@@ -50,7 +50,7 @@
 
     <!-- 查看详情模态框 -->
     <el-dialog v-model="reviewModalVisible" :modal="false" destroy-on-close>
-      <ReviewDetailModal :reviewId="currentReviewId" />
+      <ReviewDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false"/>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="reviewModalVisible = false">关闭</el-button>

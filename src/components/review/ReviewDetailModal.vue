@@ -3,10 +3,10 @@
         <div class="page-header">
             <h2>审核详情</h2>
             <div>
-                <el-button v-if="review?.status === 0" type="success" @click="handleApprove" :loading="actionLoading">
+                <el-button v-if="review?.status === 0" type="success" @click="handleApprove" :loading="approveActionLoading">
                     批准
                 </el-button>
-                <el-button v-if="review?.status === 0" type="danger" @click="handleReject" :loading="actionLoading">
+                <el-button v-if="review?.status === 0" type="danger" @click="handleReject" :loading="rejectActionLoading">
                     拒绝
                 </el-button>
             </div>
@@ -71,13 +71,21 @@ import { getReviewById } from '@/api/review';
 import { useReviewStore } from '@/stores/review';
 import type { Review } from '@/api/review';
 import type { FormInstance } from 'element-plus';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
     reviewId: string;
 }>();
 
+// 定义关闭模态框的事件
+const emit = defineEmits(['close-modal'])
+
+const router = useRouter();
+
 const reviewStore = useReviewStore();
 const review = ref<Review | null>(null);
+const approveActionLoading = ref(false);
+const rejectActionLoading = ref(false);
 const actionLoading = ref(false);
 
 // 拒绝对话框相关
@@ -129,15 +137,18 @@ const handleApprove = () => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
-        actionLoading.value = true;
+        approveActionLoading.value = true;
         try {
             const updatedReview = await reviewStore.approveReviewItem(props.reviewId);
             review.value = updatedReview;
             ElMessage.success('审核已批准');
+            emit('close-modal');
+            router.go(0);
+            // await fetchReviewDetail();
         } catch (error) {
             ElMessage.error('操作失败');
         } finally {
-            actionLoading.value = false;
+            approveActionLoading.value = false;
         }
     }).catch(() => {});
 };
@@ -154,16 +165,19 @@ const confirmReject = async () => {
     
     await rejectFormRef.value.validate(async (valid) => {
         if (valid) {
-            actionLoading.value = true;
+            rejectActionLoading.value = true;
             try {
                 const updatedReview = await reviewStore.rejectReviewItem(props.reviewId, rejectForm.value.reason);
                 review.value = updatedReview;
                 ElMessage.success('审核已拒绝');
                 rejectDialogVisible.value = false;
+                emit('close-modal');
+                router.go(0);
+                // await fetchReviewDetail();
             } catch (error) {
                 ElMessage.error('操作失败');
             } finally {
-                actionLoading.value = false;
+                rejectActionLoading.value = false;
             }
         }
     });
