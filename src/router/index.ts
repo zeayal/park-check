@@ -6,7 +6,7 @@ const routes = [
     redirect: "/admin/dashboard",
   },
   {
-    path: "/login",
+    path: "/admin/login",
     name: "Login",
     component: () => import("@/views/LoginView.vue"),
     meta: { requiresAuth: false },
