@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // 使用相对路径，让 Vite 代理处理请求
-const API_BASE_URL = "https://unistar.icu/api";
+const API_BASE_URL = "/api";
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -31,7 +31,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "/login";
+      window.location.href = "/admin/login";
     }
     return Promise.reject(error);
   }

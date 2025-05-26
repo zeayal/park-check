@@ -42,7 +42,7 @@ export const getReviews = async (
   params: ReviewParams
 ): Promise<ReviewResponse> => {
   const response = await apiClient.get<BackendResponse>(
-    "/admin/getCampingSiteList",
+    "/monster/admin/getCampingSiteList",
     { params }
   );
   return {
@@ -53,7 +53,7 @@ export const getReviews = async (
 
 // 获取查看详情
 export const getReviewById = async (id: string) => {
-  const response = await apiClient.get("/admin/getCampingSiteDetail", {
+  const response = await apiClient.get("/monster/admin/getCampingSiteDetail", {
     params: { id },
   });
   return response.data;
@@ -61,7 +61,7 @@ export const getReviewById = async (id: string) => {
 
 // 批准新增营地
 export const approveReview = async (id: number): Promise<Review> => {
-  const response = await apiClient.post<Review>("/admin/campingSite/review", {
+  const response = await apiClient.post<Review>("/monster/admin/campingSite/review", {
     id,
     status: 1,
   });
@@ -73,7 +73,7 @@ export const rejectReview = async (
   id: number,
   reason: string
 ): Promise<Review> => {
-  const response = await apiClient.post<Review>("/admin/campingSite/review", {
+  const response = await apiClient.post<Review>("/monster/admin/campingSite/review", {
     id,
     status: -1,
     reason,
@@ -83,6 +83,6 @@ export const rejectReview = async (
 
 // 获取控制面板展示数据
 export const getDashbordStatistics = async () => {
-  const response = await apiClient.get("/admin/dashboard");
+  const response = await apiClient.get("/monster/admin/dashboard");
   return response.data.data;
 };

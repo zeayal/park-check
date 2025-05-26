@@ -1,5 +1,10 @@
 # park-check
 
+
+## 首页地址
+
+https://unistar.icu/daisyDing/dashboard
+
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup
