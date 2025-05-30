@@ -55,13 +55,16 @@ const handleLogin = async () => {
   await loginForm.value.validate(async (valid) => {
     if (valid) {
       loading.value = true;
-
       try {
-        await authStore.login(form);
-        ElMessage.success('登录成功');
-        router.push('/admin/dashboard');
-      } catch (error: any) {
-        ElMessage.error(error.message || '登录失败，请检查用户名和密码');
+        const username = form.username;
+        const password = form.password;
+        const res = await authStore.login({
+          username,
+          password
+        });
+        if(res.code === 0) {
+          router.push('/admin/dashboard');
+        }
       } finally {
         loading.value = false;
       }

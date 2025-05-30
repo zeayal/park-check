@@ -35,7 +35,6 @@ export const useReviewStore = defineStore("review", {
         this.pageSize = pageSize;
         this.currentStatus = status || null;
       } catch (error) {
-        console.error("获取审核列表失败", error);
       } finally {
         this.loading = false;
       }
@@ -52,7 +51,6 @@ export const useReviewStore = defineStore("review", {
 
         return updatedReview;
       } catch (error) {
-        console.error("审批失败", error);
         throw error;
       }
     },
@@ -68,7 +66,6 @@ export const useReviewStore = defineStore("review", {
 
         return updatedReview;
       } catch (error) {
-        console.error("拒绝失败", error);
         throw error;
       }
     },

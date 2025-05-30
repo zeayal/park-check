@@ -1,10 +1,7 @@
 import axios from "axios";
-
-// 使用相对路径，让 Vite 代理处理请求
-const API_BASE_URL = "/api";
+import { ElMessage } from "element-plus";
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -27,12 +24,21 @@ apiClient.interceptors.request.use(
 
 // 响应拦截器
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
+  (response) => {
+    const code = response.data.code;
+    const msg = response.data.msg;
+    if (code == 0) {
+      ElMessage.success(msg);
+    } else {
+      ElMessage.error(msg);
+    }
+    if ([403, 401].includes(code)) {
       localStorage.removeItem("token");
       window.location.href = "/admin/login";
     }
+    return response;
+  },
+  (error) => {
     return Promise.reject(error);
   }
 );

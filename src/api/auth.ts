@@ -6,19 +6,18 @@ export interface LoginCredentials {
 }
 
 export interface LoginResponse {
-  token: string;
-  user: {
-    id: number;
-    username: string;
-    role: string;
+  code: number;
+  data: {
+    token: string;
   };
+  msg: string
 }
 
 export const login = async (
   credentials: LoginCredentials
 ): Promise<LoginResponse> => {
   const response = await apiClient.post<LoginResponse>(
-    "/users/login",
+    "/api/monster/admin/login",
     credentials
   );
   return response.data;

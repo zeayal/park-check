@@ -28,12 +28,15 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async login(credentials: LoginCredentials) {
       try {
-        const data = await login(credentials);
-        this.token = data.token;
-        this.user = data.user;
-        this.isAuthenticated = true;
-        localStorage.setItem("token", data.token);
-        return data;
+        const res = await login(credentials);
+        const token = res.data.token;
+        if (res.code === 0) {
+          this.token = token
+          this.isAuthenticated = true;
+          localStorage.setItem("token", token);
+        }
+        // this.user = data.user;
+        return res;
       } catch (error) {
         throw error;
       }
