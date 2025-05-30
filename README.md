@@ -1,6 +1,8 @@
 # park-check
 
 
+管理员账号密码 admin tcbzjyd123
+
 ## 首页地址
 
 https://unistar.icu/daisyDing/dashboard
