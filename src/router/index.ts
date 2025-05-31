@@ -46,21 +46,4 @@ const router = createRouter({
   routes,
 });
 
-// 路由守卫
-// router.beforeEach((to, from, next) => {
-//   const isAuthenticated = !!localStorage.getItem("token");
-//   const requiresAuth = to.matched.some(
-//     (record) => record.meta.requiresAuth !== false
-//   );
-
-//   if (requiresAuth && !isAuthenticated) {
-//     next("/login");
-//   } else if (to.path === "/login" && isAuthenticated) {
-//     // 避免已认证用户访问登录页面。
-//     next("/admin/dashboard");
-//   } else {
-//     next();
-//   }
-// });
-
 export default router;

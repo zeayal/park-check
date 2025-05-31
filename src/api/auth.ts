@@ -1,3 +1,4 @@
+import { storage } from "@/utils/storage";
 import apiClient from "./index";
 
 export interface LoginCredentials {
@@ -25,5 +26,5 @@ export const login = async (
 
 export const logout = async (): Promise<void> => {
   await apiClient.post("/auth/logout");
-  localStorage.removeItem("token");
+  storage.clearTokens();
 };
