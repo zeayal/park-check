@@ -25,25 +25,23 @@ const routes = [
         path: "reviews/add",
         name: "AddReview",
         component: () => import("@/views/admin/ReviewAddListView.vue"),
-        props: { mode: "add" },
       },
       {
         path: "reviews/edit",
         name: "EditReview",
         component: () => import("@/views/admin/ReviewEditListView.vue"),
-        props: { mode: "edit" },
       },
       {
         path: "reviews",
         name: "Reviews",
         component: () => import("@/views/admin/ReviewAddListView.vue"),
       },
-      {
-        path: "reviews/:id",
-        name: "ReviewDetail",
-        component: () => import("@/views/admin/ReviewDetailView.vue"),
-        props: true,
-      },
+      // {
+      //   path: "reviews/:id",
+      //   name: "ReviewDetail",
+      //   component: () => import("@/views/admin/ReviewDetailView.vue"),
+      //   props: true,
+      // },
     ],
   },
   {

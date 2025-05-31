@@ -132,6 +132,7 @@ onMounted(() => {
     currentStatus.value = route.query.status as string;
   }
   fetchReviews();
+  console.log("测试：", props)
 });
 
 // 监听状态变化刷新数据
@@ -157,9 +158,11 @@ const fetchReviews = async () => {
       await getReviews(params) : 
       await getEditReviews(params);
 
-    if (response && response.data) {
-      reviews.value = response.data.items || [];
-      total.value = response.data.total || 0;
+    console.log("response1111", response);
+
+    if (response) {
+      reviews.value = response.items || [];
+      total.value = response.total || 0;
     } else {
       reviews.value = [];
       total.value = 0;
