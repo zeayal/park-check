@@ -19,7 +19,8 @@ export default defineConfig({
         target: "http://192.168.162.160:3000",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.startsWith('/api') ? `/api/${path.slice(4)}` : path
+        rewrite: (path) =>
+          path.startsWith("/api") ? `/api/${path.slice(4)}` : path,
       },
     },
   },

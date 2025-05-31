@@ -22,9 +22,21 @@ const routes = [
         component: () => import("@/views/admin/DashboardView.vue"),
       },
       {
+        path: "reviews/add",
+        name: "AddReview",
+        component: () => import("@/views/admin/ReviewAddListView.vue"),
+        props: { mode: "add" },
+      },
+      {
+        path: "reviews/edit",
+        name: "EditReview",
+        component: () => import("@/views/admin/ReviewEditListView.vue"),
+        props: { mode: "edit" },
+      },
+      {
         path: "reviews",
         name: "Reviews",
-        component: () => import("@/views/admin/ReviewListView.vue"),
+        component: () => import("@/views/admin/ReviewAddListView.vue"),
       },
       {
         path: "reviews/:id",

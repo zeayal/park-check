@@ -38,6 +38,7 @@ export interface ReviewResponse {
   total: number;
 }
 
+// 获取新增营地审核列表
 export const getReviews = async (
   params: ReviewParams
 ): Promise<ReviewResponse> => {
@@ -51,20 +52,40 @@ export const getReviews = async (
   };
 };
 
+// 获取修改营地审核列表
+export const getEditReviews = async (
+  params: ReviewParams
+): Promise<ReviewResponse> => {
+  const response = await apiClient.get<BackendResponse>(
+    "/api/monster/admin/getCampingSiteRevisionList",
+    { params }
+  );
+  return {
+    items: response.data.data.items,
+    total: response.data.data.total,
+  };
+};
+
 // 获取查看详情
 export const getReviewById = async (id: string) => {
-  const response = await apiClient.get("/api/monster/admin/getCampingSiteDetail", {
-    params: { id },
-  });
+  const response = await apiClient.get(
+    "/api/monster/admin/getCampingSiteDetail",
+    {
+      params: { id },
+    }
+  );
   return response.data;
 };
 
 // 批准新增营地
 export const approveReview = async (id: number): Promise<Review> => {
-  const response = await apiClient.post<Review>("/api/monster/admin/campingSite/review", {
-    id,
-    status: 1,
-  });
+  const response = await apiClient.post<Review>(
+    "/api/monster/admin/campingSite/review",
+    {
+      id,
+      status: 1,
+    }
+  );
   return response.data;
 };
 
@@ -73,11 +94,14 @@ export const rejectReview = async (
   id: number,
   reason: string
 ): Promise<Review> => {
-  const response = await apiClient.post<Review>("/api/monster/admin/campingSite/review", {
-    id,
-    status: -1,
-    reason,
-  });
+  const response = await apiClient.post<Review>(
+    "/api/monster/admin/campingSite/review",
+    {
+      id,
+      status: -1,
+      reason,
+    }
+  );
   return response.data;
 };
 

@@ -16,37 +16,43 @@
             </el-icon>
             <span slot="title">控制面板</span>
           </el-menu-item>
-          <el-menu-item index="/admin/reviews">
+          <el-menu-item index="/admin/reviews/add">
             <el-icon>
               <Document />
             </el-icon>
-            <span slot="title">审核管理</span>
+            <span slot="title">新增营地管理</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/reviews/edit">
+            <el-icon>
+              <Document />
+            </el-icon>
+            <span slot="title">修改营地管理</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
       <el-container>
         <el-header>
-          <div class="header-right">
-            <el-dropdown @command="handleCommand">
-              <span class="el-dropdown-link">
-                {{ username }}
-                <el-icon class="el-icon--right">
-                  <ArrowDown />
-                </el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
-        </el-header>
-        <el-main>
-          <router-view />
-        </el-main>
-      </el-container>
-    </el-container>
+          <div class=" header-right">
+              <el-dropdown @command="handleCommand">
+                <span class="el-dropdown-link">
+                  {{ username }}
+                  <el-icon class="el-icon--right">
+                    <ArrowDown />
+                  </el-icon>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+  </div>
+  </el-header>
+  <el-main>
+    <router-view />
+  </el-main>
+  </el-container>
+  </el-container>
   </div>
 </template>
 
