@@ -1,3 +1,4 @@
+import { storage } from "@/utils/storage";
 import axios from "axios";
 import { ElMessage } from "element-plus";
 
@@ -11,7 +12,7 @@ const apiClient = axios.create({
 // 请求拦截器
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = storage.getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -33,7 +34,7 @@ apiClient.interceptors.response.use(
       ElMessage.error(msg);
     }
     if ([403, 401].includes(code)) {
-      localStorage.removeItem("token");
+      // storage.
       window.location.href = "/admin/login";
     }
     return response;

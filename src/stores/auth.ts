@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { login, logout } from "@/api/auth";
 import type { LoginCredentials } from "@/api/auth";
+import { storage } from "@/utils/storage";
 
 interface User {
   id: number;
@@ -9,16 +10,18 @@ interface User {
 }
 
 interface AuthState {
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   user: User | null;
   isAuthenticated: boolean;
 }
 
 export const useAuthStore = defineStore("auth", {
   state: (): AuthState => ({
-    token: localStorage.getItem("token"),
+    accessToken: storage.getAccessToken(),
+    refreshToken: storage.getRefreshToken(),
     user: null,
-    isAuthenticated: !!localStorage.getItem("token"),
+    isAuthenticated: !!storage.getAccessToken(),
   }),
 
   getters: {
@@ -29,11 +32,13 @@ export const useAuthStore = defineStore("auth", {
     async login(credentials: LoginCredentials) {
       try {
         const res = await login(credentials);
-        const token = res.data.token;
         if (res.code === 0) {
-          this.token = token
+          const { accessToken, refreshToken, expiresIn } = res.data as any;
+          this.accessToken = accessToken
+          this.refreshToken = refreshToken
+          console.log('accessToken, refreshToken, expiresIn', accessToken, refreshToken, expiresIn)
           this.isAuthenticated = true;
-          localStorage.setItem("token", token);
+          storage.setTokens(accessToken, refreshToken, expiresIn)
         }
         // this.user = data.user;
         return res;
@@ -45,10 +50,11 @@ export const useAuthStore = defineStore("auth", {
     async logout() {
       try {
         await logout();
-        this.token = null;
+        this.accessToken = null;
+        this.refreshToken = null;
         this.user = null;
         this.isAuthenticated = false;
-        localStorage.removeItem("token");
+        storage.clearTokens()
       } catch (error) {
         console.error("登出出错", error);
       }
