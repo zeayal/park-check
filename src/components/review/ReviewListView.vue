@@ -54,7 +54,12 @@
 
     <!-- 查看详情模态框 -->
     <el-dialog v-model="reviewModalVisible" :modal="false" destroy-on-close>
-      <ReviewDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
+      <template v-if="props.mode === 'add'">
+        <ReviewDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
+      </template>
+      <template v-else>
+        <ReviewRevisionDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
+      </template>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="reviewModalVisible = false">关闭</el-button>
@@ -90,6 +95,7 @@ import type { FormInstance } from 'element-plus';
 import { getReviews, getEditReviews, type Review } from '@/api/review';
 import dayjs from 'dayjs';
 import ReviewDetailModal from '@/components/review/ReviewDetailModal.vue';
+import ReviewRevisionDetailModal from '@/components/review/ReviewRevisionDetailModal.vue';
 
 const props = defineProps<{
   mode: 'add' | 'edit';
@@ -154,8 +160,8 @@ const fetchReviews = async () => {
     };
 
     // 从后端获取数据
-    const response = props.mode === 'add' ? 
-      await getReviews(params) : 
+    const response = props.mode === 'add' ?
+      await getReviews(params) :
       await getEditReviews(params);
 
     console.log("response1111", response);
@@ -253,7 +259,7 @@ const handleApprove = (id: string) => {
     } finally {
       actionLoading.value = false;
     }
-  }).catch(() => {});
+  }).catch(() => { });
 };
 
 // 拒绝操作
@@ -265,7 +271,7 @@ const handleReject = (id: string) => {
 // 确认拒绝
 const confirmReject = async () => {
   if (!rejectFormRef.value) return;
-  
+
   await rejectFormRef.value.validate(async (valid) => {
     if (valid) {
       actionLoading.value = true;
@@ -304,4 +310,4 @@ const handleEdit = (id: string) => {
   border: 1px solid #ccc;
   padding: 5px;
 }
-</style> 
+</style>

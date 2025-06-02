@@ -77,6 +77,18 @@ export const getReviewById = async (id: string) => {
   return response.data;
 };
 
+
+// 获取修改详情
+export const getRevisionReviewById = async (id: string) => {
+  const response = await apiClient.get(
+    "/api/monster/admin/getCampingSiteRevisionDetail",
+    {
+      params: { id },
+    }
+  );
+  return response.data;
+}
+
 // 批准新增营地
 export const approveReview = async (id: number): Promise<Review> => {
   const response = await apiClient.post<Review>(
