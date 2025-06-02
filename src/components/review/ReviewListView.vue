@@ -12,7 +12,7 @@
 
     <el-table v-loading="loading" :data="formatReviews" height="400" style="width: 100%" border show-overflow-tooltip>
       <el-table-column prop="id" label="ID" width="80" class="single" />
-      <el-table-column prop="creatorName" label="用户" width="120" />
+      <el-table-column prop="submiter.nickname" label="用户" width="120" />
       <el-table-column prop="name" label="标题" min-width="200" />
       <el-table-column prop="status" label="状态" width="100">
         <template #default="scope">
