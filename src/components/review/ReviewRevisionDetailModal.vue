@@ -27,8 +27,10 @@
             <div class="review-info">
                 <p><strong>用户：</strong> {{ review.submiter.nickname }}</p>
                 <p><strong>地址：</strong> {{ review.address }}</p>
-                <p><strong>创建时间：</strong> {{ review.createTime }}</p>
-                <p><strong>更新时间：</strong> {{ review.updateTime }}</p>
+                <p><strong>创建时间：</strong> {{ review.createdAt }}</p>
+                <p><strong>更新时间：</strong> {{ review.submitTime }}</p>
+                <p><strong>GPS经度：</strong> {{ review.longitude }}</p>
+                <p><strong>GPS纬度：</strong> {{ review.latitude }}</p>
             </div>
 
             <div class="review-content">

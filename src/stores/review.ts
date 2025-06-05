@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getReviews, approveReview, rejectReview } from "@/api/review";
+import { getReviews, approveReview, rejectReview, approveRevisionReview } from "@/api/review";
 import type { Review, ReviewParams, ReviewResponse } from "@/api/review";
 
 interface ReviewState {
@@ -43,6 +43,21 @@ export const useReviewStore = defineStore("review", {
     async approveReviewItem(id: string) {
       try {
         const updatedReview = await approveReview(id);
+        const index = this.reviews.findIndex((review) => review.id === id);
+
+        if (index !== -1) {
+          this.reviews[index] = updatedReview;
+        }
+
+        return updatedReview;
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    async approveeRevisionReviewItem(id: string) {
+      try {
+        const updatedReview = await approveRevisionReview(id);
         const index = this.reviews.findIndex((review) => review.id === id);
 
         if (index !== -1) {

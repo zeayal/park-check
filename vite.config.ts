@@ -16,7 +16,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         // target: "https://unistar.icu",
-        target: "http://192.168.162.160:3000",
+        target: "http://localhost:3000",
         changeOrigin: true,
         secure: false,
         rewrite: (path) =>

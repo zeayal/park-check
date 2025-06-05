@@ -101,6 +101,18 @@ export const approveReview = async (id: number): Promise<Review> => {
   return response.data;
 };
 
+
+// 批准修改营地
+export const approveRevisionReview = async (revisionId: string): Promise<Review> => {
+  const response = await apiClient.post<Review>(
+    "/api/monster/admin/checkApproveCampingSiteRevisionDetail",
+    {
+      id: revisionId
+    }
+  );
+  return response.data;
+};
+
 // 拒绝新增营地
 export const rejectReview = async (
   id: number,

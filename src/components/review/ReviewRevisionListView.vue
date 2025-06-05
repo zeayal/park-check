@@ -12,7 +12,7 @@
 
     <el-table v-loading="loading" :data="formatReviews" height="400" style="width: 100%" border show-overflow-tooltip>
       <el-table-column prop="id" label="ID" width="80" class="single" />
-      <el-table-column prop="creatorName" label="用户" width="120" />
+      <el-table-column prop="submiter.nickname" label="用户" width="120" />
       <el-table-column prop="name" label="标题" min-width="200" />
       <el-table-column prop="status" label="状态" width="100">
         <template #default="scope">
@@ -21,8 +21,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180" />
-      <el-table-column prop="updateTime" label="更新时间" width="180" />
+      <el-table-column prop="createdAt" label="创建时间" width="180" />
+      <el-table-column prop="submitTime" label="更新时间" width="180" />
       <el-table-column fixed="right" label="操作" width="200">
         <template #default="scope">
           <div class="table-actions">
