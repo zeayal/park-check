@@ -41,8 +41,9 @@ jobs:
       - name: Backup and clean server files
         run: |
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p ${{ secrets.SERVER_PATH }}_backup_$TIMESTAMP"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cp -r ${{ secrets.SERVER_PATH }}/* ${{ secrets.SERVER_PATH }}_backup_$TIMESTAMP/ 2>/dev/null || true"
+          # 使用 /tmp 目录进行临时备份
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /tmp/park-check-backup-$TIMESTAMP"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cp -r ${{ secrets.SERVER_PATH }}/* /tmp/park-check-backup-$TIMESTAMP/ 2>/dev/null || true"
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "rm -rf ${{ secrets.SERVER_PATH }}/*"
 
       - name: Upload files to server
