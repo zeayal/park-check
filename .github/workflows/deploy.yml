@@ -43,11 +43,15 @@ jobs:
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
           # 使用 /tmp 目录进行临时备份
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /tmp/park-check-backup-$TIMESTAMP"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cp -r ${{ secrets.SERVER_PATH }}/* /tmp/park-check-backup-$TIMESTAMP/ 2>/dev/null || true"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "rm -rf ${{ secrets.SERVER_PATH }}/*"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo cp -r ${{ secrets.SERVER_PATH }}/* /tmp/park-check-backup-$TIMESTAMP/ 2>/dev/null || true"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo rm -rf ${{ secrets.SERVER_PATH }}/*"
 
       - name: Upload files to server
         run: |
+          # 先创建目标目录
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo mkdir -p ${{ secrets.SERVER_PATH }} && sudo chown -R ${{ secrets.SERVER_USER }}:${{ secrets.SERVER_USER }} ${{ secrets.SERVER_PATH }}"
+          
+          # 使用 rsync 上传文件
           rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" \
             dist/* \
             nginx.conf \
