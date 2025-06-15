@@ -4,10 +4,10 @@
       <h2>审核详情</h2>
       <div>
         <el-button @click="goBack">返回列表</el-button>
-        <el-button v-if="review?.status === 0" type="success" @click="handleApprove" :loading="actionLoading">
+        <el-button v-if="Number(review?.status) == 0" type="success" @click="handleApprove" :loading="actionLoading">
           批准
         </el-button>
-        <el-button v-if="review?.status === 0" type="danger" @click="handleReject" :loading="actionLoading">
+        <el-button v-if="Number(review?.status) == 0" type="danger" @click="handleReject" :loading="actionLoading">
           拒绝
         </el-button>
       </div>
@@ -80,7 +80,7 @@ import type { FormInstance } from 'element-plus';
 const router = useRouter();
 const route = useRoute();
 const reviewStore = useReviewStore();
-const reviewId = route.params.id;
+const reviewId = route.params.id as string;
 
 const review = ref<Review | null>(null);
 const loading = ref(true);
@@ -100,7 +100,7 @@ const fetchReviewDetail = async () => {
   loading.value = true;
   try {
 
-    const response = await getReviewById(reviewId)
+    const response = await getReviewById(reviewId as string)
     review.value = response.data;
     
     if (!review.value) {

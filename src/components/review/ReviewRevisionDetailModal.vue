@@ -3,11 +3,11 @@
         <div class="page-header">
             <h2>审核详情</h2>
             <div>
-                <el-button v-if="review?.status === 0" type="success" @click="handleApprove"
+                <el-button v-if="Number(review?.status) == 0" type="success" @click="handleApprove"
                     :loading="approveActionLoading">
                     批准
                 </el-button>
-                <el-button v-if="review?.status === 0" type="danger" @click="handleReject"
+                <el-button v-if="Number(review?.status) == 0" type="danger" @click="handleReject"
                     :loading="rejectActionLoading">
                     拒绝
                 </el-button>

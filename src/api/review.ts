@@ -15,6 +15,7 @@ export interface Review {
   updateTime: string;
   address: string;
   images: string[];
+  [key: string]: any;
 }
 
 export interface ReviewParams {
@@ -90,7 +91,7 @@ export const getRevisionReviewById = async (id: string) => {
 }
 
 // 批准新增营地
-export const approveReview = async (id: number): Promise<Review> => {
+export const approveReview = async (id: string): Promise<Review> => {
   const response = await apiClient.post<Review>(
     "/api/monster/admin/campingSite/review",
     {
@@ -115,7 +116,7 @@ export const approveRevisionReview = async (revisionId: string): Promise<Review>
 
 // 拒绝新增营地
 export const rejectReview = async (
-  id: number,
+  id: string,
   reason: string
 ): Promise<Review> => {
   const response = await apiClient.post<Review>(
