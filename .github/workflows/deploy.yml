@@ -59,7 +59,7 @@ jobs:
 
       - name: Configure Nginx
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo cp ${{ secrets.SERVER_PATH }}/nginx.conf /etc/nginx/conf.d/park-check.conf && \
-          sudo ln -sf /etc/nginx/conf.d/park-check.conf /etc/nginx/sites-enabled/park-check.conf && \
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo cp ${{ secrets.SERVER_PATH }}/nginx.conf /etc/nginx/sites-available/park-check.conf && \
+          sudo ln -sf /etc/nginx/sites-available/park-check.conf /etc/nginx/sites-enabled/park-check.conf && \
           sudo nginx -t && \
           sudo systemctl reload nginx"
