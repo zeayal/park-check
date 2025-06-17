@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column prop="createdAt" label="创建时间" width="180" />
       <el-table-column prop="submitTime" label="更新时间" width="180" />
-      <el-table-column fixed="right" label="操作" width="200">
+      <el-table-column fixed="right" label="操作" :width="operationColumnWidth">
         <template #default="scope">
           <div class="table-actions">
             <el-button size="small" link type="primary" @click="handleView(scope.row.id)">
@@ -129,9 +129,10 @@ const rejectForm = ref({ reason: '', id: '' });
 const rejectFormRef = ref<FormInstance>();
 const actionLoading = ref(false);
 
+const isMobile = ref(window.innerWidth <= 768);
 // 计算属性
 const reviews = ref<Review[]>([]);
-
+  const operationColumnWidth = computed(() => (isMobile.value ? '60px' : '200px'));
 onMounted(() => {
   // 从URL获取状态参数
   if (route.query.status) {

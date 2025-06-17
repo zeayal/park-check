@@ -1,7 +1,7 @@
 <template>
   <div class="admin-layout">
     <el-container>
-      <el-aside :width="sidebarCollapsed ? '64px' : '200px'">
+      <el-aside :class="{ 'is-collapsed': isMobileMenuOpen }" :width="sidebarCollapsed ? '64px' : '200px'">
         <div class="sidebar-header" @click="toggleSidebar">
           <h2 v-if="!sidebarCollapsed">后台管理系统</h2>
           <el-icon v-else>
@@ -32,32 +32,39 @@
       </el-aside>
       <el-container>
         <el-header>
-          <div class=" header-right">
-              <el-dropdown @command="handleCommand">
-                <span class="el-dropdown-link">
-                  {{ username }}
-                  <el-icon class="el-icon--right">
-                    <ArrowDown />
-                  </el-icon>
-                </span>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-  </div>
-  </el-header>
-  <el-main>
-    <router-view />
-  </el-main>
-  </el-container>
-  </el-container>
+          <div class="mobile-menu-btn" @click="toggleMobileMenu">
+            <el-icon>
+              <Menu />
+            </el-icon>
+          </div>
+          <div class="header-right">
+            <el-dropdown @command="handleCommand">
+              <span class="el-dropdown-link">
+                {{ username }}
+                <el-icon class="el-icon--right">
+                  <ArrowDown />
+                </el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </el-header>
+        <el-main>
+          <router-view />
+        </el-main>
+      </el-container>
+    </el-container>
+    <!-- 移动端侧边栏的覆盖层 -->
+    <div v-if="isMobile && isMobileMenuOpen" class="mobile-menu-backdrop" @click="toggleMobileMenu"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { Menu, Document, ArrowDown } from '@element-plus/icons-vue';
@@ -65,11 +72,17 @@ import { Menu, Document, ArrowDown } from '@element-plus/icons-vue';
 const router = useRouter();
 const authStore = useAuthStore();
 const sidebarCollapsed = ref(false);
+const isMobileMenuOpen = ref(false);
+const isMobile = ref(window.innerWidth <= 768);
 
 const username = computed(() => authStore.user?.username || '管理员');
 
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value;
+};
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
 };
 
 const handleCommand = (command: string) => {
@@ -78,6 +91,22 @@ const handleCommand = (command: string) => {
     router.push('/login');
   }
 };
+
+// 监听窗口大小变化
+const handleResize = () => {
+  isMobile.value = window.innerWidth <= 768; // 更新isMobile状态
+  if (window.innerWidth > 768) {
+    isMobileMenuOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
+});
 </script>
 
 <style scoped>
@@ -93,7 +122,12 @@ const handleCommand = (command: string) => {
   background-color: #304156;
   color: #fff;
   height: 100%;
-  transition: width 0.3s;
+  transition: all 0.3s;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1000;
 }
 
 .el-header {
@@ -102,13 +136,21 @@ const handleCommand = (command: string) => {
   line-height: 60px;
   border-bottom: 1px solid #e6e6e6;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 20px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 999;
 }
 
 .el-main {
   background-color: #f5f7fa;
   padding: 20px;
+  margin-top: 60px;
+  transition: margin-left 0.3s;
 }
 
 .sidebar-header {
@@ -121,10 +163,14 @@ const handleCommand = (command: string) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-header h2 {
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-header .el-icon {
@@ -132,9 +178,8 @@ const handleCommand = (command: string) => {
 }
 
 .header-right {
-  padding-right: 20px;
+  display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 .el-dropdown-link {
@@ -142,6 +187,72 @@ const handleCommand = (command: string) => {
   color: #409EFF;
   display: flex;
   align-items: center;
-  margin-top: 35%;
+}
+
+/* 响应式样式 */
+@media screen and (max-width: 768px) {
+  .el-aside {
+    transform: translateX(-100%);
+  }
+
+  .el-aside.is-collapsed {
+    transform: translateX(0);
+  }
+
+  .el-main {
+    margin-left: 0 !important;
+  }
+
+  .el-header {
+    padding: 0 10px;
+  }
+
+  .sidebar-header h2 {
+    font-size: 16px;
+  }
+}
+
+/* 移动端菜单按钮 */
+.mobile-menu-btn {
+  display: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #409EFF;
+}
+
+@media screen and (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .mobile-menu-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 990; /* 确保在侧边栏下方，但覆盖主内容 */
+  }
+
+  .el-aside {
+    transform: translateX(-100%);
+  }
+
+  .el-aside.is-collapsed {
+    transform: translateX(0);
+  }
+
+  .el-main {
+    margin-left: 0 !important;
+  }
+
+  .el-header {
+    padding: 0 10px;
+  }
+
+  .sidebar-header h2 {
+    font-size: 16px;
+  }
 }
 </style>
