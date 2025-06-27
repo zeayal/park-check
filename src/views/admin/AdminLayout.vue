@@ -37,7 +37,8 @@
               <Menu />
             </el-icon>
           </div>
-          <div class="header-right">
+          <!-- 登出按钮 -->
+          <!-- <div class="header-right">
             <el-dropdown @command="handleCommand">
               <span class="el-dropdown-link">
                 {{ username }}
@@ -51,7 +52,7 @@
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
-          </div>
+          </div> -->
         </el-header>
         <el-main>
           <router-view />
@@ -75,7 +76,7 @@ const sidebarCollapsed = ref(false);
 const isMobileMenuOpen = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
 
-const username = computed(() => authStore.user?.username || '管理员');
+// const username = computed(() => authStore.user?.username || '管理员');
 
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value;
@@ -144,6 +145,8 @@ onUnmounted(() => {
   right: 0;
   left: 0;
   z-index: 999;
+  /* 新增头部左侧边距的过渡效果 */
+  transition: left 0.3s;
 }
 
 .el-main {
@@ -151,6 +154,28 @@ onUnmounted(() => {
   padding: 20px;
   margin-top: 60px;
   transition: margin-left 0.3s;
+}
+
+/* 新增桌面端主内容区域边距调整 */
+@media screen and (min-width: 769px) {
+  .el-main {
+    margin-left: 200px;
+    /* 默认边距 */
+  }
+
+  .el-header {
+    left: 200px;
+    /* 头部左侧边距 */
+  }
+
+  /* 侧边栏折叠时的边距调整 */
+  .el-aside[style*="width: 64px"]~.el-container .el-main {
+    margin-left: 64px;
+  }
+
+  .el-aside[style*="width: 64px"]~.el-container .el-header {
+    left: 64px;
+  }
 }
 
 .sidebar-header {
@@ -189,29 +214,6 @@ onUnmounted(() => {
   align-items: center;
 }
 
-/* 响应式样式 */
-@media screen and (max-width: 768px) {
-  .el-aside {
-    transform: translateX(-100%);
-  }
-
-  .el-aside.is-collapsed {
-    transform: translateX(0);
-  }
-
-  .el-main {
-    margin-left: 0 !important;
-  }
-
-  .el-header {
-    padding: 0 10px;
-  }
-
-  .sidebar-header h2 {
-    font-size: 16px;
-  }
-}
-
 /* 移动端菜单按钮 */
 .mobile-menu-btn {
   display: none;
@@ -220,6 +222,7 @@ onUnmounted(() => {
   color: #409EFF;
 }
 
+/* 重构移动端样式 */
 @media screen and (max-width: 768px) {
   .mobile-menu-btn {
     display: block;
@@ -232,23 +235,16 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 990; /* 确保在侧边栏下方，但覆盖主内容 */
+    z-index: 995;
   }
 
-  .el-aside {
-    transform: translateX(-100%);
-  }
-
-  .el-aside.is-collapsed {
-    transform: translateX(0);
+  .el-header {
+    left: 0;
+    padding: 0 10px;
   }
 
   .el-main {
     margin-left: 0 !important;
-  }
-
-  .el-header {
-    padding: 0 10px;
   }
 
   .sidebar-header h2 {
