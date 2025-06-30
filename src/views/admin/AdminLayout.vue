@@ -1,64 +1,48 @@
 <template>
   <div class="admin-layout">
+
+    <el-aside :class="{ 'is-collapsed': isMobileMenuOpen }" :width="sidebarCollapsed ? '64px' : '200px'">
+      <div class="sidebar-header" @click="toggleSidebar">
+        <h2 v-if="!sidebarCollapsed">后台管理系统</h2>
+        <el-icon v-else>
+          <Menu />
+        </el-icon>
+      </div>
+      <el-menu router :default-active="$route.path" class="el-menu-vertical" background-color="#304156"
+        text-color="#fff" active-text-color="#409EFF" :collapse="sidebarCollapsed">
+        <el-menu-item index="/admin/dashboard">
+          <el-icon>
+            <Menu />
+          </el-icon>
+          <span slot="title">控制面板</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/reviews/add">
+          <el-icon>
+            <Document />
+          </el-icon>
+          <span slot="title">新增营地管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/reviews/edit">
+          <el-icon>
+            <Document />
+          </el-icon>
+          <span slot="title">修改营地管理</span>
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
     <el-container>
-      <el-aside :class="{ 'is-collapsed': isMobileMenuOpen }" :width="sidebarCollapsed ? '64px' : '200px'">
-        <div class="sidebar-header" @click="toggleSidebar">
-          <h2 v-if="!sidebarCollapsed">后台管理系统</h2>
-          <el-icon v-else>
+      <el-header>
+        <div class="mobile-menu-btn" @click="toggleMobileMenu">
+          <el-icon>
             <Menu />
           </el-icon>
         </div>
-        <el-menu router :default-active="$route.path" class="el-menu-vertical" background-color="#304156"
-          text-color="#fff" active-text-color="#409EFF" :collapse="sidebarCollapsed">
-          <el-menu-item index="/admin/dashboard">
-            <el-icon>
-              <Menu />
-            </el-icon>
-            <span slot="title">控制面板</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/reviews/add">
-            <el-icon>
-              <Document />
-            </el-icon>
-            <span slot="title">新增营地管理</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/reviews/edit">
-            <el-icon>
-              <Document />
-            </el-icon>
-            <span slot="title">修改营地管理</span>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-      <el-container>
-        <el-header>
-          <div class="mobile-menu-btn" @click="toggleMobileMenu">
-            <el-icon>
-              <Menu />
-            </el-icon>
-          </div>
-          <!-- 登出按钮 -->
-          <!-- <div class="header-right">
-            <el-dropdown @command="handleCommand">
-              <span class="el-dropdown-link">
-                {{ username }}
-                <el-icon class="el-icon--right">
-                  <ArrowDown />
-                </el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div> -->
-        </el-header>
-        <el-main>
-          <router-view />
-        </el-main>
-      </el-container>
+      </el-header>
+      <el-main :class="sidebarCollapsed ? 'el-main-custom-collapsed-container' : 'el-main-custom-container'">
+        <router-view />
+      </el-main>
     </el-container>
+
     <!-- 移动端侧边栏的覆盖层 -->
     <div v-if="isMobile && isMobileMenuOpen" class="mobile-menu-backdrop" @click="toggleMobileMenu"></div>
   </div>
@@ -112,7 +96,7 @@ onUnmounted(() => {
 
 <style scoped>
 .admin-layout {
-  height: 100%;
+  min-height: 100vh;
 }
 
 .el-container {
@@ -151,30 +135,30 @@ onUnmounted(() => {
 
 .el-main {
   background-color: #f5f7fa;
-  padding: 20px;
+  padding: 0;
+  padding-bottom: 80px;
   margin-top: 60px;
   transition: margin-left 0.3s;
 }
 
+.el-main-custom-collapsed-container {
+  margin-left: 64px;
+}
+
+.el-main-custom-container {
+  margin-left: 200px;
+}
+
+.el-menu {
+  border: none;
+}
+
+
 /* 新增桌面端主内容区域边距调整 */
 @media screen and (min-width: 769px) {
-  .el-main {
-    margin-left: 200px;
-    /* 默认边距 */
-  }
 
   .el-header {
-    left: 200px;
     /* 头部左侧边距 */
-  }
-
-  /* 侧边栏折叠时的边距调整 */
-  .el-aside[style*="width: 64px"]~.el-container .el-main {
-    margin-left: 64px;
-  }
-
-  .el-aside[style*="width: 64px"]~.el-container .el-header {
-    left: 64px;
   }
 }
 
@@ -224,6 +208,7 @@ onUnmounted(() => {
 
 /* 重构移动端样式 */
 @media screen and (max-width: 768px) {
+
   .mobile-menu-btn {
     display: block;
   }
@@ -241,10 +226,6 @@ onUnmounted(() => {
   .el-header {
     left: 0;
     padding: 0 10px;
-  }
-
-  .el-main {
-    margin-left: 0 !important;
   }
 
   .sidebar-header h2 {

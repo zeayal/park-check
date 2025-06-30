@@ -10,41 +10,44 @@
       </el-radio-group>
     </div>
 
-    <el-table v-loading="loading" :data="formatReviews" height="400" style="width: 100%" border show-overflow-tooltip>
-      <el-table-column prop="id" label="ID" width="80" class="single" />
-      <el-table-column prop="submiter.nickname" label="用户" width="120" />
-      <el-table-column prop="name" label="标题" min-width="200" />
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="scope">
-          <el-tag :type="getStatusType(scope.row.status)" :class="'status-' + scope.row.status">
-            {{ getStatusText(scope.row.status) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createdAt" label="创建时间" width="180" />
-      <el-table-column prop="submitTime" label="更新时间" width="180" />
-      <el-table-column fixed="right" label="操作" :width="operationColumnWidth">
-        <template #default="scope">
-          <div class="table-actions">
-            <el-button size="small" link type="primary" @click="handleView(scope.row.id)">
-              查看
-            </el-button>
-            <el-button v-if="scope.row.status === 1 && mode === 'add'" size="small" link type="warning"
-              @click="handleEdit(scope.row.id)">
-              修改
-            </el-button>
-            <el-button v-if="scope.row.status === 0" size="small" link type="success"
-              @click="handleApprove(scope.row.id)">
-              批准
-            </el-button>
-            <el-button v-if="scope.row.status === 0" size="small" link type="danger"
-              @click="handleReject(scope.row.id)">
-              拒绝
-            </el-button>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="el-table-custom-wrapper">
+      <el-table v-loading="loading" :data="formatReviews" height="75vh" style="width: 100%" border
+        show-overflow-tooltip>
+        <el-table-column prop="id" label="ID" width="80" class="single" />
+        <el-table-column prop="submiter.nickname" label="用户" width="120" />
+        <el-table-column prop="name" label="标题" min-width="200" />
+        <el-table-column prop="status" label="状态" width="100">
+          <template #default="scope">
+            <el-tag :type="getStatusType(scope.row.status)" :class="'status-' + scope.row.status">
+              {{ getStatusText(scope.row.status) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="创建时间" width="180" />
+        <el-table-column prop="submitTime" label="更新时间" width="180" />
+        <el-table-column fixed="right" label="操作" :width="operationColumnWidth">
+          <template #default="scope">
+            <div class="table-actions">
+              <el-button size="small" link type="primary" @click="handleView(scope.row.id)">
+                查看
+              </el-button>
+              <!-- <el-button v-if="scope.row.status === 1" size="small" link type="warning"
+                @click="handleEdit(scope.row.id)">
+                修改
+              </el-button> -->
+              <el-button v-if="scope.row.status === 0" size="small" link type="success"
+                @click="handleApprove(scope.row.id)">
+                批准
+              </el-button>
+              <el-button v-if="scope.row.status === 0" size="small" link type="danger"
+                @click="handleReject(scope.row.id)">
+                拒绝
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
     <div class="pagination-container">
       <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[100, 200, 500, 1000]"
@@ -54,12 +57,7 @@
 
     <!-- 查看详情模态框 -->
     <el-dialog v-model="reviewModalVisible" :modal="false" destroy-on-close>
-      <template v-if="props.mode === 'add'">
-        <ReviewDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
-      </template>
-      <template v-else>
-        <ReviewRevisionDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
-      </template>
+      <ReviewRevisionDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="reviewModalVisible = false">关闭</el-button>
@@ -98,7 +96,7 @@ import ReviewDetailModal from '@/components/review/ReviewDetailModal.vue';
 import ReviewRevisionDetailModal from '@/components/review/ReviewRevisionDetailModal.vue';
 
 const props = defineProps<{
-  mode: 'add' | 'edit';
+  mode: 'edit';
   title: string;
 }>();
 
@@ -132,7 +130,7 @@ const actionLoading = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
 // 计算属性
 const reviews = ref<Review[]>([]);
-  const operationColumnWidth = computed(() => (isMobile.value ? '60px' : '200px'));
+const operationColumnWidth = computed(() => (isMobile.value ? '60px' : '200px'));
 onMounted(() => {
   // 从URL获取状态参数
   if (route.query.status) {
@@ -161,8 +159,7 @@ const fetchReviews = async () => {
     };
 
     // 从后端获取数据
-    const response = props.mode === 'add' ?
-      await getReviews(params) :
+    const response =
       await getEditReviews(params);
 
     console.log("response1111", response);
@@ -252,7 +249,7 @@ const handleApprove = (id: string) => {
   }).then(async () => {
     try {
       actionLoading.value = true;
-      await props.mode === 'add' ? reviewStore.approveReviewItem(id) : reviewStore.approveeRevisionReviewItem(id);
+      await reviewStore.approveeRevisionReviewItem(id);
       ElMessage.success('审核已批准');
       fetchReviews();
     } catch (error) {
@@ -297,6 +294,10 @@ const handleEdit = (id: string) => {
 </script>
 
 <style scoped>
+.review-list {
+  height: calc(100vh - 60px);
+}
+
 .pagination-container {
   margin-top: 20px;
   display: flex;

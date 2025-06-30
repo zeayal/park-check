@@ -31,22 +31,15 @@ body {
 .app-container {
   width: 100%;
   min-height: 100vh;
-  max-width: var(--max-width);
-  min-width: var(--min-width);
   margin: 0 auto;
-  padding: 0 1rem;
 }
 
 /* 响应式断点 */
 @media screen and (max-width: 768px) {
-  .app-container {
-    padding: 0 0.5rem;
-  }
+  .app-container {}
 }
 
 @media screen and (max-width: 480px) {
-  .app-container {
-    padding: 0 0.25rem;
-  }
+  .app-container {}
 }
 </style>

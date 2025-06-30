@@ -155,7 +155,7 @@ const handleApprove = () => {
     }).then(async () => {
         approveActionLoading.value = true;
         try {
-            const updatedReview = await reviewStore.approveReviewItem(props.reviewId);
+            const updatedReview = await reviewStore.approveeRevisionReviewItem(props.reviewId);
             review.value = updatedReview;
             ElMessage.success('审核已批准');
             emit('close-modal');

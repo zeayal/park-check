@@ -12,10 +12,10 @@
       </div>
     </div>
 
-    <el-table v-loading="loading" :data="formatReviews" :height="tableHeight" style="width: 100%" border show-overflow-tooltip>
+    <el-table v-loading="loading" :data="formatReviews" height="75vh" style="width: 100%" border show-overflow-tooltip>
       <el-table-column prop="id" label="ID" width="80" class="single" />
       <el-table-column prop="name" label="标题" min-width="150" />
-      
+
       <!-- 在移动端隐藏部分列 -->
       <el-table-column prop="creatorName" label="用户" width="120" class="desktop-only" />
       <el-table-column prop="status" label="状态" width="100" class="desktop-only">
@@ -27,15 +27,14 @@
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="180" class="desktop-only" />
       <el-table-column prop="updateTime" label="更新时间" width="180" class="desktop-only" />
-      
+
       <el-table-column fixed="right" label="操作" :width="operationColumnWidth">
         <template #default="scope">
           <div class="table-actions desktop-only">
             <el-button size="small" link type="primary" @click="handleView(scope.row.id)">
               查看
             </el-button>
-            <el-button v-if="scope.row.status === 1 && mode === 'add'" size="small" link type="warning"
-              @click="handleEdit(scope.row.id)">
+            <el-button v-if="scope.row.status === 1" size="small" link type="warning" @click="handleEdit(scope.row.id)">
               修改
             </el-button>
             <el-button v-if="scope.row.status === 0" size="small" link type="success"
@@ -55,9 +54,12 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item @click="handleView(scope.row.id)">查看</el-dropdown-item>
-                  <el-dropdown-item v-if="scope.row.status === 1 && mode === 'add'" @click="handleEdit(scope.row.id)">修改</el-dropdown-item>
-                  <el-dropdown-item v-if="scope.row.status === 0" @click="handleApprove(scope.row.id)">批准</el-dropdown-item>
-                  <el-dropdown-item v-if="scope.row.status === 0" @click="handleReject(scope.row.id)">拒绝</el-dropdown-item>
+                  <el-dropdown-item v-if="scope.row.status === 1"
+                    @click="handleEdit(scope.row.id)">修改</el-dropdown-item>
+                  <el-dropdown-item v-if="scope.row.status === 0"
+                    @click="handleApprove(scope.row.id)">批准</el-dropdown-item>
+                  <el-dropdown-item v-if="scope.row.status === 0"
+                    @click="handleReject(scope.row.id)">拒绝</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -74,12 +76,7 @@
 
     <!-- 查看详情模态框 -->
     <el-dialog v-model="reviewModalVisible" :modal="false" destroy-on-close :width="dialogWidth">
-      <template v-if="props.mode === 'add'">
-        <ReviewDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
-      </template>
-      <template v-else>
-        <ReviewRevisionDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
-      </template>
+      <ReviewDetailModal :reviewId="currentReviewId" @close-modal="reviewModalVisible = false" />
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="reviewModalVisible = false">关闭</el-button>
@@ -119,7 +116,7 @@ import ReviewRevisionDetailModal from '@/components/review/ReviewRevisionDetailM
 import { ArrowDown } from '@element-plus/icons-vue';
 
 const props = defineProps<{
-  mode: 'add' | 'edit';
+  mode: 'add';
   title: string;
 }>();
 
@@ -136,7 +133,7 @@ const currentStatus = ref('');
 
 // 响应式布局相关
 const isMobile = ref(window.innerWidth <= 768);
-const tableHeight = computed(() => (isMobile.value ? 'auto' : '400'));
+const tableHeight = 'auto';
 const paginationLayout = computed(() =>
   isMobile.value ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next, jumper'
 );
@@ -201,9 +198,7 @@ const fetchReviews = async () => {
     };
 
     // 从后端获取数据
-    const response = props.mode === 'add' ?
-      await getReviews(params) :
-      await getEditReviews(params);
+    const response = await getReviews(params)
 
     console.log("response1111", response);
 
@@ -350,15 +345,17 @@ const handleEdit = (id: string) => {
 
 <style scoped>
 .review-list {
-  padding: 20px;
+  height: calc(100vh - 60px);
 }
+
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  flex-wrap: wrap; /* 允许换行 */
+  flex-wrap: wrap;
+  /* 允许换行 */
 }
 
 .page-header h2 {
@@ -367,7 +364,8 @@ const handleEdit = (id: string) => {
 }
 
 .status-filter-wrapper {
-  margin-top: 0; /* 默认在同一行 */
+  margin-top: 0;
+  /* 默认在同一行 */
 }
 
 .el-table {
@@ -380,8 +378,10 @@ const handleEdit = (id: string) => {
 }
 
 .table-actions .el-button {
-  margin-left: 0; /* 消除默认的左边距 */
-  margin-right: 8px; /* 增加右边距 */
+  margin-left: 0;
+  /* 消除默认的左边距 */
+  margin-right: 8px;
+  /* 增加右边距 */
 }
 
 /* 响应式样式 */
@@ -401,7 +401,8 @@ const handleEdit = (id: string) => {
   }
 
   .status-filter-wrapper {
-    width: 100%; /* 占据整行 */
+    width: 100%;
+    /* 占据整行 */
   }
 
   .el-radio-group {
@@ -410,7 +411,8 @@ const handleEdit = (id: string) => {
   }
 
   .el-radio-button {
-    flex: 1; /* 均分空间 */
+    flex: 1;
+    /* 均分空间 */
     margin-bottom: 5px;
   }
 
@@ -420,23 +422,29 @@ const handleEdit = (id: string) => {
   }
 
   .el-table-column[prop="id"] {
-    width: 60px !important; /* 调整ID列宽度 */
+    width: 60px !important;
+    /* 调整ID列宽度 */
   }
 
   .el-table-column[prop="name"] {
-    min-width: 100px !important; /* 调整标题列最小宽度 */
+    min-width: 100px !important;
+    /* 调整标题列最小宽度 */
   }
 
   .table-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px; /* 按钮之间的间距 */
+    gap: 5px;
+    /* 按钮之间的间距 */
   }
 
   .table-actions .el-button {
-    margin: 0; /* 重置margin */
-    padding: 5px 8px; /* 调整按钮内边距 */
-    font-size: 0.8em; /* 调整字体大小 */
+    margin: 0;
+    /* 重置margin */
+    padding: 5px 8px;
+    /* 调整按钮内边距 */
+    font-size: 0.8em;
+    /* 调整字体大小 */
   }
 
   .pagination-container {
@@ -448,8 +456,10 @@ const handleEdit = (id: string) => {
   }
 
   .table-actions.mobile-only .el-button {
-    padding: 4px 6px; /* 进一步缩小按钮内边距 */
-    font-size: 0.7em; /* 进一步缩小字体 */
+    padding: 4px 6px;
+    /* 进一步缩小按钮内边距 */
+    font-size: 0.7em;
+    /* 进一步缩小字体 */
   }
 }
 
