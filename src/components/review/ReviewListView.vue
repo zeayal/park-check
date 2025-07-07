@@ -1,7 +1,11 @@
 <template>
   <div class="review-list">
     <div class="page-header">
-      <h2>{{ title }}</h2>
+      <div class="search-wrapper">
+        <h2>{{ title }}</h2>
+        <el-input v-model="input" clearable :prefix-icon="Search" style="width: 240px" placeholder="请输入标题进行搜索"
+          @change="handleOnChange" />
+      </div>
       <div class="status-filter-wrapper">
         <el-radio-group v-model="currentStatus" @change="handleStatusChange">
           <el-radio-button label="">全部</el-radio-button>
@@ -15,7 +19,7 @@
     <el-table v-loading="loading" :data="formatReviews" height="75vh" style="width: 100%" border show-overflow-tooltip>
       <el-table-column prop="id" label="ID" width="80" class="single" />
       <el-table-column prop="name" label="标题" min-width="150" />
-
+      <el-table-column prop="description" label="营地介绍" width="180" class="desktop-only" />
       <!-- 在移动端隐藏部分列 -->
       <el-table-column prop="creatorName" label="用户" width="120" class="desktop-only" />
       <el-table-column prop="status" label="状态" width="100" class="desktop-only">
@@ -25,7 +29,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180" class="desktop-only" />
+      <!-- <el-table-column prop="createTime" label="创建时间" width="180" class="desktop-only" /> -->
+
       <el-table-column prop="updateTime" label="更新时间" width="180" class="desktop-only" />
 
       <el-table-column fixed="right" label="操作" :width="operationColumnWidth">
@@ -104,17 +109,19 @@
 </template>
 
 <script setup lang="ts">
+import { Search } from '@element-plus/icons-vue'
 import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useReviewStore } from '@/stores/review';
 import type { FormInstance } from 'element-plus';
-import { getReviews, getEditReviews, type Review } from '@/api/review';
+import { getReviews, type Review } from '@/api/review';
 import dayjs from 'dayjs';
 import ReviewDetailModal from '@/components/review/ReviewDetailModal.vue';
-import ReviewRevisionDetailModal from '@/components/review/ReviewRevisionDetailModal.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 
+
+const input = ref('')
 const props = defineProps<{
   mode: 'add';
   title: string;
@@ -140,6 +147,8 @@ const paginationLayout = computed(() =>
 const dialogWidth = computed(() => (isMobile.value ? '90%' : '30%'));
 const operationColumnWidth = computed(() => (isMobile.value ? '60px' : '200px'));
 
+// 搜索相关
+const searchName = ref('');
 // 分页相关
 const currentPage = ref(1);
 const pageSize = ref(100);
@@ -185,13 +194,23 @@ watch(currentStatus, (newStatus) => {
   router.push({ query: newStatus ? { status: newStatus } : {} });
 });
 
+const handleOnChange = (value: string) => {
+  const val = value?.trim() || '';
+  searchName.value = val;
+  fetchReviews();
+  console.log('handleOnChange, ', val)
+
+}
+
 // 获取审核列表
 const fetchReviews = async () => {
   loading.value = true;
   emit('update:loading', true);
+  console.log('searchName', searchName.value);
   try {
     // 构建请求参数
     const params = {
+      searchName: searchName.value,
       statusList: currentStatus.value ? currentStatus.value : '',
       page: currentPage.value,
       pageSize: pageSize.value,
@@ -477,5 +496,10 @@ const handleEdit = (id: string) => {
   .el-radio-button {
     font-size: 0.8em;
   }
+}
+
+.search-wrapper {
+  display: flex;
+  gap: 20px;
 }
 </style>
