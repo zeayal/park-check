@@ -1,7 +1,33 @@
 <template>
-  <div class="dashboard container">
-    <div class="page-header">
-      <h2>控制面板</h2>
+  <div v-if="loading">
+    <el-skeleton :rows="3" :animated="true" />
+  </div>
+
+  <div v-else class="dashboard container">
+    <div class="page-user">
+      <h3>用户数据</h3>
+      <p>
+        <text class="page-user-text">总用户数：{{ statistics.totalUsers }}</text>
+        <text class="page-user-text">今日新增：{{ statistics.dailyNewUsersInLastSevenDays?.[0]?.count }}</text>
+      </p>
+
+      <!-- 用户数据 -->
+      <div class="page-user-table">
+        <h5>过去7天新增用户数</h5>
+      </div>
+      <div>
+        <el-table :data="statistics.dailyNewUsersInLastSevenDays" stripe style="width: 100%">
+          <el-table-column prop="date" label="日期" width="180">
+          </el-table-column>
+          <el-table-column prop="count" label="当日新增" width="180">
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
+
+    <!-- 审核管理 -->
+    <div class="page-check">
+      <h3>审核管理</h3>
     </div>
 
     <el-row :gutter="20">
@@ -102,10 +128,13 @@ import ReviewDetailModal from '@/components/review/ReviewDetailModal.vue';
 
 const router = useRouter();
 const recentReviews = ref<Review[]>([]);
+const loading = ref(true);
 const statistics = ref({
   pending: 0,
   approved: 0,
-  rejected: 0
+  rejected: 0,
+  dailyNewUsersInLastSevenDays: [],
+  totalUsers: 0
 });
 
 // 查看模态框相关
@@ -119,22 +148,29 @@ onMounted(async () => {
 const fetchDashboardData = async () => {
   try {
     // 获取最近的审核
+    loading.value = true;
     const response = await getReviews({ page: 1, pageSize: 5 });
     recentReviews.value = response.items;
     
     // 模拟获取统计数据
     // 实际项目中应通过API获取
     const dashbordStatistics = await getDashbordStatistics();
+    console.log("dashbordStatistics", dashbordStatistics);
 
     statistics.value = {
       pending: dashbordStatistics.totalPendingReview,
       approved: dashbordStatistics.totalApproved,
-      rejected: dashbordStatistics.totalRejected
+      rejected: dashbordStatistics.totalRejected,
+      dailyNewUsersInLastSevenDays: dashbordStatistics.dailyNewUsersInLastSevenDays.reverse(),
+      totalUsers: dashbordStatistics.totalUsers
     };
   } catch (error) {
     console.error('获取控制面板数据失败', error);
+  } finally {
+    loading.value = false;
   }
 };
+
 
 // 计算属性：格式化日期
 const formatRecentReviews = computed(() => {
@@ -199,6 +235,29 @@ const viewDetail = (id: string) => {
   padding: 20px 0;
 }
 
+.page-user {
+  margin-bottom: 20px;
+}
+
+.page-user p {
+  margin: 10px 0;
+  font-size: 14px;
+  color:#909399;
+  font-weight: 500;
+}
+
+.page-user-text {
+  margin-right:20px;
+}
+
+.page-user-table h5 {
+margin-bottom: 5px;
+}
+
+.page-check {
+  margin-bottom: 20px;
+}
+
 .statistic {
   margin-bottom: 20px;
   text-align: center;
@@ -222,5 +281,12 @@ const viewDetail = (id: string) => {
 
 .recent-section h3 {
   margin-bottom: 20px;
+}
+
+.user-total, .today-new, .today-active {
+  margin-right: 20px;
+  font-size: 12px;
+  color: #909399;
+  font-weight: 600;
 }
 </style> 
