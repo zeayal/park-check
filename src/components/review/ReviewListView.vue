@@ -176,7 +176,7 @@ onMounted(() => {
     currentStatus.value = route.query.status as string;
   }
   fetchReviews();
-  console.log("测试：", props)
+  // console.log("测试：", props)
 });
 
 onUnmounted(() => {
@@ -219,7 +219,7 @@ const fetchReviews = async () => {
     // 从后端获取数据
     const response = await getReviews(params)
 
-    console.log("response1111", response);
+    // console.log("response1111", response);
 
     if (response) {
       reviews.value = response.items || [];

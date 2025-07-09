@@ -117,7 +117,9 @@ const fetchReviewDetail = async () => {
 const fetchRevisionReviewDetail = async () => {
     try {
         const response = await getRevisionReviewById(props.reviewId);
+        
         review.value = response.data;
+        console.log("详情图片：", review.value?.images)
     } catch (error) {
         console.error('获取审核详情失败', error);
         ElMessage.error('获取审核详情失败');

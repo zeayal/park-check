@@ -41,7 +41,7 @@
             <div class="review-images">
                 <h3>图片</h3>
                 <div class="images-box">
-                    <img v-for="(url, index) in review.images" :key="index" :src="url" alt="图片"></img>
+                    <img v-for="(image, index) in review.images" :key="index" :src="image.previewUrl" alt="图片"></img>
                 </div>
             </div>
         </el-card>
@@ -72,7 +72,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getReviewById, getRevisionReviewById } from '@/api/review';
 import { useReviewStore } from '@/stores/review';
 import type { Review } from '@/api/review';
-import type { FormInstance } from 'element-plus';
+import type { FormInstance, imageEmits } from 'element-plus';
 import { useRouter } from 'vue-router';
 
 const props = defineProps<{
@@ -110,17 +110,6 @@ const fetchReviewDetail = async () => {
     }
 };
 
-// 获取修改营地的详情
-
-const fetchRevisionReviewDetail = async () => {
-    try {
-        const response = await getRevisionReviewById(props.reviewId);
-        review.value = response.data;
-    } catch (error) {
-        console.error('获取审核详情失败', error);
-        ElMessage.error('获取审核详情失败');
-    }
-}
 
 // 状态文本
 const getStatusText = (status: string) => {

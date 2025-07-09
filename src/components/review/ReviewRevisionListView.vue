@@ -137,7 +137,7 @@ onMounted(() => {
     currentStatus.value = route.query.status as string;
   }
   fetchReviews();
-  console.log("测试：", props)
+  // console.log("测试：", props)
 });
 
 // 监听状态变化刷新数据

@@ -53,10 +53,11 @@ import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { Menu, Document, ArrowDown } from '@element-plus/icons-vue';
+import { storage } from '@/utils/storage';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const sidebarCollapsed = ref(false);
+const sidebarCollapsed = ref(storage.get('sidebarCollapsed'));
 const isMobileMenuOpen = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
 
@@ -64,6 +65,7 @@ const isMobile = ref(window.innerWidth <= 768);
 
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value;
+  storage.set('sidebarCollapsed',sidebarCollapsed.value)
 };
 
 const toggleMobileMenu = () => {

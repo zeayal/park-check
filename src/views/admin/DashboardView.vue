@@ -155,7 +155,6 @@ const fetchDashboardData = async () => {
     // 模拟获取统计数据
     // 实际项目中应通过API获取
     const dashbordStatistics = await getDashbordStatistics();
-    console.log("dashbordStatistics", dashbordStatistics);
 
     statistics.value = {
       pending: dashbordStatistics.totalPendingReview,
