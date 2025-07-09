@@ -129,7 +129,7 @@ import ReviewDetailModal from '@/components/review/ReviewDetailModal.vue';
 const router = useRouter();
 const recentReviews = ref<Review[]>([]);
 const loading = ref(true);
-const statistics = ref({
+const statistics = ref<any>({
   pending: 0,
   approved: 0,
   rejected: 0,
