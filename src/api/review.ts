@@ -14,7 +14,7 @@ export interface Review {
   createTime: string;
   updateTime: string;
   address: string;
-  images: string[];
+  images: any[];
   [key: string]: any;
 }
 
@@ -78,7 +78,6 @@ export const getReviewById = async (id: string) => {
   return response.data;
 };
 
-
 // 获取修改详情
 export const getRevisionReviewById = async (id: string) => {
   const response = await apiClient.get(
@@ -88,7 +87,7 @@ export const getRevisionReviewById = async (id: string) => {
     }
   );
   return response.data;
-}
+};
 
 // 批准新增营地
 export const approveReview = async (id: string): Promise<Review> => {
@@ -102,13 +101,14 @@ export const approveReview = async (id: string): Promise<Review> => {
   return response.data;
 };
 
-
 // 批准修改营地
-export const approveRevisionReview = async (revisionId: string): Promise<Review> => {
+export const approveRevisionReview = async (
+  revisionId: string
+): Promise<Review> => {
   const response = await apiClient.post<Review>(
     "/api/monster/admin/checkApproveCampingSiteRevisionDetail",
     {
-      id: revisionId
+      id: revisionId,
     }
   );
   return response.data;
