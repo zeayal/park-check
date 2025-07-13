@@ -9,9 +9,7 @@ const apiClient = axios.create({
   timeout: 120000,
 });
 
-
 let getAccessTokenPromise: Promise<void> | null = null;
-
 
 // 请求拦截器
 apiClient.interceptors.request.use(
@@ -19,23 +17,24 @@ apiClient.interceptors.request.use(
     if (storage.isAccessTokenExpired()) {
       if (!getAccessTokenPromise) {
         // access_token 已过期
-        console.log('进入令牌刷新逻辑'); // 新增日志
+        console.log("进入令牌刷新逻辑"); // 新增日志
         const refreshToken = storage.getRefreshToken();
-        getAccessTokenPromise = axios.get('/api/users/refreshToken', {
-          params: {
-            refreshToken
-          }
-        }).then(res => {
-          const { code, data } = res.data
-          if (code === 0) {
-            const { accessToken, refreshToken, expiresIn } = data;
-            storage.setTokens(accessToken, refreshToken, expiresIn)
-
-          }
-        }).finally(() => {
-          getAccessTokenPromise = null
-        })
-
+        getAccessTokenPromise = axios
+          .get("/api/users/refreshToken", {
+            params: {
+              refreshToken,
+            },
+          })
+          .then((res) => {
+            const { code, data } = res.data;
+            if (code === 0) {
+              const { accessToken, refreshToken, expiresIn } = data;
+              storage.setTokens(accessToken, refreshToken, expiresIn);
+            }
+          })
+          .finally(() => {
+            getAccessTokenPromise = null;
+          });
       }
 
       // 等待令牌刷新完成

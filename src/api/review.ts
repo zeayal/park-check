@@ -135,3 +135,12 @@ export const getDashbordStatistics = async () => {
   const response = await apiClient.get("/api/monster/admin/dashboard");
   return response.data.data;
 };
+
+// 管理员直接修改营地
+export const adminEditDetail = async (params: object) => {
+  const response = await apiClient.post(
+    "/api/monster/admin/campingSite/updateDetailInfo",
+    params
+  );
+  return response.data;
+};
