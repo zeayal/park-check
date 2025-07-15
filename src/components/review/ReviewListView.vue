@@ -802,6 +802,7 @@ const confirmReject = async () => {
     /* 进一步缩小按钮内边距 */
     font-size: 0.7em;
     /* 进一步缩小字体 */
+    margin-left: -6px;
   }
 }
 
