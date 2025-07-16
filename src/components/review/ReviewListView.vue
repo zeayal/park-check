@@ -64,7 +64,7 @@
 
       <el-table-column
         prop="updateTime"
-        label="更新时间"
+        label="创建时间"
         width="180"
         class="desktop-only"
       />

@@ -32,8 +32,8 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间" width="180" />
-        <el-table-column prop="submitTime" label="更新时间" width="180" />
+        <!-- <el-table-column prop="createTime" label="创建时间" width="180" /> -->
+        <el-table-column prop="updateTime" label="创建时间" width="180" />
         <el-table-column
           fixed="right"
           label="操作"
@@ -70,7 +70,17 @@
             </div>
             <!-- 手机端展示效果 -->
             <div class="table-actions mobile-only">
-              <el-dropdown trigger="click">
+              <el-button
+                v-if="scope.row.status !== 0"
+                class="mobile-view"
+                size="small"
+                link
+                type="primary"
+                @click="handleView(scope.row.id)"
+              >
+                查看
+              </el-button>
+              <el-dropdown v-if="scope.row.status === 0" trigger="click">
                 <el-button size="small" type="primary">
                   操作<el-icon class="el-icon--right"><arrow-down /></el-icon>
                 </el-button>
@@ -79,11 +89,11 @@
                     <el-dropdown-item @click="handleView(scope.row.id)"
                       >查看</el-dropdown-item
                     >
-                    <el-dropdown-item
+                    <!-- <el-dropdown-item
                       v-if="scope.row.status === 1"
                       @click="handleEdit(scope.row.id)"
                       >修改</el-dropdown-item
-                    >
+                    > -->
                     <el-dropdown-item
                       v-if="scope.row.status === 0"
                       @click="handleApprove(scope.row.id)"
@@ -263,11 +273,13 @@ const fetchReviews = async () => {
 
 // 计算属性：格式化日期
 const formatReviews = computed(() => {
-  return reviews.value.map((review) => ({
+  const formatReview = reviews.value.map((review) => ({
     ...review,
     createTime: formatDate(review.createTime),
     updateTime: formatDate(review.updateTime),
   }));
+
+  return formatReview;
 });
 
 // 格式化日期
@@ -347,6 +359,7 @@ const handleApprove = (id: string) => {
 const handleReject = (id: string) => {
   rejectForm.value = { reason: "", id };
   rejectDialogVisible.value = true;
+  console.log("rejectForm：", rejectForm.value);
 };
 
 // 确认拒绝
@@ -357,10 +370,11 @@ const confirmReject = async () => {
     if (valid) {
       actionLoading.value = true;
       try {
-        await reviewStore.rejectReviewItem(
+        const res = await reviewStore.rejectReviewItem(
           rejectForm.value.id,
           rejectForm.value.reason
         );
+        console.log("确认拒绝返回值：", res);
         ElMessage.success("审核已拒绝");
         rejectDialogVisible.value = false;
         fetchReviews();
@@ -459,6 +473,13 @@ const handleEdit = (id: string) => {
 
   .mobile-only {
     display: block;
+  }
+
+  .mobile-view {
+    /* 进一步缩小按钮内边距 */
+    padding: 4px 6px;
+    /* 进一步缩小字体 */
+    font-size: 0.7em;
   }
 
   .table-actions.mobile-only .el-button {

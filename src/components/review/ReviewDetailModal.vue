@@ -26,15 +26,24 @@
 
             <div class="review-info">
                 <p><strong>用户：</strong> {{ review.creatorName }}</p>
-                <p><strong>地址：</strong> {{ review.address }}</p>
-                <p><strong>创建时间：</strong> {{ review.createTime }}</p>
-                <p><strong>更新时间：</strong> {{ review.updateTime }}</p>
+                <p><strong>创建时间：</strong> {{ formatDate(review.createTime) }}</p>
+                <p><strong>更新时间：</strong> {{ formatDate(review.updateTime) }}</p>
             </div>
 
             <div class="review-content">
-                <h3>内容</h3>
+                <h3>详情</h3>
                 <div class="content-box">
-                    {{ review.description }}
+                    <!-- {{ review.description }} -->
+                    <p><strong>营地描述：</strong> {{ review.description }}</p><br>
+                    <p><strong>地址：</strong> {{ review.address }}</p>
+                    <p><strong>GPS经度：</strong> {{ review.longitude }}</p>
+                    <p><strong>GPS纬度：</strong> {{ review.latitude }}</p>
+                    <p><strong>是否收费：</strong> {{ review.isCharged ? "收费" : "免费" }}</p>
+                    <p><strong>是否有厕所：</strong> {{ review.hasToilet ? "有" : "无" }}</p>
+                    <p><strong>是否可以接水：</strong> {{ review.hasWater ? "可以" : "不可以" }}</p>
+                    <p><strong>是否有充电桩：</strong> {{ review.hasElectricity ? "有" : "无" }}</p>
+                    <p><strong>是否可以搭帐篷：</strong> {{ review.canPitchTent ? "可以" : "不可以" }}</p>
+                    <p><strong>是否五星营地：</strong> {{ review.isStarCamp ? "是" : "否" }}</p>
                 </div>
             </div>
 
@@ -74,6 +83,7 @@ import { useReviewStore } from '@/stores/review';
 import type { Review } from '@/api/review';
 import type { FormInstance, imageEmits } from 'element-plus';
 import { useRouter } from 'vue-router';
+import dayjs, { Dayjs } from 'dayjs';
 
 const props = defineProps<{
     reviewId: string;
@@ -185,6 +195,11 @@ const confirmReject = async () => {
         }
     });
 };
+
+// 格式化日期
+const formatDate = (date: string) => {
+    return dayjs(date).format("YYYY-MM-DD HH:mm:ss")
+}
 </script>
 
 <style scoped>

@@ -1,71 +1,84 @@
 <template>
-    <div class="review-detail-modal">
-        <div class="page-header">
-            <h2>审核详情</h2>
-            <div>
-                <el-button v-if="Number(review?.status) == 0" type="success" @click="handleApprove"
-                    :loading="approveActionLoading">
-                    批准
-                </el-button>
-                <el-button v-if="Number(review?.status) == 0" type="danger" @click="handleReject"
-                    :loading="rejectActionLoading">
-                    拒绝
-                </el-button>
-            </div>
-        </div>
-
-        <el-card v-if="review">
-            <template #header>
-                <div class="card-header">
-                    <span>{{ review.name }}</span>
-                    <el-tag :type="getStatusType(review.status)" :class="'status-' + review.status">
-                        {{ getStatusText(review.status) }}
-                    </el-tag>
-                </div>
-            </template>
-
-            <div class="review-info">
-                <p><strong>用户：</strong> {{ review.submiter.nickname }}</p>
-                <p><strong>地址：</strong> {{ review.address }}</p>
-                <p><strong>创建时间：</strong> {{ review.createdAt }}</p>
-                <p><strong>更新时间：</strong> {{ review.submitTime }}</p>
-                <p><strong>GPS经度：</strong> {{ review.longitude }}</p>
-                <p><strong>GPS纬度：</strong> {{ review.latitude }}</p>
-            </div>
-
-            <div class="review-content">
-                <h3>内容</h3>
-                <div class="content-box">
-                    {{ review.description }}
-                </div>
-            </div>
-
-            <div class="review-images">
-                <h3>图片</h3>
-                <div class="images-box">
-                    <img v-for="(url, index) in review.images" :key="index" :src="url" alt="图片"></img>
-                </div>
-            </div>
-        </el-card>
-
-        <!-- 拒绝对话框 -->
-        <el-dialog v-model="rejectDialogVisible" title="拒绝原因" width="30%">
-            <el-form :model="rejectForm" ref="rejectFormRef">
-                <el-form-item prop="reason" label="拒绝原因"
-                    :rules="[{ required: true, message: '请输入拒绝原因', trigger: 'blur' }]">
-                    <el-input v-model="rejectForm.reason" type="textarea" :rows="4" placeholder="请输入拒绝原因"></el-input>
-                </el-form-item>
-            </el-form>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="rejectDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="confirmReject" :loading="actionLoading">
-                        确认
+    <div class="contrast-container">
+        <div class="review-detail-modal">
+            <div class="page-header">
+                <h2>修改审批详情</h2>
+                <div>
+                    <el-button v-if="Number(review?.status) == 0" type="success" @click="handleApprove"
+                        :loading="approveActionLoading">
+                        批准
                     </el-button>
-                </span>
-            </template>
-        </el-dialog>
+                    <el-button v-if="Number(review?.status) == 0" type="danger" @click="handleReject"
+                        :loading="rejectActionLoading">
+                        拒绝
+                    </el-button>
+                </div>
+            </div>
+
+            <el-card v-if="review">
+                <template #header>
+                    <div class="card-header">
+                        <span>{{ review.name }}</span>
+                        <el-tag :type="getStatusType(review.status)" :class="'status-' + review.status">
+                            {{ getStatusText(review.status) }}
+                        </el-tag>
+                    </div>
+                </template>
+
+                <div class="review-content review-info">
+                    <h3>基础信息</h3>
+                    <div class="content-box">
+                        <p><strong>用户：</strong> {{ review.submiter.nickname }}</p>
+                        <!-- <p><strong>创建时间：</strong> {{ formatDate(review.createdAt) }}</p> -->
+                        <p><strong>提交时间：</strong> {{ formatDate(review.submitTime) }}</p>
+                    </div>
+                </div>
+
+                <div class="review-content">
+                    <h3>详情</h3>
+                    <div class="content-box">
+                        <p><strong>营地描述：</strong> {{ review.description }}</p><br>
+                        <p><strong>地址：</strong> {{ review.address }}</p>
+                        <p><strong>GPS经度：</strong> {{ review.longitude }}</p>
+                        <p><strong>GPS纬度：</strong> {{ review.latitude }}</p>
+                        <p><strong>是否收费：</strong> {{ review.isCharged ? "收费" : "免费" }}</p>
+                        <p><strong>是否有厕所：</strong> {{ review.hasToilet ? "有" : "无" }}</p>
+                        <p><strong>是否可以接水：</strong> {{ review.hasWater ? "可以" : "不可以" }}</p>
+                        <p><strong>是否有充电桩：</strong> {{ review.hasElectricity ? "有" : "无" }}</p>
+                        <p><strong>是否可以搭帐篷：</strong> {{ review.canPitchTent ? "可以" : "不可以" }}</p>
+                        <p><strong>是否五星营地：</strong> {{ review.isStarCamp ? "是" : "否" }}</p>
+                    </div>
+                </div>
+
+                <div class="review-images">
+                    <h3>图片</h3>
+                    <div class="images-box">
+                        <img v-for="(url, index) in review.images" :key="index" :src="url" alt="图片"></img>
+                    </div>
+                </div>
+            </el-card>
+
+            <!-- 拒绝对话框 -->
+            <el-dialog v-model="rejectDialogVisible" title="拒绝原因" width="30%">
+                <el-form :model="rejectForm" ref="rejectFormRef">
+                    <el-form-item prop="reason" label="拒绝原因"
+                        :rules="[{ required: true, message: '请输入拒绝原因', trigger: 'blur' }]">
+                        <el-input v-model="rejectForm.reason" type="textarea" :rows="4"
+                            placeholder="请输入拒绝原因"></el-input>
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="rejectDialogVisible = false">取消</el-button>
+                        <el-button type="primary" @click="confirmReject" :loading="actionLoading">
+                            确认
+                        </el-button>
+                    </span>
+                </template>
+            </el-dialog>
+        </div>
     </div>
+
 </template>
 
 <script setup lang="ts">
@@ -76,6 +89,7 @@ import { useReviewStore } from '@/stores/review';
 import type { Review } from '@/api/review';
 import type { FormInstance } from 'element-plus';
 import { useRouter } from 'vue-router';
+import dayjs from 'dayjs'
 
 const props = defineProps<{
     reviewId: string;
@@ -87,6 +101,7 @@ const emit = defineEmits(['close-modal'])
 const router = useRouter();
 
 const reviewStore = useReviewStore();
+const beforeReview = ref<Review | null>(null);
 const review = ref<Review | null>(null);
 const approveActionLoading = ref(false);
 const rejectActionLoading = ref(false);
@@ -98,33 +113,38 @@ const rejectForm = ref({ reason: '' });
 const rejectFormRef = ref<FormInstance>();
 
 onMounted(async () => {
-    await fetchRevisionReviewDetail()
+    // await fetchReviewDetail();
+    await fetchRevisionReviewDetail();
 });
 
-// 获取审核详情
+// 获取营地修改前详情(后端暂没有提供id)
 const fetchReviewDetail = async () => {
     try {
-        const response = await getReviewById(props.reviewId);
-        review.value = response.data;
-    } catch (error) {
-        console.error('获取审核详情失败', error);
-        ElMessage.error('获取审核详情失败');
-    }
-};
-
-// 获取修改营地的详情
-
-const fetchRevisionReviewDetail = async () => {
-    try {
-        const response = await getRevisionReviewById(props.reviewId);
-        
-        review.value = response.data;
-        console.log("详情图片：", review.value?.images)
+        console.log("props.reviewId:", props.reviewId)
+        const res = await getReviewById(props.reviewId);
+        beforeReview.value = res.data;
     } catch (error) {
         console.error('获取审核详情失败', error);
         ElMessage.error('获取审核详情失败');
     }
 }
+
+
+// 获取修改营地的详情
+const fetchRevisionReviewDetail = async () => {
+    try {
+        const response = await getRevisionReviewById(props.reviewId);
+        review.value = response.data;
+    } catch (error) {
+        console.error('获取修改详情失败', error);
+        ElMessage.error('获取修改详情失败');
+    }
+}
+
+// 格式化日期
+const formatDate = (date: string) => {
+  return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
+};
 
 // 状态文本
 const getStatusText = (status: string) => {
@@ -203,6 +223,10 @@ const confirmReject = async () => {
 </script>
 
 <style scoped>
+.contrast-container {
+    display: flex;
+}
+
 .card-header {
     display: flex;
     justify-content: space-between;
