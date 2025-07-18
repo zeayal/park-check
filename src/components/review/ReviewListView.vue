@@ -33,18 +33,18 @@
       <el-table-column prop="id" label="ID" width="80" class="single" />
       <el-table-column prop="name" label="标题" min-width="150" />
       <el-table-column
+        prop="address"
+        label="地址"
+        width="120"
+        class="desktop-only"
+      />
+      <el-table-column
         prop="description"
         label="营地介绍"
         width="180"
         class="desktop-only"
       />
       <!-- 在移动端隐藏部分列 -->
-      <el-table-column
-        prop="creatorName"
-        label="用户"
-        width="120"
-        class="desktop-only"
-      />
       <el-table-column
         prop="status"
         label="状态"
