@@ -33,7 +33,7 @@
           </template>
         </el-table-column>
         <!-- <el-table-column prop="createTime" label="创建时间" width="180" /> -->
-        <el-table-column prop="updateTime" label="创建时间" width="180" />
+        <el-table-column prop="submitTime" label="创建时间" width="180" />
         <el-table-column
           fixed="right"
           label="操作"
@@ -276,7 +276,7 @@ const formatReviews = computed(() => {
   const formatReview = reviews.value.map((review) => ({
     ...review,
     createTime: formatDate(review.createTime),
-    updateTime: formatDate(review.updateTime),
+    submitTime: formatDate(review.submitTime),
   }));
 
   return formatReview;
