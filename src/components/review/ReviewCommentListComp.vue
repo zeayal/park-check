@@ -10,6 +10,12 @@
       </el-radio-group>
     </div>
 
+    <div class="mb-4">
+      <el-button plain type="primary" v-if="hasPendingStatus">
+        批量批准
+      </el-button>
+    </div>
+
     <div class="el-table-custom-wrapper">
       <el-table
         v-loading="loading"
@@ -19,9 +25,17 @@
         border
         show-overflow-tooltip
       >
-        <el-table-column prop="id" label="ID" width="80" class="single" />
-        <el-table-column prop="submiter.nickname" label="用户" width="120" />
-        <el-table-column prop="name" label="标题" min-width="200" />
+        <!-- <el-table-column prop="site.id" label="ID" width="80" class="single" /> -->
+        <el-table-column
+          type="selection"
+          :selectable="selectable"
+          width="55"
+          v-if="hasPendingStatus"
+        />
+        <el-table-column prop="nickName" label="用户" width="120" />
+        <el-table-column prop="site.name" label="标题" width="180" />
+        <el-table-column prop="site.address" label="地址" width="180" />
+        <el-table-column prop="content" label="打卡内容" min-width="180" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
             <el-tag
@@ -32,8 +46,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <!-- <el-table-column prop="createTime" label="创建时间" width="180" /> -->
-        <el-table-column prop="submitTime" label="创建时间" width="180" />
+        <el-table-column prop="checkInTime" label="打卡日期" width="170" />
         <el-table-column
           fixed="right"
           label="操作"
@@ -89,11 +102,6 @@
                     <el-dropdown-item @click="handleView(scope.row.id)"
                       >查看</el-dropdown-item
                     >
-                    <!-- <el-dropdown-item
-                      v-if="scope.row.status === 1"
-                      @click="handleEdit(scope.row.id)"
-                      >修改</el-dropdown-item
-                    > -->
                     <el-dropdown-item
                       v-if="scope.row.status === 0"
                       @click="handleApprove(scope.row.id)"
@@ -179,14 +187,13 @@ import { useRouter, useRoute } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useReviewStore } from "@/stores/review";
 import type { FormInstance } from "element-plus";
-import { getReviews, getEditReviews, type Review } from "@/api/review";
+import { getCommentList, type Review } from "@/api/review";
 import dayjs from "dayjs";
 import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
 import ReviewRevisionDetailModal from "@/components/review/ReviewRevisionDetailModal.vue";
-import { ArrowDown } from "@element-plus/icons-vue";
+import { ArrowDown, Check } from "@element-plus/icons-vue";
 
 const props = defineProps<{
-  mode: "edit";
   title: string;
 }>();
 
@@ -224,15 +231,6 @@ const operationColumnWidth = computed(() =>
   isMobile.value ? "60px" : "200px"
 );
 
-// onMounted(() => {
-//   // 从URL获取状态参数(默认跳转到全部)
-//   if (route.query.status) {
-//     currentStatus.value = route.query.status as string;
-//   }
-//   fetchReviews();
-//   // console.log("测试：", props)
-// });
-
 onMounted(() => {
   // 从URL获取状态参数，若没有则默认跳转待审核
   if (route.query.status) {
@@ -250,7 +248,7 @@ watch(currentStatus, (newStatus) => {
   router.push({ query: newStatus ? { status: newStatus } : {} });
 });
 
-// 获取审核列表
+// 获取打卡列表
 const fetchReviews = async () => {
   loading.value = true;
   emit("update:loading", true);
@@ -263,9 +261,7 @@ const fetchReviews = async () => {
     };
 
     // 从后端获取数据
-    const response = await getEditReviews(params);
-
-    // console.log("response1111", response);
+    const response = await getCommentList(params);
 
     if (response) {
       reviews.value = response.items || [];
@@ -287,12 +283,30 @@ const fetchReviews = async () => {
 const formatReviews = computed(() => {
   const formatReview = reviews.value.map((review) => ({
     ...review,
-    createTime: formatDate(review.createTime),
-    submitTime: formatDate(review.submitTime),
+    checkInTime: formatDate(review.checkInTime),
   }));
 
   return formatReview;
 });
+
+// 复选框相关
+
+// const multipleTableRef = ref();
+// const multipleSelection = ref([]);
+
+// 计算属性：判断是否存在待审核状态的数据，若没有则不显示该列
+const hasPendingStatus = computed(() => {
+  return formatReviews.value.some((item) => Number(item.status) === 0);
+});
+
+// 自定义复选框可选逻辑：只有待审核的可以选中
+const selectable = (row: any) => {
+  return row.status === 0;
+};
+
+// const handleSelectionChange = (val: any) => {
+//   multipleSelection.value = val;
+// };
 
 // 格式化日期
 const formatDate = (date: string) => {
@@ -406,6 +420,10 @@ const handleEdit = (id: string) => {
 </script>
 
 <style scoped>
+.el-table-custom-wrapper {
+  margin-top: 10px;
+}
+
 .review-list {
   height: calc(100vh - 60px);
 }

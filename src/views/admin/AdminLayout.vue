@@ -1,15 +1,24 @@
 <template>
   <div class="admin-layout">
-
-    <el-aside :class="{ 'is-collapsed': isMobileMenuOpen }" :width="sidebarCollapsed ? '64px' : '200px'">
+    <el-aside
+      :class="{ 'is-collapsed': isMobileMenuOpen }"
+      :width="sidebarCollapsed ? '64px' : '200px'"
+    >
       <div class="sidebar-header" @click="toggleSidebar">
         <h2 v-if="!sidebarCollapsed">后台管理系统</h2>
         <el-icon v-else>
-          <Menu />
+          <Expand />
         </el-icon>
       </div>
-      <el-menu router :default-active="$route.path" class="el-menu-vertical" background-color="#304156"
-        text-color="#fff" active-text-color="#409EFF" :collapse="sidebarCollapsed">
+      <el-menu
+        router
+        :default-active="$route.path"
+        class="el-menu-vertical"
+        background-color="#304156"
+        text-color="#fff"
+        active-text-color="#409EFF"
+        :collapse="sidebarCollapsed"
+      >
         <el-menu-item index="/admin/dashboard">
           <el-icon>
             <Menu />
@@ -18,15 +27,22 @@
         </el-menu-item>
         <el-menu-item index="/admin/reviews/add">
           <el-icon>
-            <Document />
+            <!-- <Document /> -->
+            <CirclePlus />
           </el-icon>
           <span slot="title">新增营地管理</span>
         </el-menu-item>
         <el-menu-item index="/admin/reviews/edit">
           <el-icon>
-            <Document />
+            <Edit />
           </el-icon>
           <span slot="title">修改营地管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/reviews/comment">
+          <el-icon>
+            <ChatLineRound />
+          </el-icon>
+          <span slot="title">打卡审核管理</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -38,26 +54,42 @@
           </el-icon>
         </div>
       </el-header>
-      <el-main :class="sidebarCollapsed ? 'el-main-custom-collapsed-container' : 'el-main-custom-container'">
+      <el-main
+        :class="
+          sidebarCollapsed
+            ? 'el-main-custom-collapsed-container'
+            : 'el-main-custom-container'
+        "
+      >
         <router-view />
       </el-main>
     </el-container>
 
     <!-- 移动端侧边栏的覆盖层 -->
-    <div v-if="isMobile && isMobileMenuOpen" class="mobile-menu-backdrop" @click="toggleMobileMenu"></div>
+    <div
+      v-if="isMobile && isMobileMenuOpen"
+      class="mobile-menu-backdrop"
+      @click="toggleMobileMenu"
+    ></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { Menu, Document, ArrowDown } from '@element-plus/icons-vue';
-import { storage } from '@/utils/storage';
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { storage } from "@/utils/storage";
+import {
+  Edit,
+  CirclePlus,
+  ChatLineRound,
+  Menu,
+  Expand,
+} from "@element-plus/icons-vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const sidebarCollapsed = ref(storage.get('sidebarCollapsed'));
+const sidebarCollapsed = ref(storage.get("sidebarCollapsed"));
 const isMobileMenuOpen = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
 
@@ -65,7 +97,7 @@ const isMobile = ref(window.innerWidth <= 768);
 
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value;
-  storage.set('sidebarCollapsed',sidebarCollapsed.value)
+  storage.set("sidebarCollapsed", sidebarCollapsed.value);
 };
 
 const toggleMobileMenu = () => {
@@ -73,9 +105,9 @@ const toggleMobileMenu = () => {
 };
 
 const handleCommand = (command: string) => {
-  if (command === 'logout') {
+  if (command === "logout") {
     authStore.logout();
-    router.push('/login');
+    router.push("/login");
   }
 };
 
@@ -88,11 +120,11 @@ const handleResize = () => {
 };
 
 onMounted(() => {
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 </script>
 
@@ -155,10 +187,8 @@ onUnmounted(() => {
   border: none;
 }
 
-
 /* 新增桌面端主内容区域边距调整 */
 @media screen and (min-width: 769px) {
-
   .el-header {
     /* 头部左侧边距 */
   }
@@ -195,7 +225,7 @@ onUnmounted(() => {
 
 .el-dropdown-link {
   cursor: pointer;
-  color: #409EFF;
+  color: #409eff;
   display: flex;
   align-items: center;
 }
@@ -205,12 +235,11 @@ onUnmounted(() => {
   display: none;
   font-size: 20px;
   cursor: pointer;
-  color: #409EFF;
+  color: #409eff;
 }
 
 /* 重构移动端样式 */
 @media screen and (max-width: 768px) {
-
   .mobile-menu-btn {
     display: block;
   }

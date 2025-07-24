@@ -1,3 +1,4 @@
+import component from "element-plus/es/components/tree-select/src/tree-select-option.mjs";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -30,6 +31,11 @@ const routes = [
         path: "reviews/edit",
         name: "EditReview",
         component: () => import("@/views/admin/ReviewEditListView.vue"),
+      },
+      {
+        path: "reviews/comment",
+        name: "CommentReview",
+        component: () => import("@/views/admin/ReviewCommentListView.vue"),
       },
       {
         path: "reviews",

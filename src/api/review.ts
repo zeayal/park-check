@@ -67,6 +67,20 @@ export const getEditReviews = async (
   };
 };
 
+// 获取打卡审核列表
+export const getCommentList = async (params: ReviewParams) => {
+  const response = await apiClient.get(
+    "/api/monster/admin/getCampingCheckInList",
+    { params }
+  );
+  console.log("打卡response：", response);
+
+  return {
+    items: response.data.data.items,
+    total: response.data.data.total,
+  };
+};
+
 // 获取查看详情
 export const getReviewById = async (id: string) => {
   const response = await apiClient.get(
