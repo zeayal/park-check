@@ -198,7 +198,7 @@ onUnmounted(() => {
   height: 60px;
   line-height: 60px;
   text-align: center;
-  font-size: 18px;
+  font-size: 16px;
   color: #fff;
   cursor: pointer;
   display: flex;

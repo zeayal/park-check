@@ -11,7 +11,7 @@
     </div>
 
     <div class="mb-4">
-      <el-button plain type="primary" v-if="hasPendingStatus">
+      <el-button plain type="primary" @click="handleBatchApprove">
         批量批准
       </el-button>
     </div>
@@ -24,6 +24,7 @@
         style="width: 100%"
         border
         show-overflow-tooltip
+        @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column prop="site.id" label="ID" width="80" class="single" /> -->
         <el-table-column
@@ -55,14 +56,6 @@
           <template #default="scope">
             <div class="table-actions desktop-only">
               <el-button
-                size="small"
-                link
-                type="primary"
-                @click="handleView(scope.row.id)"
-              >
-                查看
-              </el-button>
-              <el-button
                 v-if="scope.row.status === 0"
                 size="small"
                 link
@@ -83,25 +76,12 @@
             </div>
             <!-- 手机端展示效果 -->
             <div class="table-actions mobile-only">
-              <el-button
-                v-if="scope.row.status !== 0"
-                class="mobile-view"
-                size="small"
-                link
-                type="primary"
-                @click="handleView(scope.row.id)"
-              >
-                查看
-              </el-button>
               <el-dropdown v-if="scope.row.status === 0" trigger="click">
                 <el-button size="small" type="primary">
                   操作<el-icon class="el-icon--right"><arrow-down /></el-icon>
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="handleView(scope.row.id)"
-                      >查看</el-dropdown-item
-                    >
                     <el-dropdown-item
                       v-if="scope.row.status === 0"
                       @click="handleApprove(scope.row.id)"
@@ -133,19 +113,6 @@
         @current-change="handleCurrentChange"
       />
     </div>
-
-    <!-- 查看详情模态框 -->
-    <el-dialog v-model="reviewModalVisible" :modal="false" destroy-on-close>
-      <ReviewRevisionDetailModal
-        :reviewId="currentReviewId"
-        @close-modal="reviewModalVisible = false"
-      />
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="reviewModalVisible = false">关闭</el-button>
-        </div>
-      </template>
-    </el-dialog>
 
     <!-- 拒绝对话框 -->
     <el-dialog v-model="rejectDialogVisible" title="拒绝原因" width="30%">
@@ -187,9 +154,14 @@ import { useRouter, useRoute } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useReviewStore } from "@/stores/review";
 import type { FormInstance } from "element-plus";
-import { getCommentList, type Review } from "@/api/review";
+import {
+  getCommentList,
+  type Review,
+  approveComment,
+  rejectComment,
+  batchApproveComment,
+} from "@/api/review";
 import dayjs from "dayjs";
-import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
 import ReviewRevisionDetailModal from "@/components/review/ReviewRevisionDetailModal.vue";
 import { ArrowDown, Check } from "@element-plus/icons-vue";
 
@@ -214,13 +186,9 @@ const pageSize = ref(100);
 const total = ref(0);
 const loading = ref(false);
 
-// 查看模态框相关
-const reviewModalVisible = ref(false);
-const currentReviewId = ref("");
-
 // 拒绝对话框相关
 const rejectDialogVisible = ref(false);
-const rejectForm = ref({ reason: "", id: "" });
+const rejectForm = ref({ reason: "", id: 0 });
 const rejectFormRef = ref<FormInstance>();
 const actionLoading = ref(false);
 
@@ -232,13 +200,10 @@ const operationColumnWidth = computed(() =>
 );
 
 onMounted(() => {
-  // 从URL获取状态参数，若没有则默认跳转待审核
+  // 从URL获取状态参数
   if (route.query.status) {
     currentStatus.value = route.query.status as string;
-  } else {
-    currentStatus.value = "0";
   }
-
   fetchReviews();
 });
 
@@ -289,25 +254,6 @@ const formatReviews = computed(() => {
   return formatReview;
 });
 
-// 复选框相关
-
-// const multipleTableRef = ref();
-// const multipleSelection = ref([]);
-
-// 计算属性：判断是否存在待审核状态的数据，若没有则不显示该列
-const hasPendingStatus = computed(() => {
-  return formatReviews.value.some((item) => Number(item.status) === 0);
-});
-
-// 自定义复选框可选逻辑：只有待审核的可以选中
-const selectable = (row: any) => {
-  return row.status === 0;
-};
-
-// const handleSelectionChange = (val: any) => {
-//   multipleSelection.value = val;
-// };
-
 // 格式化日期
 const formatDate = (date: string) => {
   return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
@@ -353,14 +299,9 @@ const handleStatusChange = (val: string) => {
   fetchReviews();
 };
 
-// 查看详情
-const handleView = (id: string) => {
-  currentReviewId.value = id;
-  reviewModalVisible.value = true;
-};
-
 // 批准操作
-const handleApprove = (id: string) => {
+const handleApprove = (id: number) => {
+  console.log("点击了手机端的批准");
   ElMessageBox.confirm("确定要批准该审核吗?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -369,9 +310,13 @@ const handleApprove = (id: string) => {
     .then(async () => {
       try {
         actionLoading.value = true;
-        await reviewStore.approveeRevisionReviewItem(id);
-        ElMessage.success("审核已批准");
-        fetchReviews();
+        const res = await approveComment(id);
+        if (res.code === 0) {
+          fetchReviews();
+        } else {
+          ElMessage.error(res.msg);
+          console.log(res.msg);
+        }
       } catch (error) {
         ElMessage.error("操作失败");
       } finally {
@@ -381,8 +326,63 @@ const handleApprove = (id: string) => {
     .catch(() => {});
 };
 
+// 批量批准操作
+// 复选框相关
+// const multipleTableRef = ref();
+const selectedRows = ref([]);
+
+// 计算属性：判断是否存在待审核状态的数据，若没有则不显示该列
+const hasPendingStatus = computed(() => {
+  return formatReviews.value.some((item) => Number(item.status) === 0);
+});
+
+// 自定义复选框可选逻辑：只有待审核的可以选中
+const selectable = (row: any) => {
+  return row.status === 0;
+};
+
+// 处理选择框的变化
+const handleSelectionChange = (val: any) => {
+  selectedRows.value = val;
+};
+
+// 批量批准打卡内容
+const handleBatchApprove = async () => {
+  // 当没有选中的数据时，提示选中
+  if (selectedRows.value.length === 0) {
+    ElMessage.warning("请勾选至少一条数据！");
+  } else {
+    ElMessageBox.confirm(
+      `确定要批准选中的 ${selectedRows.value.length} 条数据吗？`,
+      "提示",
+      {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }
+    )
+      .then(async () => {
+        try {
+          actionLoading.value = true;
+          const res = await batchApproveComment(
+            selectedRows.value.map((item: any) => item.id)
+          );
+          if (res.code === 0) {
+            ElMessage.success(`成功批准了${selectedRows.value.length}条数据`);
+            fetchReviews();
+          }
+        } catch (error) {
+          ElMessage.error("操作失败");
+        } finally {
+          actionLoading.value = false;
+        }
+      })
+      .catch(() => {});
+  }
+};
+
 // 拒绝操作
-const handleReject = (id: string) => {
+const handleReject = (id: number) => {
   rejectForm.value = { reason: "", id };
   rejectDialogVisible.value = true;
   console.log("rejectForm：", rejectForm.value);
@@ -396,26 +396,22 @@ const confirmReject = async () => {
     if (valid) {
       actionLoading.value = true;
       try {
-        const res = await reviewStore.rejectReviewItem(
+        const res = await rejectComment(
           rejectForm.value.id,
           rejectForm.value.reason
         );
-        console.log("确认拒绝返回值：", res);
-        ElMessage.success("审核已拒绝");
-        rejectDialogVisible.value = false;
-        fetchReviews();
+        if (res.code === 0) {
+          rejectDialogVisible.value = false;
+          fetchReviews();
+        }
       } catch (error) {
         ElMessage.error("操作失败");
+        console.log(error);
       } finally {
         actionLoading.value = false;
       }
     }
   });
-};
-
-// 修改营地
-const handleEdit = (id: string) => {
-  console.log("修改营地:", id);
 };
 </script>
 

@@ -393,20 +393,11 @@ onMounted(() => {
   // 监听窗口大小变化
   window.addEventListener("resize", handleResize);
 
-  // 从URL获取状态参数，若没有则默认跳转待审核
+  // 从URL获取状态参数
   if (route.query.status) {
     currentStatus.value = route.query.status as string;
-  } else {
-    currentStatus.value = "0";
   }
-
   fetchReviews();
-
-  // 从URL获取状态参数(默认全部)
-  // if (route.query.status) {
-  //   currentStatus.value = route.query.status as string;
-  // }
-  // fetchReviews();
 });
 
 onUnmounted(() => {

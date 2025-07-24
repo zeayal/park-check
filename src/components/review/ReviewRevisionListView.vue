@@ -89,11 +89,6 @@
                     <el-dropdown-item @click="handleView(scope.row.id)"
                       >查看</el-dropdown-item
                     >
-                    <!-- <el-dropdown-item
-                      v-if="scope.row.status === 1"
-                      @click="handleEdit(scope.row.id)"
-                      >修改</el-dropdown-item
-                    > -->
                     <el-dropdown-item
                       v-if="scope.row.status === 0"
                       @click="handleApprove(scope.row.id)"
@@ -179,7 +174,7 @@ import { useRouter, useRoute } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useReviewStore } from "@/stores/review";
 import type { FormInstance } from "element-plus";
-import { getReviews, getEditReviews, type Review } from "@/api/review";
+import { rejectEditCamp, getEditReviews, type Review } from "@/api/review";
 import dayjs from "dayjs";
 import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
 import ReviewRevisionDetailModal from "@/components/review/ReviewRevisionDetailModal.vue";
@@ -224,23 +219,11 @@ const operationColumnWidth = computed(() =>
   isMobile.value ? "60px" : "200px"
 );
 
-// onMounted(() => {
-//   // 从URL获取状态参数(默认跳转到全部)
-//   if (route.query.status) {
-//     currentStatus.value = route.query.status as string;
-//   }
-//   fetchReviews();
-//   // console.log("测试：", props)
-// });
-
 onMounted(() => {
-  // 从URL获取状态参数，若没有则默认跳转待审核
+  // 从URL获取状态参数
   if (route.query.status) {
     currentStatus.value = route.query.status as string;
-  } else {
-    currentStatus.value = "0";
   }
-
   fetchReviews();
 });
 
@@ -371,7 +354,6 @@ const handleApprove = (id: string) => {
 const handleReject = (id: string) => {
   rejectForm.value = { reason: "", id };
   rejectDialogVisible.value = true;
-  console.log("rejectForm：", rejectForm.value);
 };
 
 // 确认拒绝
@@ -382,14 +364,15 @@ const confirmReject = async () => {
     if (valid) {
       actionLoading.value = true;
       try {
-        const res = await reviewStore.rejectReviewItem(
+        const res = await rejectEditCamp(
           rejectForm.value.id,
           rejectForm.value.reason
         );
         console.log("确认拒绝返回值：", res);
-        ElMessage.success("审核已拒绝");
-        rejectDialogVisible.value = false;
-        fetchReviews();
+        if (res.code === 0) {
+          rejectDialogVisible.value = false;
+          fetchReviews();
+        }
       } catch (error) {
         ElMessage.error("操作失败");
       } finally {
@@ -397,11 +380,6 @@ const confirmReject = async () => {
       }
     }
   });
-};
-
-// 修改营地
-const handleEdit = (id: string) => {
-  console.log("修改营地:", id);
 };
 </script>
 

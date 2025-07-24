@@ -73,7 +73,6 @@ export const getCommentList = async (params: ReviewParams) => {
     "/api/monster/admin/getCampingCheckInList",
     { params }
   );
-  console.log("打卡response：", response);
 
   return {
     items: response.data.data.items,
@@ -128,6 +127,26 @@ export const approveRevisionReview = async (
   return response.data;
 };
 
+// 批准打卡信息
+export const approveComment = async (id: number) => {
+  const response = await apiClient.post(
+    "/api/monster/admin/campingSite/checkIn/approve",
+    {
+      id,
+    }
+  );
+  return response.data;
+};
+
+// 批量批准打卡信息
+export const batchApproveComment = async (idList: number[]) => {
+  const response = await apiClient.post(
+    "/api/monster/admin/campingSite/checkIn/batchApprove",
+    { idList }
+  );
+  return response.data;
+};
+
 // 拒绝新增营地
 export const rejectReview = async (
   id: string,
@@ -138,6 +157,30 @@ export const rejectReview = async (
     {
       id,
       status: -1,
+      reason,
+    }
+  );
+  return response.data;
+};
+
+// 拒绝修改营地
+export const rejectEditCamp = async (id: string, reason: string) => {
+  const response = await apiClient.post(
+    "/api/monster/admin/campingSite/revisionReject",
+    {
+      id,
+      reason,
+    }
+  );
+  return response.data;
+};
+
+// 拒绝打卡信息
+export const rejectComment = async (id: number, reason: string) => {
+  const response = await apiClient.post(
+    "/api/monster/admin/campingSite/checkIn/reject",
+    {
+      id,
       reason,
     }
   );
