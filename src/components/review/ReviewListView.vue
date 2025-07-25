@@ -86,7 +86,7 @@
               查看
             </el-button>
             <el-button
-              v-if="scope.row.status === 1"
+              v-if="scope.row.status === 1 || scope.row.status === 0"
               size="small"
               link
               type="warning"
@@ -124,7 +124,7 @@
                     >查看</el-dropdown-item
                   >
                   <el-dropdown-item
-                    v-if="scope.row.status === 1"
+                    v-if="scope.row.status === 1 || scope.row.status === 0"
                     @click="handleEdit(scope.row.id)"
                     >修改</el-dropdown-item
                   >
@@ -443,7 +443,7 @@ const handleOnChange = (value: string) => {
 const fetchReviews = async () => {
   loading.value = true;
   emit("update:loading", true);
-  console.log("searchName", searchName.value);
+  // console.log("searchName", searchName.value);
   try {
     // 构建请求参数
     const params = {
@@ -569,7 +569,6 @@ const handleEdit = async (id: string) => {
   // 获取营地详情
   try {
     const { data } = await getReviewById(id);
-    console.log("修改详情：", data);
 
     // 复制数据到表单
     const { images, ...restData } = data;
