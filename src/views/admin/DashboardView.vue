@@ -45,11 +45,11 @@
 
     <el-row :gutter="20">
       <!-- 新增待审核 -->
-      <el-col :xs="24" :md="8">
+      <el-col :xs="24" :md="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
-              <span>新增营地待审核</span>
+              <span>待审核</span>
             </div>
           </template>
           <div class="card-content">
@@ -105,7 +105,7 @@
       </el-col> -->
 
       <!-- 已批准营地 -->
-      <el-col :xs="24" :md="8">
+      <el-col :xs="24" :md="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
@@ -125,7 +125,7 @@
       </el-col>
 
       <!-- 新增已拒绝 -->
-      <el-col :xs="24" :md="8">
+      <el-col :xs="24" :md="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
@@ -379,5 +379,24 @@ const viewDetail = (id: string) => {
   font-size: 12px;
   color: #909399;
   font-weight: 600;
+}
+
+/* 仅在手机端(xs)设置上下间距 */
+@media screen and (max-width: 768px) {
+  .card-column {
+    margin-bottom: 16px;
+  }
+
+  /* 移除最后一个卡片的底部间距，避免多余空白 */
+  .card-column:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* 大屏幕下不需要额外间距，保持原有gutter即可 */
+@media screen and (min-width: 768px) {
+  .card-column {
+    margin-bottom: 0;
+  }
 }
 </style>
