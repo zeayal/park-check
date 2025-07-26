@@ -44,11 +44,12 @@
     </div>
 
     <el-row :gutter="20">
-      <el-col :span="8">
+      <!-- 新增待审核 -->
+      <el-col :xs="24" :md="8">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
-              <span>待审核</span>
+              <span>新增营地待审核</span>
             </div>
           </template>
           <div class="card-content">
@@ -63,7 +64,48 @@
         </el-card>
       </el-col>
 
-      <el-col :span="8">
+      <!-- 修改待审核 -->
+      <!-- <el-col :span="6">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span>已拒绝</span>
+            </div>
+          </template>
+          <div class="card-content">
+            <div class="statistic">
+              <span class="number">{{ statistics.rejected }}</span>
+              <span class="label">条</span>
+            </div>
+            <el-button type="danger" @click="navigateToReviews('-1')"
+              >查看详情</el-button
+            >
+          </div>
+        </el-card>
+      </el-col> -->
+
+      <!-- 打卡待审核 -->
+      <!-- <el-col :span="6">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span>已拒绝</span>
+            </div>
+          </template>
+          <div class="card-content">
+            <div class="statistic">
+              <span class="number">{{ statistics.rejected }}</span>
+              <span class="label">条</span>
+            </div>
+            <el-button type="danger" @click="navigateToReviews('-1')"
+              >查看详情</el-button
+            >
+          </div>
+        </el-card>
+      </el-col> -->
+
+      <!-- 已批准营地 -->
+      <el-col :xs="24" :md="8">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
@@ -82,7 +124,8 @@
         </el-card>
       </el-col>
 
-      <el-col :span="8">
+      <!-- 新增已拒绝 -->
+      <el-col :xs="24" :md="8">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
