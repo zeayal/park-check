@@ -289,9 +289,6 @@ const fetchRevisionReviewDetail = async () => {
         review.value = response.data;
         revisionDetai.value = review.value.revisionDetai;
         originalDetail.value = review.value.originalDetail;
-        console.log("revisionDetai:", revisionDetai.value);
-        console.log("originalDetail:", originalDetail.value);
-        // console.log("review:", review.value);
         differences.value = compareData();
     } catch (error) {
         console.error("获取修改详情失败", error);
@@ -455,6 +452,7 @@ const confirmReject = async () => {
 /* 新增图片样式 */
 .added {
     border-color: green;
+    border-width: 3px;
     /* 红色边框 */
 }
 
@@ -463,6 +461,7 @@ const confirmReject = async () => {
     border-color: #ff4d4f;
     /* 灰色边框 */
     background-color: #f9fafb;
+    border-width: 3px;
 }
 
 .deleted-placeholder {
