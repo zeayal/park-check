@@ -91,7 +91,6 @@
                             <div v-for="(img, index) in revisedImages" :key="index" class="image-wrapper"
                                 :class="{ added: isImageAdded(img) }">
                                 <img :src="img.previewUrl" alt="图片" class="image" />
-                                <!-- <span v-if="isImageAdded(img)" class="tag added-tag">新增</span> -->
                             </div>
 
                             <!-- 显示已删除的原始图片 -->
@@ -455,18 +454,13 @@ const confirmReject = async () => {
 
 /* 新增图片样式 */
 .added {
-    border-color: #ff4d4f;
+    border-color: green;
     /* 红色边框 */
-}
-
-.added-tag {
-    background-color: #ff4d4f;
-    color: white;
 }
 
 /* 删除图片样式 */
 .deleted {
-    border-color: #9ca3af;
+    border-color: #ff4d4f;
     /* 灰色边框 */
     background-color: #f9fafb;
 }
@@ -477,8 +471,9 @@ const confirmReject = async () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6b7280;
+    color: black;
     font-size: 12px;
+    font-weight: 800;
     text-align: center;
     padding: 4px;
 }
