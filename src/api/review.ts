@@ -187,6 +187,26 @@ export const rejectComment = async (id: number, reason: string) => {
   return response.data;
 };
 
+// 作废营地
+export const invalidCampsite = async (id: string) => {
+  const response = await apiClient.post(
+    "/api/monster/admin/campingSite/invalidate",
+    { id }
+  );
+
+  return response.data;
+};
+
+// 恢复已作废营地
+export const restoreCampsite = async (id: string) => {
+  const response = await apiClient.post(
+    "/api/monster/admin/campingSite/restoreInvalidateToNormal",
+    { id }
+  );
+
+  return response.data;
+};
+
 // 获取控制面板展示数据
 export const getDashbordStatistics = async () => {
   const response = await apiClient.get("/api/monster/admin/dashboard");

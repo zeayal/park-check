@@ -78,7 +78,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { getReviewById, getRevisionReviewById } from '@/api/review';
+import { getReviewById } from '@/api/review';
 import { useReviewStore } from '@/stores/review';
 import type { Review } from '@/api/review';
 import type { FormInstance, imageEmits } from 'element-plus';

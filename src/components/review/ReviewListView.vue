@@ -18,6 +18,7 @@
           <el-radio-button label="0">待审核</el-radio-button>
           <el-radio-button label="1">已批准</el-radio-button>
           <el-radio-button label="-1">已拒绝</el-radio-button>
+          <el-radio-button label="-2">已作废</el-radio-button>
         </el-radio-group>
       </div>
     </div>
@@ -112,6 +113,24 @@
             >
               拒绝
             </el-button>
+            <el-button
+              v-if="scope.row.status === 1"
+              size="small"
+              link
+              type="danger"
+              @click="handleInvalid(scope.row.id)"
+            >
+              作废
+            </el-button>
+            <el-button
+              v-if="scope.row.status === -2"
+              size="small"
+              link
+              type="warning"
+              @click="handleRestore(scope.row.id)"
+            >
+              恢复
+            </el-button>
           </div>
           <div class="table-actions mobile-only">
             <el-dropdown trigger="click">
@@ -137,6 +156,16 @@
                     v-if="scope.row.status === 0"
                     @click="handleReject(scope.row.id)"
                     >拒绝</el-dropdown-item
+                  >
+                  <el-dropdown-item
+                    v-if="scope.row.status === 1"
+                    @click="handleInvalid(scope.row.id)"
+                    >作废</el-dropdown-item
+                  >
+                  <el-dropdown-item
+                    v-if="scope.row.status === -2"
+                    @click="handleRestore(scope.row.id)"
+                    >恢复</el-dropdown-item
                   >
                 </el-dropdown-menu>
               </template>
@@ -296,6 +325,28 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 作废对话框 -->
+    <el-dialog v-model="invalidDialogVisible" title="提示" :width="dialogWidth">
+      <span>是否确认作废该条数据？</span>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="invalidDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="confirmInvalid"> 确认 </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 恢复作废营地对话框 -->
+    <el-dialog v-model="restoreDialogVisible" title="提示" :width="dialogWidth">
+      <span>是否确认恢复该条数据？</span>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="restoreDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="confirmRestore"> 确认 </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -311,6 +362,8 @@ import {
   type Review,
   getReviewById,
   adminEditDetail,
+  invalidCampsite,
+  restoreCampsite,
 } from "@/api/review";
 import dayjs from "dayjs";
 import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
@@ -385,6 +438,14 @@ const rejectDialogVisible = ref(false);
 const rejectForm = ref({ reason: "", id: "" });
 const rejectFormRef = ref<FormInstance>();
 const actionLoading = ref(false);
+
+// 作废营地相关
+const invalidDialogVisible = ref(false);
+const invalidId = ref("");
+
+// 恢复作废营地相关
+const restoreDialogVisible = ref(false);
+const restoreId = ref("");
 
 // 计算属性
 const reviews = ref<Review[]>([]);
@@ -506,6 +567,7 @@ const getStatusType = (status: string) => {
     "0": "warning",
     "1": "success",
     "-1": "danger",
+    "-2": "info",
   };
   return typeMap[status] || "";
 };
@@ -681,12 +743,61 @@ const confirmReject = async () => {
           ElMessage.error(res.msg || "拒绝失败");
         }
       } catch (error) {
-        ElMessage.error("拒绝失败");
+        ElMessage.error("接口调取失败");
       } finally {
         actionLoading.value = false;
       }
     }
   });
+};
+
+// 作废营地
+const handleInvalid = (id: string) => {
+  invalidDialogVisible.value = true;
+  invalidId.value = id;
+};
+
+//  确认作废
+const confirmInvalid = async () => {
+  actionLoading.value = true;
+  try {
+    const res = await invalidCampsite(invalidId.value);
+    if (res.code === 0) {
+      ElMessage.success("数据已作废");
+      invalidDialogVisible.value = false;
+      fetchReviews();
+    } else {
+      ElMessage.error(res.msg || "作废失败");
+    }
+  } catch (error) {
+    ElMessage.error("接口调取失败");
+  } finally {
+    invalidDialogVisible.value = false;
+  }
+};
+
+// 恢复已作废营地
+const handleRestore = (id: string) => {
+  restoreDialogVisible.value = true;
+  restoreId.value = id;
+};
+
+// 确认恢复
+const confirmRestore = async () => {
+  actionLoading.value = true;
+  try {
+    const res = await restoreCampsite(restoreId.value);
+    if (res.code === 0) {
+      ElMessage.success("已恢复该条数据");
+      fetchReviews();
+    } else {
+      ElMessage.error("数据恢复操作失败");
+    }
+  } catch (error) {
+    ElMessage.error("接口调取失败");
+  } finally {
+    restoreDialogVisible.value = false;
+  }
 };
 </script>
 
