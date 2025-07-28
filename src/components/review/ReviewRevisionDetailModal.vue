@@ -28,7 +28,7 @@
                         <template v-else>{{ revisionDetai?.name }}</template>
                         <el-tag :type="getStatusType(review?.revisionDetai?.status || '')"
                             :class="'status-' + review?.revisionDetai?.status">
-                            {{ getStatusText(review?.revisionDetai?.status) }}
+                            {{ getStatusText(review?.revisionDetai?.status || '') }}
                         </el-tag>
                     </div>
                 </template>
@@ -42,7 +42,7 @@
                         <!-- 营地创建日期 -->
                         <p>
                             <strong>创建时间：</strong>
-                            {{ formatDate(originalDetail?.createTime) }}
+                            {{ formatDate(originalDetail?.createTime || '') }}
                         </p>
                         <!-- 修改提交提起 -->
                         <p>
