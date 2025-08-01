@@ -1,5 +1,12 @@
 import { defineStore } from "pinia";
-import { getReviews, approveReview, rejectReview, approveRevisionReview } from "@/api/review";
+import {
+  getReviews,
+  approveReview,
+  rejectReview,
+  approveRevisionReview,
+  getEditReviews,
+  getCommentList,
+} from "@/api/review";
 import type { Review, ReviewParams, ReviewResponse } from "@/api/review";
 
 interface ReviewState {
@@ -9,6 +16,12 @@ interface ReviewState {
   currentPage: number;
   pageSize: number;
   currentStatus: string | null;
+  // 新增徽章状态
+  pendingCounts: {
+    "/admin/reviews/add": number;
+    "/admin/reviews/edit": number;
+    "/admin/reviews/comment": number;
+  };
 }
 
 export const useReviewStore = defineStore("review", {
@@ -19,9 +32,32 @@ export const useReviewStore = defineStore("review", {
     currentPage: 1,
     pageSize: 100,
     currentStatus: null,
+    // 初始化徽章状态
+    pendingCounts: {
+      "/admin/reviews/add": 0,
+      "/admin/reviews/edit": 0,
+      "/admin/reviews/comment": 0,
+    },
   }),
 
   actions: {
+    // 新增：刷新所有徽章数量
+    async refreshPendingCounts() {
+      try {
+        const [addRes, editRes, commentRes] = await Promise.all([
+          getReviews({ statusList: "0" }),
+          getEditReviews({ statusList: "0" }),
+          getCommentList({ statusList: "0" }),
+        ]);
+
+        this.pendingCounts["/admin/reviews/add"] = addRes.total;
+        this.pendingCounts["/admin/reviews/edit"] = editRes.total;
+        this.pendingCounts["/admin/reviews/comment"] = commentRes.total;
+      } catch (error) {
+        console.error("刷新徽章失败:", error);
+      }
+    },
+
     async fetchReviews(params?: ReviewParams) {
       this.loading = true;
 
@@ -33,7 +69,7 @@ export const useReviewStore = defineStore("review", {
         this.total = response.total;
         this.currentPage = page;
         this.pageSize = pageSize;
-        this.currentStatus = status || null;
+        this.currentStatus = statusList || null;
       } catch (error) {
       } finally {
         this.loading = false;
@@ -48,6 +84,9 @@ export const useReviewStore = defineStore("review", {
         if (index !== -1) {
           this.reviews[index] = updatedReview;
         }
+
+        // 批准后刷新徽章
+        await this.refreshPendingCounts();
 
         return updatedReview;
       } catch (error) {
@@ -64,6 +103,9 @@ export const useReviewStore = defineStore("review", {
           this.reviews[index] = updatedReview;
         }
 
+        // 批准后刷新徽章
+        await this.refreshPendingCounts();
+
         return updatedReview;
       } catch (error) {
         throw error;
@@ -78,6 +120,9 @@ export const useReviewStore = defineStore("review", {
         if (index !== -1) {
           this.reviews[index] = updatedReview;
         }
+
+        // 拒绝后刷新徽章
+        await this.refreshPendingCounts();
 
         return updatedReview;
       } catch (error) {

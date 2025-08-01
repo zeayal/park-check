@@ -497,7 +497,7 @@ const handleOnChange = (value: string) => {
   const val = value?.trim() || "";
   searchName.value = val;
   fetchReviews();
-  console.log("handleOnChange, ", val);
+  // console.log("handleOnChange, ", val);
 };
 
 // 获取审核列表
@@ -610,6 +610,7 @@ const handleApprove = (id: string) => {
         if (res.code === 0) {
           ElMessage.success("审核已批准");
           fetchReviews();
+          reviewStore.refreshPendingCounts();
         } else {
           ElMessage.error(res.msg || "批准失败");
         }
@@ -739,6 +740,7 @@ const confirmReject = async () => {
           ElMessage.success("审核已拒绝");
           rejectDialogVisible.value = false;
           fetchReviews();
+          reviewStore.refreshPendingCounts();
         } else {
           ElMessage.error(res.msg || "拒绝失败");
         }

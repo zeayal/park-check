@@ -313,6 +313,7 @@ const handleApprove = (id: number) => {
         const res = await approveComment(id);
         if (res.code === 0) {
           fetchReviews();
+          reviewStore.refreshPendingCounts();
         } else {
           ElMessage.error(res.msg);
           console.log(res.msg);
@@ -370,6 +371,7 @@ const handleBatchApprove = async () => {
           if (res.code === 0) {
             ElMessage.success(`成功批准了${selectedRows.value.length}条数据`);
             fetchReviews();
+            reviewStore.refreshPendingCounts();
           }
         } catch (error) {
           ElMessage.error("操作失败");
@@ -403,6 +405,7 @@ const confirmReject = async () => {
         if (res.code === 0) {
           rejectDialogVisible.value = false;
           fetchReviews();
+          reviewStore.refreshPendingCounts();
         }
       } catch (error) {
         ElMessage.error("操作失败");

@@ -4,11 +4,11 @@
             <div class="page-header">
                 <h2>修改审批详情</h2>
                 <div>
-                    <el-button v-if="Number(review?.revisionDetai?.status) == 0" type="success" @click="handleApprove"
+                    <el-button v-if="Number(review?.revisionDetai?.status) === 0" type="success" @click="handleApprove"
                         :loading="approveActionLoading">
                         批准
                     </el-button>
-                    <el-button v-if="Number(review?.revisionDetai?.status) == 0" type="danger" @click="handleReject"
+                    <el-button v-if="Number(review?.revisionDetai?.status) === 0" type="danger" @click="handleReject"
                         :loading="rejectActionLoading">
                         拒绝
                     </el-button>
@@ -20,16 +20,14 @@
                     <div class="card-header">
                         <!-- <span>{{ review?.revisionDetai?.name }}</span> -->
                         <template v-if="differences.name && Number(review?.revisionDetai?.status) === 0">
-                            <span style="color: red">{{
-                                differences.name.revised
-                                }}</span>
+                            <span style="color: red">{{differences.name.revised}}</span>
                             <span class="original-text">（原：{{ differences.name.original }}）</span>
                         </template>
-                        <template v-else>{{ revisionDetai?.name }}</template>
-                        <el-tag :type="getStatusType(review?.revisionDetai?.status || '')"
+                        <template v-else>{{ review?.revisionDetai?.name }}</template>
+                        <!-- <el-tag :type="getStatusType(review?.revisionDetai?.status)"
                             :class="'status-' + review?.revisionDetai?.status">
-                            {{ getStatusText(review?.revisionDetai?.status || '') }}
-                        </el-tag>
+                            {{ getStatusText(review?.revisionDetai?.status) }}
+                        </el-tag> -->
                     </div>
                 </template>
 
@@ -62,10 +60,10 @@
                                 <!-- 有差异时显示修改后（红）和修改前的值 -->
                                 <span style="color: red">{{
                                     formatValue(field.key, differences[field.key].revised)
-                                    }}</span>
+                                }}</span>
                                 <span class="original-text">（原：{{
                                     formatValue(field.key, differences[field.key].original)
-                                    }}）</span>
+                                }}）</span>
                             </template>
                             <template v-else>
                                 <!-- 无差异时直接显示当前值 -->
@@ -73,7 +71,7 @@
                                     formatValue(
                                         field.key,
                                         revisionDetai?.[field.key as keyof Review]
-                                )
+                                    )
                                 }}
                             </template>
                         </p>
@@ -86,7 +84,7 @@
                         <img v-for="(url, index) in review?.revisionDetai?.images" :key="index" :src="url.previewUrl" alt="图片"></img>
                     </div> -->
                     <template v-if="Number(review?.revisionDetai?.status) === 0">
-                        <div class="image-comparison">
+                        <div class="images-box">
                             <!-- 显示修改后的图片（含新增标识） -->
                             <div v-for="(img, index) in revisedImages" :key="index" class="image-wrapper"
                                 :class="{ added: isImageAdded(img) }">
@@ -105,9 +103,9 @@
                     </template>
 
                     <template v-else>
-                        <div class="image-comparison"> 
+                        <div class="image-comparison">
                             <div v-for="(img, index) in revisedImages" :key="index" class="image-wrapper">
-                                <img :src="img.previewUrl" alt="图片" class="image"/>
+                                <img :src="img.previewUrl" alt="图片" class="image" />
                             </div>
                         </div>
                     </template>
@@ -309,8 +307,10 @@ const getStatusText = (status: string) => {
         "0": "待审核",
         "1": "已批准",
         "2": "申请作废",
+        "unknown": "未知状态"
     };
-    return statusMap[status] || status;
+    // return statusMap[status] || status;
+    return statusMap || "未知状态"
 };
 
 // 状态类型
@@ -319,8 +319,9 @@ const getStatusType = (status: string) => {
         "0": "warning",
         "1": "success",
         "-1": "danger",
+        "unknown": "info"
     };
-    return typeMap[status] || "";
+    return typeMap[status] || "info";
 };
 
 // 批准操作
@@ -432,19 +433,19 @@ const confirmReject = async () => {
     padding: 8px;
 }
 
-.image-wrapper {
+/* .image-wrapper {
     position: relative;
-    width: 120px;
+    width: 100%;
     height: 120px;
     border: 2px solid #e5e7eb;
     border-radius: 4px;
     overflow: hidden;
     transition: all 0.2s;
-}
+} */
 
 .image {
-    width: 100%;
-    height: 100%;
+    width: 380px;
+    /* height: 100%; */
     object-fit: cover;
     display: block;
 }

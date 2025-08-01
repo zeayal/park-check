@@ -5,7 +5,12 @@
       :width="sidebarCollapsed ? '64px' : '200px'"
     >
       <div class="sidebar-header" @click="toggleSidebar">
-        <h2 v-if="!sidebarCollapsed">后台管理系统</h2>
+        <h2 v-if="!sidebarCollapsed">
+          <el-icon>
+            <Fold />
+          </el-icon>
+          后台管理系统
+        </h2>
         <el-icon v-else>
           <Expand />
         </el-icon>
@@ -26,20 +31,58 @@
           <span slot="title">控制面板</span>
         </el-menu-item>
         <el-menu-item index="/admin/reviews/add">
-          <el-icon>
-            <!-- <Document /> -->
+          <el-badge
+            v-if="reviewStore.pendingCounts['/admin/reviews/add'] !== 0"
+            :value="reviewStore.pendingCounts['/admin/reviews/add']"
+            :max="99"
+            class="badge-item"
+          >
+            <el-icon>
+              <CirclePlus />
+            </el-icon>
+          </el-badge>
+
+          <el-icon v-else>
             <CirclePlus />
           </el-icon>
           <span slot="title">新增营地管理</span>
         </el-menu-item>
+
+        <!-- v-if="pendingCounts['/admin/reviews/edit'] !== 0"
+            :value="pendingCounts['/admin/reviews/edit']" -->
         <el-menu-item index="/admin/reviews/edit">
-          <el-icon>
+          <el-badge
+            v-if="reviewStore.pendingCounts['/admin/reviews/edit'] !== 0"
+            :value="reviewStore.pendingCounts['/admin/reviews/edit']"
+            :max="99"
+            class="badge-item"
+          >
+            <el-icon>
+              <Edit />
+            </el-icon>
+          </el-badge>
+
+          <el-icon v-else>
             <Edit />
           </el-icon>
           <span slot="title">修改营地管理</span>
         </el-menu-item>
+
+        <!--  v-if="pendingCounts['/admin/reviews/comment'] !== 0"
+            :value="pendingCounts['/admin/reviews/comment']" -->
         <el-menu-item index="/admin/reviews/comment">
-          <el-icon>
+          <el-badge
+            v-if="reviewStore.pendingCounts['/admin/reviews/comment'] !== 0"
+            :value="reviewStore.pendingCounts['/admin/reviews/comment']"
+            :max="99"
+            class="badge-item"
+          >
+            <el-icon>
+              <ChatLineRound />
+            </el-icon>
+          </el-badge>
+
+          <el-icon v-else>
             <ChatLineRound />
           </el-icon>
           <span slot="title">打卡审核管理</span>
@@ -78,6 +121,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { useReviewStore } from "@/stores/review";
 import { storage } from "@/utils/storage";
 import {
   Edit,
@@ -85,13 +129,17 @@ import {
   ChatLineRound,
   Menu,
   Expand,
+  Fold,
 } from "@element-plus/icons-vue";
+import { getReviews, getEditReviews, getCommentList } from "@/api/review";
 
 const router = useRouter();
 const authStore = useAuthStore();
 const sidebarCollapsed = ref(storage.get("sidebarCollapsed"));
 const isMobileMenuOpen = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
+
+const reviewStore = useReviewStore();
 
 // const username = computed(() => authStore.user?.username || '管理员');
 
@@ -104,12 +152,12 @@ const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
 };
 
-const handleCommand = (command: string) => {
-  if (command === "logout") {
-    authStore.logout();
-    router.push("/login");
-  }
-};
+// 初始化待审核状态数据
+// const pendingCounts = ref({
+//   "/admin/reviews/add": 0,
+//   "/admin/reviews/edit": 0,
+//   "/admin/reviews/comment": 0,
+// });
 
 // 监听窗口大小变化
 const handleResize = () => {
@@ -121,11 +169,26 @@ const handleResize = () => {
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
+  // initPendingCount();
+  // 初始化徽章数量
+  reviewStore.refreshPendingCounts();
 });
 
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
 });
+
+// 初始化所有徽章数量的函数
+// const initPendingCount = async () => {
+//   const addRes = await getReviews({ statusList: "0" });
+//   pendingCounts.value["/admin/reviews/add"] = addRes.total;
+
+//   const editRes = await getEditReviews({ statusList: "0" });
+//   pendingCounts.value["/admin/reviews/edit"] = editRes.total;
+
+//   const commentRes = await getCommentList({ statusList: "0" });
+//   pendingCounts.value["/admin/reviews/comment"] = commentRes.total;
+// };
 </script>
 
 <style scoped>
@@ -259,8 +322,28 @@ onUnmounted(() => {
     padding: 0 10px;
   }
 
-  .sidebar-header h2 {
+  .sidebar-header .el-icon {
     font-size: 16px;
   }
+
+  .sidebar-header h2 {
+    font-size: 20px;
+  }
+}
+
+:deep(.badge-item) {
+  margin-top: 10px;
+}
+
+:deep(.el-badge__content) {
+  border: none;
+}
+
+:deep(.el-badge__content.is-fixed) {
+  font-size: 10px;
+}
+
+:deep(.el-menu-item) {
+  display: inline-block;
 }
 </style>
