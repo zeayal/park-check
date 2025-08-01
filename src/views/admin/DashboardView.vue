@@ -6,18 +6,14 @@
   <div v-else class="dashboard container">
     <div class="page-user">
       <!-- <h3>用户数据</h3> -->
-      <el-button plain @click="freshData" class="page-user-button"
-        >刷新用户数据</el-button
-      >
+
       <p>
-        <text class="page-user-text"
-          >总用户数：{{ statistics.totalUsers }}</text
-        >
-        <text class="page-user-text"
-          >今日新增：{{
-            statistics.dailyNewUsersInLastSevenDays?.[0]?.count
-          }}</text
-        >
+        <text class="page-user-text">总用户数：{{ statistics.totalUsers }}</text>
+        <text class="page-user-text">今日新增：{{
+          statistics.dailyNewUsersInLastSevenDays?.[0]?.count
+        }}</text>
+        <text class="page-user-text">总营地数： {{ statistics.totalAddApproved }} </text>
+
       </p>
 
       <!-- 用户数据 -->
@@ -25,17 +21,14 @@
         <h5>过去7天新增用户数</h5>
       </div>
       <div>
-        <el-table
-          :data="statistics.dailyNewUsersInLastSevenDays"
-          stripe
-          style="width: 100%"
-        >
+        <el-table :data="statistics.dailyNewUsersInLastSevenDays" stripe style="width: 100%">
           <el-table-column prop="date" label="日期" width="180">
           </el-table-column>
           <el-table-column prop="count" label="当日新增" width="180">
           </el-table-column>
         </el-table>
       </div>
+      <el-button plain @click="freshData" class="page-user-button">刷新用户数据</el-button>
     </div>
 
     <!-- 审核管理 -->
@@ -49,63 +42,57 @@
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
-              <span>待审核</span>
+              <span>新增营地待审核</span>
             </div>
           </template>
           <div class="card-content">
             <div class="statistic">
-              <span class="number">{{ statistics.pending }}</span>
+              <span class="number">{{ statistics.totalAddPendingReview }}</span>
               <span class="label">条</span>
             </div>
-            <el-button type="primary" @click="navigateToReviews('0')"
-              >查看详情</el-button
-            >
+            <el-button type="primary" @click="navigateToReviews('/admin/reviews/add', '0')">查看详情</el-button>
           </div>
         </el-card>
       </el-col>
 
       <!-- 修改待审核 -->
-      <!-- <el-col :span="6">
+      <el-col :xs="24" :md="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
-              <span>已拒绝</span>
+              <span>修改营地待审核</span>
             </div>
           </template>
           <div class="card-content">
             <div class="statistic">
-              <span class="number">{{ statistics.rejected }}</span>
+              <span class="number">{{ statistics.totalEditPendingReview }}</span>
               <span class="label">条</span>
             </div>
-            <el-button type="danger" @click="navigateToReviews('-1')"
-              >查看详情</el-button
-            >
+            <el-button type="primary" @click="navigateToReviews('/admin/reviews/edit', '0')">查看详情</el-button>
           </div>
         </el-card>
-      </el-col> -->
+      </el-col>
 
       <!-- 打卡待审核 -->
-      <!-- <el-col :span="6">
+      <el-col :xs="24" :md="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
-              <span>已拒绝</span>
+              <span>打卡待审核</span>
             </div>
           </template>
           <div class="card-content">
             <div class="statistic">
-              <span class="number">{{ statistics.rejected }}</span>
+              <span class="number">{{ statistics.totalCommentPendingReview }}</span>
               <span class="label">条</span>
             </div>
-            <el-button type="danger" @click="navigateToReviews('-1')"
-              >查看详情</el-button
-            >
+            <el-button type="primary" @click="navigateToReviews('/admin/reviews/comment', '0')">查看详情</el-button>
           </div>
         </el-card>
-      </el-col> -->
+      </el-col>
 
       <!-- 已批准营地 -->
-      <el-col :xs="24" :md="8" class="card-column">
+      <!-- <el-col :xs="24" :md="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
@@ -122,10 +109,10 @@
             >
           </div>
         </el-card>
-      </el-col>
+      </el-col> -->
 
       <!-- 新增已拒绝 -->
-      <el-col :xs="24" :md="8" class="card-column">
+      <!-- <el-col :xs="24" :md="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
@@ -142,7 +129,7 @@
             >
           </div>
         </el-card>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <div class="recent-section">
@@ -152,10 +139,7 @@
         <el-table-column prop="name" label="标题" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
-            <el-tag
-              :type="getStatusType(scope.row.status)"
-              :class="'status-' + scope.row.status"
-            >
+            <el-tag :type="getStatusType(scope.row.status)" :class="'status-' + scope.row.status">
               {{ getStatusText(scope.row.status) }}
             </el-tag>
           </template>
@@ -220,11 +204,18 @@ const fetchDashboardData = async () => {
 
     // 获取数据
     const dashbordStatistics = await getDashbordStatistics();
+    const {
+      totalAddApproved,
+      totalAddPendingReview,
+      totalEditPendingReview,
+      totalCommentPendingReview,
+    } = dashbordStatistics;
 
     statistics.value = {
-      pending: dashbordStatistics.totalPendingReview,
-      approved: dashbordStatistics.totalApproved,
-      rejected: dashbordStatistics.totalRejected,
+      totalAddApproved,
+      totalAddPendingReview,
+      totalEditPendingReview,
+      totalCommentPendingReview,
       dailyNewUsersInLastSevenDays:
         dashbordStatistics.dailyNewUsersInLastSevenDays.reverse(),
       totalUsers: dashbordStatistics.totalUsers,
@@ -240,13 +231,21 @@ const fetchDashboardData = async () => {
 const freshData = async () => {
   try {
     loading.value = true;
-    const res = await getDashbordStatistics();
+    const dashbordStatistics = await getDashbordStatistics();
+    const {
+      totalAddApproved,
+      totalAddPendingReview,
+      totalEditPendingReview,
+      totalCommentPendingReview,
+    } = dashbordStatistics;
     statistics.value = {
-      pending: res.totalPendingReview,
-      approved: res.totalApproved,
-      rejected: res.totalRejected,
-      dailyNewUsersInLastSevenDays: res.dailyNewUsersInLastSevenDays.reverse(),
-      totalUsers: res.totalUsers,
+      totalAddApproved,
+      totalAddPendingReview,
+      totalEditPendingReview,
+      totalCommentPendingReview,
+      dailyNewUsersInLastSevenDays:
+        dashbordStatistics.dailyNewUsersInLastSevenDays.reverse(),
+      totalUsers: dashbordStatistics.totalUsers,
     };
   } catch (error) {
     console.error("更新数据失败", error);
@@ -291,10 +290,10 @@ const getStatusType = (status: string) => {
   return typeMap[status] || "";
 };
 
-const navigateToReviews = (status: string) => {
+const navigateToReviews = (path: string, status: string) => {
   console.log("当前状态：", status);
   router.push({
-    path: "/admin/reviews",
+    path,
     query: { status },
   });
 };
@@ -333,6 +332,7 @@ const viewDetail = (id: string) => {
 .page-user-button {
   font-size: 16px;
   font-weight: 700;
+  margin-top: 10px;
 }
 
 .page-user-text {
