@@ -115,7 +115,12 @@
     </div>
 
     <!-- 拒绝对话框 -->
-    <el-dialog v-model="rejectDialogVisible" title="拒绝原因" width="30%">
+    <el-dialog
+      v-model="rejectDialogVisible"
+      title="拒绝原因"
+      width="30%"
+      class="reject-dialog"
+    >
       <el-form :model="rejectForm" ref="rejectFormRef">
         <el-form-item
           prop="reason"
@@ -517,6 +522,10 @@ const confirmReject = async () => {
     font-size: 0.7em;
     /* 进一步缩小字体 */
     margin-left: -6px;
+  }
+
+  :deep(.reject-dialog) {
+    width: 90% !important;
   }
 }
 

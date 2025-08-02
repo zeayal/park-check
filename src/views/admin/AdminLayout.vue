@@ -141,8 +141,6 @@ const isMobile = ref(window.innerWidth <= 768);
 
 const reviewStore = useReviewStore();
 
-// const username = computed(() => authStore.user?.username || '管理员');
-
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value;
   storage.set("sidebarCollapsed", sidebarCollapsed.value);
@@ -151,13 +149,6 @@ const toggleSidebar = () => {
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
 };
-
-// 初始化待审核状态数据
-// const pendingCounts = ref({
-//   "/admin/reviews/add": 0,
-//   "/admin/reviews/edit": 0,
-//   "/admin/reviews/comment": 0,
-// });
 
 // 监听窗口大小变化
 const handleResize = () => {
@@ -169,7 +160,7 @@ const handleResize = () => {
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
-  // initPendingCount();
+
   // 初始化徽章数量
   reviewStore.refreshPendingCounts();
 });
@@ -177,18 +168,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
 });
-
-// 初始化所有徽章数量的函数
-// const initPendingCount = async () => {
-//   const addRes = await getReviews({ statusList: "0" });
-//   pendingCounts.value["/admin/reviews/add"] = addRes.total;
-
-//   const editRes = await getEditReviews({ statusList: "0" });
-//   pendingCounts.value["/admin/reviews/edit"] = editRes.total;
-
-//   const commentRes = await getCommentList({ statusList: "0" });
-//   pendingCounts.value["/admin/reviews/comment"] = commentRes.total;
-// };
 </script>
 
 <style scoped>

@@ -83,7 +83,7 @@ import { useReviewStore } from '@/stores/review';
 import type { Review } from '@/api/review';
 import type { FormInstance, imageEmits } from 'element-plus';
 import { useRouter } from 'vue-router';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 const props = defineProps<{
     reviewId: string;
