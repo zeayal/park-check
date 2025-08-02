@@ -37,6 +37,7 @@
         <el-table-column prop="site.name" label="标题" width="180" />
         <el-table-column prop="site.address" label="地址" width="180" />
         <el-table-column prop="content" label="打卡内容" min-width="180" />
+        <el-table-column prop="score" label="星级：1-5星" min-width="60" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
             <el-tag
