@@ -218,13 +218,13 @@ const displayFields = [
         trueText: "可以",
         falseText: "不可以",
     },
-    {
-        key: "isStarCamp",
-        label: "是否五星营地",
-        type: "boolean",
-        trueText: "是",
-        falseText: "否",
-    },
+    // {
+    //     key: "isStarCamp",
+    //     label: "是否五星营地",
+    //     type: "boolean",
+    //     trueText: "是",
+    //     falseText: "否",
+    // },
 ];
 
 // 格式化值（根据字段类型处理显示）

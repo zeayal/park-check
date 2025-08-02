@@ -43,7 +43,7 @@
                     <p><strong>是否可以接水：</strong> {{ review.hasWater ? "可以" : "不可以" }}</p>
                     <p><strong>是否有充电桩：</strong> {{ review.hasElectricity ? "有" : "无" }}</p>
                     <p><strong>是否可以搭帐篷：</strong> {{ review.canPitchTent ? "可以" : "不可以" }}</p>
-                    <p><strong>是否五星营地：</strong> {{ review.isStarCamp ? "是" : "否" }}</p>
+                    <!-- <p><strong>是否五星营地：</strong> {{ review.isStarCamp ? "是" : "否" }}</p> -->
                 </div>
             </div>
 
