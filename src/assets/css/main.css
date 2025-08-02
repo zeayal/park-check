@@ -7,6 +7,8 @@
   --text-color: #333;
   --text-color-secondary: #666;
   --bg-color: #f5f7fa;
+  --el-menu-icon-width: 14px;
+  --el-menu-base-level-padding: 12px;
 }
 
 * {
@@ -30,7 +32,7 @@ body {
 }
 
 .container {
-  padding: 20px;
+  padding: 4px 8px;
 }
 
 .auth-container {
@@ -65,7 +67,6 @@ body {
 }
 
 .page-header {
-  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -86,3 +87,5 @@ body {
 .el-table .status-rejected {
   color: var(--danger-color);
 }
+
+

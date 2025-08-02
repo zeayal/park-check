@@ -2,7 +2,7 @@
   <div class="admin-layout">
     <el-aside
       :class="{ 'is-collapsed': isMobileMenuOpen }"
-      :width="sidebarCollapsed ? '64px' : '200px'"
+      :width="sidebarCollapsed ? '44px' : '200px'"
     >
       <div class="sidebar-header" @click="toggleSidebar">
         <h2 v-if="!sidebarCollapsed">
@@ -218,7 +218,7 @@ onUnmounted(() => {
 }
 
 .el-main-custom-collapsed-container {
-  margin-left: 64px;
+  margin-left: 44px;
 }
 
 .el-main-custom-container {

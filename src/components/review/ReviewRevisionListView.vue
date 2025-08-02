@@ -398,9 +398,6 @@ const confirmReject = async () => {
 
 /* 响应式样式 */
 @media screen and (max-width: 768px) {
-  .review-list {
-    padding: 10px;
-  }
 
   .page-header {
     flex-direction: column;
@@ -408,8 +405,8 @@ const confirmReject = async () => {
   }
 
   .page-header h2 {
-    margin-bottom: 10px;
-    font-size: 20px;
+    margin-bottom: 5px;
+    font-size: 15px;
   }
 
   .status-filter-wrapper {
@@ -419,7 +416,6 @@ const confirmReject = async () => {
 
   .el-radio-group {
     display: flex;
-    width: 100%;
   }
 
   .el-radio-button {

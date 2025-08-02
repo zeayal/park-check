@@ -1,29 +1,37 @@
 <template>
   <div class="review-list">
-    <div class="page-header">
-      <div class="page-header-left">
-        <div class="search-wrapper">
-          <h2>{{ title }}</h2>
-          <el-input v-model="input" clearable :prefix-icon="Search" style="width: 240px" placeholder="请输入标题进行搜索"
-            @change="handleOnChange" />
+    <el-row :gutter="10" class="page-header">
+      <el-col :span="24" :md="12">
+        <div class="status-filter-wrapper">
+          <el-radio-group v-model="currentStatus" @change="handleStatusChange">
+            <el-radio-button label="">全部</el-radio-button>
+            <el-radio-button label="0">待审核</el-radio-button>
+            <el-radio-button label="1">已批准</el-radio-button>
+            <el-radio-button label="-1">已拒绝</el-radio-button>
+            <el-radio-button label="-2">已作废</el-radio-button>
+          </el-radio-group>
         </div>
-        <div class="block">
-          <span class="demonstration">筛选星级</span>
-          <el-rate v-model="starValue" :colors="colors">
-          </el-rate>
-          <el-button @click="handleClearStar">清空星级</el-button>
-        </div>
-      </div>
-      <div class="status-filter-wrapper">
-        <el-radio-group v-model="currentStatus" @change="handleStatusChange">
-          <el-radio-button label="">全部</el-radio-button>
-          <el-radio-button label="0">待审核</el-radio-button>
-          <el-radio-button label="1">已批准</el-radio-button>
-          <el-radio-button label="-1">已拒绝</el-radio-button>
-          <el-radio-button label="-2">已作废</el-radio-button>
-        </el-radio-group>
-      </div>
-    </div>
+
+
+      </el-col>
+      <el-col :span="24" :md="12">
+        <el-row :gutter="10">
+          <el-col :span="24" :md="12" class="search-wrapper">
+            <!-- <h2>{{ title }}</h2> -->
+            <el-input v-model="input" clearable :prefix-icon="Search" style="width: 340px; height: 30px;"
+              placeholder="请输入标题进行搜索" @change="handleOnChange" />
+          </el-col>
+
+          <el-col :span="24" :md="12" class="star-filter-wrapper">
+            <span class="demonstration">筛选星级</span>
+            <el-rate v-model="starValue" :colors="colors">
+            </el-rate>
+            <el-button @click="handleClearStar">清空星级</el-button>
+          </el-col>
+        </el-row>
+      </el-col>
+    </el-row>
+
 
     <el-table v-loading="loading" :data="formatReviews" height="75vh" style="width: 100%" border show-overflow-tooltip>
       <el-table-column prop="id" label="ID" width="80" class="single" />
@@ -703,12 +711,7 @@ const confirmRestore = async () => {
 }
 
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  /* 允许换行 */
+  margin-bottom: 6px;
 }
 
 .page-header h2 {
@@ -718,7 +721,11 @@ const confirmRestore = async () => {
 
 .status-filter-wrapper {
   margin-top: 0;
+
   /* 默认在同一行 */
+  .el-radio-group {
+    flex-wrap: nowrap;
+  }
 }
 
 .el-table {
@@ -739,18 +746,14 @@ const confirmRestore = async () => {
 
 /* 响应式样式 */
 @media screen and (max-width: 768px) {
-  .review-list {
-    padding: 10px;
-  }
-
   .page-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .page-header h2 {
-    margin-bottom: 10px;
-    font-size: 20px;
+    margin-bottom: 5px;
+    font-size:15px;
   }
 
   .status-filter-wrapper {
@@ -760,7 +763,6 @@ const confirmRestore = async () => {
 
   .el-radio-group {
     display: flex;
-    width: 100%;
   }
 
   .el-radio-button {
@@ -841,5 +843,13 @@ const confirmRestore = async () => {
 .page-header-left {
   display: flex;
   gap: 10px;
+}
+
+.star-filter-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
 }
 </style>
