@@ -11,6 +11,7 @@
           <span class="demonstration">筛选星级</span>
           <el-rate v-model="starValue" :colors="colors">
           </el-rate>
+          <el-button @click="handleClearStar">清空星级</el-button>
         </div>
       </div>
       <div class="status-filter-wrapper">
@@ -384,6 +385,12 @@ const handleOnChange = (value: string) => {
   searchName.value = val;
   fetchReviews();
   // console.log("handleOnChange, ", val);
+};
+
+// 清空星级
+const handleClearStar = () => {
+  starValue.value = 0;
+  fetchReviews();
 };
 
 // 获取审核列表
