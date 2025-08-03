@@ -124,10 +124,11 @@
       <el-table :data="formatRecentReviews" stripe style="width: 100%">
         <el-table-column prop="creatorName" label="用户" width="120" />
         <el-table-column prop="name" label="标题" />
+        <el-table-column prop="address" label="地址" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
             <el-tag
-              :type="getStatusType(scope.row.status)"
+              :type="getStatusType(scope.row.status) || 'info'"
               :class="'status-' + scope.row.status"
             >
               {{ getStatusText(scope.row.status) }}
@@ -161,7 +162,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import { getReviews, getDashbordStatistics } from "@/api/review";
+import { type DashboardData } from "@/api/review";
 import type { Review } from "@/api/review";
 import { dayjs } from "element-plus";
 import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
@@ -171,10 +172,12 @@ const router = useRouter();
 const reviewStore = useReviewStore();
 const recentReviews = ref<Review[]>([]);
 const loading = ref(true);
-const statistics = ref<any>({
-  pending: 0,
-  approved: 0,
-  rejected: 0,
+const statistics = ref<DashboardData>({
+  total: 0,
+  totalAddApproved: 0,
+  totalAddPendingReview: 0,
+  totalEditPendingReview: 0,
+  totalCommentPendingReview: 0,
   dailyNewUsersInLastSevenDays: [],
   totalUsers: 0,
 });
@@ -187,30 +190,40 @@ onMounted(async () => {
   await fetchDashboardData();
 });
 
+// 获取大屏数据
 const fetchDashboardData = async () => {
   try {
-    // 获取最近的审核
+    // 刷新大屏
+    await reviewStore.refreshDashboard();
+
+    // 使用store中的数据
+    const response: DashboardData = reviewStore.dashboardData;
+
+    // 最近10日审核
     loading.value = true;
-    const response = await getReviews({ page: 1, pageSize: 5 });
-    recentReviews.value = response.items;
+    recentReviews.value = response?.recentList?.slice(0, 10) || [];
 
     // 获取数据
-    const dashbordStatistics = await getDashbordStatistics();
     const {
+      total,
       totalAddApproved,
       totalAddPendingReview,
       totalEditPendingReview,
       totalCommentPendingReview,
-    } = dashbordStatistics;
+      dailyNewUsersInLastSevenDays,
+      totalUsers,
+    } = response;
 
     statistics.value = {
+      total,
       totalAddApproved,
       totalAddPendingReview,
       totalEditPendingReview,
       totalCommentPendingReview,
-      dailyNewUsersInLastSevenDays:
-        dashbordStatistics.dailyNewUsersInLastSevenDays.reverse(),
-      totalUsers: dashbordStatistics.totalUsers,
+      dailyNewUsersInLastSevenDays: dailyNewUsersInLastSevenDays
+        .slice(1, 8)
+        .reverse(),
+      totalUsers,
     };
   } catch (error) {
     console.error("获取控制面板数据失败", error);
@@ -223,23 +236,32 @@ const fetchDashboardData = async () => {
 const freshData = async () => {
   try {
     loading.value = true;
-    const dashbordStatistics = await getDashbordStatistics();
+    // 刷新大屏
+    await reviewStore.refreshDashboard();
+
+    // 使用store中的数据
+    const response: DashboardData = reviewStore.dashboardData;
+
     const {
+      total,
       totalAddApproved,
       totalAddPendingReview,
       totalEditPendingReview,
       totalCommentPendingReview,
-    } = dashbordStatistics;
+      dailyNewUsersInLastSevenDays,
+      totalUsers,
+    } = response;
     statistics.value = {
+      total,
       totalAddApproved,
       totalAddPendingReview,
       totalEditPendingReview,
       totalCommentPendingReview,
-      dailyNewUsersInLastSevenDays:
-        dashbordStatistics.dailyNewUsersInLastSevenDays.reverse(),
-      totalUsers: dashbordStatistics.totalUsers,
+      dailyNewUsersInLastSevenDays: dailyNewUsersInLastSevenDays
+        .slice(1, 8)
+        .reverse(),
+      totalUsers,
     };
-    reviewStore.refreshPendingCounts();
   } catch (error) {
     console.error("更新数据失败", error);
   } finally {

@@ -18,6 +18,17 @@ export interface Review {
   [key: string]: any;
 }
 
+export interface DashboardData {
+  total: number;
+  totalAddApproved: number;
+  totalAddPendingReview: number;
+  totalEditPendingReview: number;
+  totalCommentPendingReview: number;
+  recentList?: Review[];
+  dailyNewUsersInLastSevenDays: { date: string; count: number }[];
+  totalUsers: number;
+}
+
 export interface ReviewParams {
   statusList?: string;
   page?: number;

@@ -22,6 +22,7 @@
         <el-table-column prop="id" label="ID" width="80" class="single" />
         <el-table-column prop="submiter.nickname" label="用户" width="120" />
         <el-table-column prop="name" label="标题" min-width="200" />
+        <el-table-column prop="address" label="地址" min-width="200" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
             <el-tag
@@ -341,7 +342,7 @@ const handleApprove = (id: string) => {
         await reviewStore.approveeRevisionReviewItem(id);
         ElMessage.success("审核已批准");
         fetchReviews();
-        reviewStore.refreshPendingCounts();
+        reviewStore.refreshDashboard();
       } catch (error) {
         ElMessage.error("操作失败");
       } finally {
@@ -369,11 +370,10 @@ const confirmReject = async () => {
           rejectForm.value.id,
           rejectForm.value.reason
         );
-        console.log("确认拒绝返回值：", res);
         if (res.code === 0) {
           rejectDialogVisible.value = false;
           fetchReviews();
-          reviewStore.refreshPendingCounts();
+          reviewStore.refreshDashboard();
         }
       } catch (error) {
         ElMessage.error("操作失败");
@@ -398,7 +398,6 @@ const confirmReject = async () => {
 
 /* 响应式样式 */
 @media screen and (max-width: 768px) {
-
   .page-header {
     flex-direction: column;
     align-items: flex-start;

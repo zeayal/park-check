@@ -1,9 +1,17 @@
 <template>
   <div class="admin-layout">
     <el-container>
-      <el-header style="padding: 0!important;">
-        <el-menu router :default-active="$route.path" class="el-menu-vertical" background-color="#304156"
-          text-color="#fff" active-text-color="#409EFF" :collapse="sidebarCollapsed" mode="horizontal">
+      <el-header class="menu-header">
+        <el-menu
+          router
+          :default-active="$route.path"
+          class="el-menu-vertical"
+          background-color="#304156"
+          text-color="#fff"
+          active-text-color="#409EFF"
+          :collapse="sidebarCollapsed"
+          mode="horizontal"
+        >
           <el-menu-item index="/admin/dashboard">
             <el-icon>
               <Menu />
@@ -11,8 +19,11 @@
             <span slot="title" class="hidden-md-and-down">控制面板</span>
           </el-menu-item>
           <el-menu-item index="/admin/reviews/add">
-            <el-badge v-if="reviewStore.pendingCounts['/admin/reviews/add'] !== 0"
-              :value="reviewStore.pendingCounts['/admin/reviews/add']" :max="99" class="badge-item">
+            <el-badge
+              v-if="reviewStore.dashboardData.totalAddPendingReview !== 0"
+              :value="reviewStore.dashboardData.totalAddPendingReview || 0"
+              :max="99"
+            >
               <el-icon>
                 <CirclePlus />
               </el-icon>
@@ -24,11 +35,12 @@
             <span slot="title" class="hidden-md-and-down">新增营地管理</span>
           </el-menu-item>
 
-          <!-- v-if="pendingCounts['/admin/reviews/edit'] !== 0"
-            :value="pendingCounts['/admin/reviews/edit']" -->
           <el-menu-item index="/admin/reviews/edit">
-            <el-badge v-if="reviewStore.pendingCounts['/admin/reviews/edit'] !== 0"
-              :value="reviewStore.pendingCounts['/admin/reviews/edit']" :max="99" class="badge-item">
+            <el-badge
+              v-if="reviewStore.dashboardData.totalEditPendingReview !== 0"
+              :value="reviewStore.dashboardData.totalEditPendingReview || 0"
+              :max="99"
+            >
               <el-icon>
                 <Edit />
               </el-icon>
@@ -39,12 +51,12 @@
             </el-icon>
             <span slot="title" class="hidden-md-and-down">修改营地管理</span>
           </el-menu-item>
-
-          <!--  v-if="pendingCounts['/admin/reviews/comment'] !== 0"
-            :value="pendingCounts['/admin/reviews/comment']" -->
           <el-menu-item index="/admin/reviews/comment">
-            <el-badge v-if="reviewStore.pendingCounts['/admin/reviews/comment'] !== 0"
-              :value="reviewStore.pendingCounts['/admin/reviews/comment']" :max="99" class="badge-item">
+            <el-badge
+              v-if="reviewStore.dashboardData.totalCommentPendingReview !== 0"
+              :value="reviewStore.dashboardData.totalCommentPendingReview || 0"
+              :max="99"
+            >
               <el-icon>
                 <ChatLineRound />
               </el-icon>
@@ -63,7 +75,11 @@
     </el-container>
 
     <!-- 移动端侧边栏的覆盖层 -->
-    <div v-if="isMobile && isMobileMenuOpen" class="mobile-menu-backdrop" @click="toggleMobileMenu"></div>
+    <div
+      v-if="isMobile && isMobileMenuOpen"
+      class="mobile-menu-backdrop"
+      @click="toggleMobileMenu"
+    ></div>
   </div>
 </template>
 
@@ -81,7 +97,7 @@ import {
   Expand,
   Fold,
 } from "@element-plus/icons-vue";
-import { getReviews, getEditReviews, getCommentList } from "@/api/review";
+import { type DashboardData } from "@/api/review";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -90,6 +106,7 @@ const isMobileMenuOpen = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
 
 const reviewStore = useReviewStore();
+const dashboardStatics = ref<DashboardData>();
 
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value;
@@ -110,9 +127,6 @@ const handleResize = () => {
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
-
-  // 初始化徽章数量
-  reviewStore.refreshPendingCounts();
 });
 
 onUnmounted(() => {
@@ -121,6 +135,23 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.menu-header {
+  padding: 0 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+:deep(.el-menu--horizontal) {
+  height: 50px;
+}
+
+:deep(.el-icon) {
+  display: block;
+}
+
 .admin-layout {
   min-height: 100vh;
 }
@@ -129,8 +160,8 @@ onUnmounted(() => {
   height: 100%;
 }
 
-
 .el-main {
+  margin-top: 50px;
   background-color: #f5f7fa;
   padding: 0;
   padding-bottom: 80px;
@@ -148,7 +179,6 @@ onUnmounted(() => {
 .el-menu {
   border: none;
 }
-
 
 .sidebar-header {
   height: 60px;
@@ -219,10 +249,6 @@ onUnmounted(() => {
   }
 }
 
-:deep(.badge-item) {
-  margin-top: 10px;
-}
-
 :deep(.el-badge__content) {
   border: none;
 }
@@ -231,9 +257,9 @@ onUnmounted(() => {
   font-size: 10px;
 }
 
-:deep(.el-menu-item) {
+/* :deep(.el-menu-item) {
   display: inline-block;
-}
+} */
 
 .el-menu-item {
   display: inline-flex;

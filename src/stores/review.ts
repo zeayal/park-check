@@ -4,10 +4,14 @@ import {
   approveReview,
   rejectReview,
   approveRevisionReview,
-  getEditReviews,
-  getCommentList,
+  getDashbordStatistics,
 } from "@/api/review";
-import type { Review, ReviewParams, ReviewResponse } from "@/api/review";
+import type {
+  Review,
+  ReviewParams,
+  ReviewResponse,
+  DashboardData,
+} from "@/api/review";
 
 interface ReviewState {
   reviews: Review[];
@@ -16,12 +20,8 @@ interface ReviewState {
   currentPage: number;
   pageSize: number;
   currentStatus: string | null;
-  // 新增徽章状态
-  pendingCounts: {
-    "/admin/reviews/add": number;
-    "/admin/reviews/edit": number;
-    "/admin/reviews/comment": number;
-  };
+  // 新增大屏数据
+  dashboardData: DashboardData;
 }
 
 export const useReviewStore = defineStore("review", {
@@ -32,29 +32,27 @@ export const useReviewStore = defineStore("review", {
     currentPage: 1,
     pageSize: 100,
     currentStatus: null,
-    // 初始化徽章状态
-    pendingCounts: {
-      "/admin/reviews/add": 0,
-      "/admin/reviews/edit": 0,
-      "/admin/reviews/comment": 0,
+    // 初始化大屏状态
+    dashboardData: {
+      total: 0,
+      totalAddApproved: 0,
+      totalAddPendingReview: 0,
+      totalEditPendingReview: 0,
+      totalCommentPendingReview: 0,
+      recentList: [],
+      dailyNewUsersInLastSevenDays: [],
+      totalUsers: 0,
     },
   }),
 
   actions: {
-    // 新增：刷新所有徽章数量
-    async refreshPendingCounts() {
+    // 刷新大屏
+    async refreshDashboard() {
       try {
-        const [addRes, editRes, commentRes] = await Promise.all([
-          getReviews({ statusList: "0" }),
-          getEditReviews({ statusList: "0" }),
-          getCommentList({ statusList: "0" }),
-        ]);
-
-        this.pendingCounts["/admin/reviews/add"] = addRes.total;
-        this.pendingCounts["/admin/reviews/edit"] = editRes.total;
-        this.pendingCounts["/admin/reviews/comment"] = commentRes.total;
+        const response = await getDashbordStatistics();
+        this.dashboardData = response;
       } catch (error) {
-        console.error("刷新徽章失败:", error);
+        throw error;
       }
     },
 
@@ -85,8 +83,8 @@ export const useReviewStore = defineStore("review", {
           this.reviews[index] = updatedReview;
         }
 
-        // 批准后刷新徽章
-        await this.refreshPendingCounts();
+        // 批准后刷新大屏
+        await this.refreshDashboard();
 
         return updatedReview;
       } catch (error) {
@@ -103,8 +101,8 @@ export const useReviewStore = defineStore("review", {
           this.reviews[index] = updatedReview;
         }
 
-        // 批准后刷新徽章
-        await this.refreshPendingCounts();
+        // 批准后刷新大屏
+        await this.refreshDashboard();
 
         return updatedReview;
       } catch (error) {
@@ -121,8 +119,8 @@ export const useReviewStore = defineStore("review", {
           this.reviews[index] = updatedReview;
         }
 
-        // 拒绝后刷新徽章
-        await this.refreshPendingCounts();
+        // 拒绝后刷新大屏
+        await this.refreshDashboard();
 
         return updatedReview;
       } catch (error) {
