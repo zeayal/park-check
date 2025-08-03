@@ -7,8 +7,7 @@
   --text-color: #333;
   --text-color-secondary: #666;
   --bg-color: #f5f7fa;
-  --el-menu-icon-width: 14px;
-  --el-menu-base-level-padding: 12px;
+  --el-menu-horizontal-height: 44px;
 }
 
 * {
@@ -87,5 +86,3 @@ body {
 .el-table .status-rejected {
   color: var(--danger-color);
 }
-
-

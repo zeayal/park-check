@@ -1,119 +1,69 @@
 <template>
   <div class="admin-layout">
-    <el-aside
-      :class="{ 'is-collapsed': isMobileMenuOpen }"
-      :width="sidebarCollapsed ? '44px' : '200px'"
-    >
-      <div class="sidebar-header" @click="toggleSidebar">
-        <h2 v-if="!sidebarCollapsed">
-          <el-icon>
-            <Fold />
-          </el-icon>
-          后台管理系统
-        </h2>
-        <el-icon v-else>
-          <Expand />
-        </el-icon>
-      </div>
-      <el-menu
-        router
-        :default-active="$route.path"
-        class="el-menu-vertical"
-        background-color="#304156"
-        text-color="#fff"
-        active-text-color="#409EFF"
-        :collapse="sidebarCollapsed"
-      >
-        <el-menu-item index="/admin/dashboard">
-          <el-icon>
-            <Menu />
-          </el-icon>
-          <span slot="title">控制面板</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/reviews/add">
-          <el-badge
-            v-if="reviewStore.pendingCounts['/admin/reviews/add'] !== 0"
-            :value="reviewStore.pendingCounts['/admin/reviews/add']"
-            :max="99"
-            class="badge-item"
-          >
+    <el-container>
+      <el-header style="padding: 0!important;">
+        <el-menu router :default-active="$route.path" class="el-menu-vertical" background-color="#304156"
+          text-color="#fff" active-text-color="#409EFF" :collapse="sidebarCollapsed" mode="horizontal">
+          <el-menu-item index="/admin/dashboard">
             <el-icon>
+              <Menu />
+            </el-icon>
+            <span slot="title">控制面板</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/reviews/add">
+            <el-badge v-if="reviewStore.pendingCounts['/admin/reviews/add'] !== 0"
+              :value="reviewStore.pendingCounts['/admin/reviews/add']" :max="99" class="badge-item">
+              <el-icon>
+                <CirclePlus />
+              </el-icon>
+            </el-badge>
+
+            <el-icon v-else>
               <CirclePlus />
             </el-icon>
-          </el-badge>
+            <span slot="title">新增营地管理</span>
+          </el-menu-item>
 
-          <el-icon v-else>
-            <CirclePlus />
-          </el-icon>
-          <span slot="title">新增营地管理</span>
-        </el-menu-item>
-
-        <!-- v-if="pendingCounts['/admin/reviews/edit'] !== 0"
+          <!-- v-if="pendingCounts['/admin/reviews/edit'] !== 0"
             :value="pendingCounts['/admin/reviews/edit']" -->
-        <el-menu-item index="/admin/reviews/edit">
-          <el-badge
-            v-if="reviewStore.pendingCounts['/admin/reviews/edit'] !== 0"
-            :value="reviewStore.pendingCounts['/admin/reviews/edit']"
-            :max="99"
-            class="badge-item"
-          >
-            <el-icon>
+          <el-menu-item index="/admin/reviews/edit">
+            <el-badge v-if="reviewStore.pendingCounts['/admin/reviews/edit'] !== 0"
+              :value="reviewStore.pendingCounts['/admin/reviews/edit']" :max="99" class="badge-item">
+              <el-icon>
+                <Edit />
+              </el-icon>
+            </el-badge>
+
+            <el-icon v-else>
               <Edit />
             </el-icon>
-          </el-badge>
+            <span slot="title">修改营地管理</span>
+          </el-menu-item>
 
-          <el-icon v-else>
-            <Edit />
-          </el-icon>
-          <span slot="title">修改营地管理</span>
-        </el-menu-item>
-
-        <!--  v-if="pendingCounts['/admin/reviews/comment'] !== 0"
+          <!--  v-if="pendingCounts['/admin/reviews/comment'] !== 0"
             :value="pendingCounts['/admin/reviews/comment']" -->
-        <el-menu-item index="/admin/reviews/comment">
-          <el-badge
-            v-if="reviewStore.pendingCounts['/admin/reviews/comment'] !== 0"
-            :value="reviewStore.pendingCounts['/admin/reviews/comment']"
-            :max="99"
-            class="badge-item"
-          >
-            <el-icon>
+          <el-menu-item index="/admin/reviews/comment">
+            <el-badge v-if="reviewStore.pendingCounts['/admin/reviews/comment'] !== 0"
+              :value="reviewStore.pendingCounts['/admin/reviews/comment']" :max="99" class="badge-item">
+              <el-icon>
+                <ChatLineRound />
+              </el-icon>
+            </el-badge>
+
+            <el-icon v-else>
               <ChatLineRound />
             </el-icon>
-          </el-badge>
-
-          <el-icon v-else>
-            <ChatLineRound />
-          </el-icon>
-          <span slot="title">打卡审核管理</span>
-        </el-menu-item>
-      </el-menu>
-    </el-aside>
-    <el-container>
-      <el-header>
-        <div class="mobile-menu-btn" @click="toggleMobileMenu">
-          <el-icon>
-            <Menu />
-          </el-icon>
-        </div>
+            <span slot="title">打卡审核管理</span>
+          </el-menu-item>
+        </el-menu>
       </el-header>
-      <el-main
-        :class="
-          sidebarCollapsed
-            ? 'el-main-custom-collapsed-container'
-            : 'el-main-custom-container'
-        "
-      >
+      <el-main>
         <router-view />
       </el-main>
     </el-container>
 
     <!-- 移动端侧边栏的覆盖层 -->
-    <div
-      v-if="isMobile && isMobileMenuOpen"
-      class="mobile-menu-backdrop"
-      @click="toggleMobileMenu"
-    ></div>
+    <div v-if="isMobile && isMobileMenuOpen" class="mobile-menu-backdrop" @click="toggleMobileMenu"></div>
   </div>
 </template>
 
@@ -179,41 +129,11 @@ onUnmounted(() => {
   height: 100%;
 }
 
-.el-aside {
-  background-color: #304156;
-  color: #fff;
-  height: 100%;
-  transition: all 0.3s;
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 1000;
-}
-
-.el-header {
-  background-color: #fff;
-  color: #333;
-  line-height: 60px;
-  border-bottom: 1px solid #e6e6e6;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 999;
-  /* 新增头部左侧边距的过渡效果 */
-  transition: left 0.3s;
-}
 
 .el-main {
   background-color: #f5f7fa;
   padding: 0;
   padding-bottom: 80px;
-  margin-top: 60px;
   transition: margin-left 0.3s;
 }
 
@@ -229,12 +149,6 @@ onUnmounted(() => {
   border: none;
 }
 
-/* 新增桌面端主内容区域边距调整 */
-@media screen and (min-width: 769px) {
-  .el-header {
-    /* 头部左侧边距 */
-  }
-}
 
 .sidebar-header {
   height: 60px;
@@ -296,11 +210,6 @@ onUnmounted(() => {
     z-index: 995;
   }
 
-  .el-header {
-    left: 0;
-    padding: 0 10px;
-  }
-
   .sidebar-header .el-icon {
     font-size: 16px;
   }
@@ -324,5 +233,9 @@ onUnmounted(() => {
 
 :deep(.el-menu-item) {
   display: inline-block;
+}
+
+.el-menu-item {
+  display: inline-flex;
 }
 </style>
