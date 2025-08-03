@@ -8,7 +8,7 @@
             <el-icon>
               <Menu />
             </el-icon>
-            <span slot="title">控制面板</span>
+            <span slot="title" class="hidden-md-and-down">控制面板</span>
           </el-menu-item>
           <el-menu-item index="/admin/reviews/add">
             <el-badge v-if="reviewStore.pendingCounts['/admin/reviews/add'] !== 0"
@@ -21,7 +21,7 @@
             <el-icon v-else>
               <CirclePlus />
             </el-icon>
-            <span slot="title">新增营地管理</span>
+            <span slot="title" class="hidden-md-and-down">新增营地管理</span>
           </el-menu-item>
 
           <!-- v-if="pendingCounts['/admin/reviews/edit'] !== 0"
@@ -37,7 +37,7 @@
             <el-icon v-else>
               <Edit />
             </el-icon>
-            <span slot="title">修改营地管理</span>
+            <span slot="title" class="hidden-md-and-down">修改营地管理</span>
           </el-menu-item>
 
           <!--  v-if="pendingCounts['/admin/reviews/comment'] !== 0"
@@ -53,7 +53,7 @@
             <el-icon v-else>
               <ChatLineRound />
             </el-icon>
-            <span slot="title">打卡审核管理</span>
+            <span slot="title" class="hidden-md-and-down">打卡审核管理</span>
           </el-menu-item>
         </el-menu>
       </el-header>
