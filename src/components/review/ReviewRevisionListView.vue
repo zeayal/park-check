@@ -342,7 +342,6 @@ const handleApprove = (id: string) => {
         await reviewStore.approveeRevisionReviewItem(id);
         ElMessage.success("审核已批准");
         fetchReviews();
-        reviewStore.refreshDashboard();
       } catch (error) {
         ElMessage.error("操作失败");
       } finally {

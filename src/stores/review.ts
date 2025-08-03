@@ -5,6 +5,7 @@ import {
   rejectReview,
   approveRevisionReview,
   getDashbordStatistics,
+  rejectEditCamp,
 } from "@/api/review";
 import type {
   Review,
@@ -110,9 +111,29 @@ export const useReviewStore = defineStore("review", {
       }
     },
 
+    // 拒绝新增
     async rejectReviewItem(id: string, reason: string) {
       try {
         const updatedReview = await rejectReview(id, reason);
+        const index = this.reviews.findIndex((review) => review.id === id);
+
+        if (index !== -1) {
+          this.reviews[index] = updatedReview;
+        }
+
+        // 拒绝后刷新大屏
+        await this.refreshDashboard();
+
+        return updatedReview;
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    // 修改审核拒绝
+    async rejectEditItem(id: string, reason: string) {
+      try {
+        const updatedReview = await rejectEditCamp(id, reason);
         const index = this.reviews.findIndex((review) => review.id === id);
 
         if (index !== -1) {

@@ -341,7 +341,6 @@ const handleApprove = () => {
                 ElMessage.success("审核已批准");
                 emit("close-modal");
                 router.go(0);
-                // await fetchReviewDetail();
             } catch (error) {
                 ElMessage.error("操作失败");
             } finally {
@@ -365,7 +364,7 @@ const confirmReject = async () => {
         if (valid) {
             rejectActionLoading.value = true;
             try {
-                const updatedReview = await reviewStore.rejectReviewItem(
+                const updatedReview = await reviewStore.rejectEditItem(
                     props.reviewId,
                     rejectForm.value.reason
                 );
@@ -374,9 +373,9 @@ const confirmReject = async () => {
                 rejectDialogVisible.value = false;
                 emit("close-modal");
                 router.go(0);
-                // await fetchReviewDetail();
             } catch (error) {
                 ElMessage.error("操作失败");
+                console.log(error)
             } finally {
                 rejectActionLoading.value = false;
             }

@@ -186,7 +186,6 @@ const confirmReject = async () => {
                 rejectDialogVisible.value = false;
                 emit('close-modal');
                 router.go(0);
-                // await fetchReviewDetail();
             } catch (error) {
                 ElMessage.error('操作失败');
             } finally {

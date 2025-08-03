@@ -49,11 +49,11 @@
 
     <el-row :gutter="20">
       <!-- 新增待审核 -->
-      <el-col :xs="24" :md="8" class="card-column">
+      <el-col :span="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
-              <span>新增营地待审核</span>
+              <span>新增待审核</span>
             </div>
           </template>
           <div class="card-content">
@@ -71,11 +71,11 @@
       </el-col>
 
       <!-- 修改待审核 -->
-      <el-col :xs="24" :md="8" class="card-column">
+      <el-col :span="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">
-              <span>修改营地待审核</span>
+              <span>修改待审核</span>
             </div>
           </template>
           <div class="card-content">
@@ -95,7 +95,7 @@
       </el-col>
 
       <!-- 打卡待审核 -->
-      <el-col :xs="24" :md="8" class="card-column">
+      <el-col :span="8" class="card-column">
         <el-card shadow="hover">
           <template #header>
             <div class="card-header">

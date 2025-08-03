@@ -645,7 +645,6 @@ const handleApprove = (id: string) => {
         if (res.code === 0) {
           ElMessage.success("审核已批准");
           fetchReviews();
-          reviewStore.refreshDashboard();
         } else {
           ElMessage.error(res.msg || "批准失败");
         }
@@ -775,7 +774,6 @@ const confirmReject = async () => {
           ElMessage.success("审核已拒绝");
           rejectDialogVisible.value = false;
           fetchReviews();
-          reviewStore.refreshDashboard();
         } else {
           ElMessage.error(res.msg || "拒绝失败");
         }
