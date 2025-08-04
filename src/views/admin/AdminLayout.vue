@@ -9,7 +9,6 @@
           background-color="#304156"
           text-color="#fff"
           active-text-color="#409EFF"
-          :collapse="sidebarCollapsed"
           mode="horizontal"
         >
           <el-menu-item index="/admin/dashboard">
@@ -101,17 +100,11 @@ import { type DashboardData } from "@/api/review";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const sidebarCollapsed = ref(storage.get("sidebarCollapsed"));
 const isMobileMenuOpen = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
 
 const reviewStore = useReviewStore();
 const dashboardStatics = ref<DashboardData>();
-
-const toggleSidebar = () => {
-  sidebarCollapsed.value = !sidebarCollapsed.value;
-  storage.set("sidebarCollapsed", sidebarCollapsed.value);
-};
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
