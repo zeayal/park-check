@@ -160,9 +160,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { type DashboardData } from "@/api/review";
 import type { Review } from "@/api/review";
 import { dayjs } from "element-plus";
 import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
@@ -171,102 +170,16 @@ import { useReviewStore } from "@/stores/review";
 const router = useRouter();
 const reviewStore = useReviewStore();
 const recentReviews = ref<Review[]>([]);
-const loading = ref(true);
-const statistics = ref<DashboardData>({
-  total: 0,
-  totalAddApproved: 0,
-  totalAddPendingReview: 0,
-  totalEditPendingReview: 0,
-  totalCommentPendingReview: 0,
-  dailyNewUsersInLastSevenDays: [],
-  totalUsers: 0,
-});
+const loading = computed(() => reviewStore.loading);
+const statistics = computed(() => reviewStore.dashboardData);
 
 // 查看模态框相关
 const reviewModalVisible = ref(false);
 const currentReviewId = ref("");
 
-onMounted(async () => {
-  await fetchDashboardData();
-});
-
-// 获取大屏数据
-const fetchDashboardData = async () => {
-  try {
-    // 刷新大屏
-    await reviewStore.refreshDashboard();
-
-    // 使用store中的数据
-    const response: DashboardData = reviewStore.dashboardData;
-
-    // 最近10日审核
-    loading.value = true;
-    recentReviews.value = response?.recentList?.slice(0, 10) || [];
-
-    // 获取数据
-    const {
-      total,
-      totalAddApproved,
-      totalAddPendingReview,
-      totalEditPendingReview,
-      totalCommentPendingReview,
-      dailyNewUsersInLastSevenDays,
-      totalUsers,
-    } = response;
-
-    statistics.value = {
-      total,
-      totalAddApproved,
-      totalAddPendingReview,
-      totalEditPendingReview,
-      totalCommentPendingReview,
-      dailyNewUsersInLastSevenDays: dailyNewUsersInLastSevenDays
-        .slice(1, 8)
-        .reverse(),
-      totalUsers,
-    };
-  } catch (error) {
-    console.error("获取控制面板数据失败", error);
-  } finally {
-    loading.value = false;
-  }
-};
-
 // 点击刷新数据
 const freshData = async () => {
-  try {
-    loading.value = true;
-    // 刷新大屏
-    await reviewStore.refreshDashboard();
-
-    // 使用store中的数据
-    const response: DashboardData = reviewStore.dashboardData;
-
-    const {
-      total,
-      totalAddApproved,
-      totalAddPendingReview,
-      totalEditPendingReview,
-      totalCommentPendingReview,
-      dailyNewUsersInLastSevenDays,
-      totalUsers,
-    } = response;
-    statistics.value = {
-      total,
-      totalAddApproved,
-      totalAddPendingReview,
-      totalEditPendingReview,
-      totalCommentPendingReview,
-      dailyNewUsersInLastSevenDays: dailyNewUsersInLastSevenDays
-        .slice(1, 8)
-        .reverse(),
-      totalUsers,
-    };
-  } catch (error) {
-    console.error("更新数据失败", error);
-  } finally {
-    loading.value = false;
-  }
+  await reviewStore.refreshDashboard();
 };
 
 // 计算属性：格式化日期

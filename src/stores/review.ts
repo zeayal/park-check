@@ -7,13 +7,7 @@ import {
   getDashbordStatistics,
   rejectEditCamp,
 } from "@/api/review";
-import type {
-  Review,
-  ReviewParams,
-  ReviewResponse,
-  DashboardData,
-} from "@/api/review";
-import { useRouter } from "vue-router";
+import type { Review, ReviewParams, DashboardData } from "@/api/review";
 
 interface ReviewState {
   reviews: Review[];
@@ -52,20 +46,31 @@ export const useReviewStore = defineStore("review", {
     initRouteListener(router: any) {
       router.afterEach(async () => {
         // 每次路由跳转后刷新大屏数据
+        console.log("每次路由跳转后刷新大屏数据");
         await this.refreshDashboard();
-        // console.log("路由跳转：", this.dashboardData);
       });
     },
 
     // 刷新大屏
     async refreshDashboard() {
       try {
+        this.loading = true;
         const response = await getDashbordStatistics();
-        this.dashboardData = response;
+        const dailyNewUsersInLastSevenDays =
+          response.dailyNewUsersInLastSevenDays.reverse().slice(0, 7);
+        this.dashboardData = {
+          ...response,
+          dailyNewUsersInLastSevenDays,
+        };
       } catch (error) {
-        throw error;
+        console.error("刷新大屏refreshDashboard error", error);
+      } finally {
+        this.loading = false;
       }
+      console.log("刷新大屏ending", this.loading);
     },
+
+    // 初始化时请求一次
 
     async fetchReviews(params?: ReviewParams) {
       this.loading = true;
