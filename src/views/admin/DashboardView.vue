@@ -397,21 +397,9 @@ const viewDetail = (id: string) => {
 }
 
 /* 仅在手机端(xs)设置上下间距 */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 430px) {
   .card-column {
-    margin-bottom: 16px;
-  }
-
-  /* 移除最后一个卡片的底部间距，避免多余空白 */
-  .card-column:last-child {
-    margin-bottom: 0;
-  }
-}
-
-/* 大屏幕下不需要额外间距，保持原有gutter即可 */
-@media screen and (min-width: 768px) {
-  .card-column {
-    margin-bottom: 0;
+    font-size: 12px;
   }
 }
 </style>
