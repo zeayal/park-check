@@ -1,4 +1,3 @@
-import component from "element-plus/es/components/tree-select/src/tree-select-option.mjs";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -42,12 +41,13 @@ const routes = [
         name: "Reviews",
         component: () => import("@/views/admin/ReviewAddListView.vue"),
       },
-      // {
-      //   path: "reviews/:id",
-      //   name: "ReviewDetail",
-      //   component: () => import("@/views/admin/ReviewDetailView.vue"),
-      //   props: true,
-      // },
+
+      {
+        path: "monitor",
+        name: "Monitor",
+        component: () => import("@/views/admin/MonitorView.vue"),
+      },
+     
     ],
   },
   {

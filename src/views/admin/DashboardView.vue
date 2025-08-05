@@ -31,7 +31,7 @@
 
       <el-row :gutter="20" class="page-action-button">
         <el-col :span="6" class="card-column">
-          <el-button type="primary" @click="freshData">刷新数据</el-button>
+          <el-button type="primary" plain @click="freshData">刷新数据</el-button>
         </el-col>
 
 
