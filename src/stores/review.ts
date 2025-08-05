@@ -13,6 +13,7 @@ import type {
   ReviewResponse,
   DashboardData,
 } from "@/api/review";
+import { useRouter } from "vue-router";
 
 interface ReviewState {
   reviews: Review[];
@@ -47,6 +48,15 @@ export const useReviewStore = defineStore("review", {
   }),
 
   actions: {
+    // 初始路由监听
+    initRouteListener(router: any) {
+      router.afterEach(async () => {
+        // 每次路由跳转后刷新大屏数据
+        await this.refreshDashboard();
+        // console.log("路由跳转：", this.dashboardData);
+      });
+    },
+
     // 刷新大屏
     async refreshDashboard() {
       try {

@@ -58,7 +58,7 @@ apiClient.interceptors.response.use(
     const code = response.data.code;
     const msg = response.data.msg;
     if (code == 0) {
-      ElMessage.success(msg);
+      ElMessage.success({ message: msg, duration: 1000 });
     } else {
       ElMessage.error(msg);
     }

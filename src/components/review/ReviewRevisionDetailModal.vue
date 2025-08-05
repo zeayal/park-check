@@ -86,17 +86,16 @@
                     <template v-if="Number(review?.revisionDetai?.status) === 0">
                         <div class="images-box">
                             <!-- 显示修改后的图片（含新增标识） -->
-                            <div v-for="(img, index) in revisedImages" :key="index" class="image-wrapper"
-                                :class="{ added: isImageAdded(img) }">
-                                <img :src="img.previewUrl" alt="图片" class="image" />
+                            <div v-for="(img, index) in revisedImages" :key="index" class="image-wrapper">
+                                <img :src="img.previewUrl" alt="图片" class="image" :class="{ added: isImageAdded(img) }" />
                             </div>
 
                             <!-- 显示已删除的原始图片 -->
-                            <div v-for="(img, index) in deletedImages" :key="index" class="image-wrapper deleted">
-                                <div class="deleted-placeholder">
-                                    <span>原图片：已删除</span>
-                                    <img :src="img.previewUrl"></img>
-                                </div>
+                             <p v-if="deletedImages.length !==0">删除了以下图片：</p>
+                            <div v-for="(img, index) in deletedImages" :key="index" class="image-wrapper">
+                                <!-- <div class="deleted-placeholder"> -->
+                                    <img :src="img.previewUrl" class="image deleted"></img>
+                                <!-- </div> -->
                             </div>
                         </div>
 
@@ -468,6 +467,7 @@ const confirmReject = async () => {
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     color: black;
