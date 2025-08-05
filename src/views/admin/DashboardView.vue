@@ -4,120 +4,63 @@
   </div>
 
   <div v-else class="dashboard container">
-    <div class="page-user">
-      <!-- <h3>用户数据</h3> -->
 
+
+    <div class="page-user">
       <p>
-        <text class="page-user-text"
-          >总用户数：{{ statistics.totalUsers }}</text
-        >
-        <text class="page-user-text"
-          >今日新增：{{
-            statistics.dailyNewUsersInLastSevenDays?.[0]?.count
-          }}</text
-        >
-        <text class="page-user-text"
-          >总营地数： {{ statistics.totalAddApproved }}
+        <text class="page-user-text">总用户数：{{ statistics.totalUsers }}</text>
+        <text class="page-user-text">今日新增：{{
+          statistics.dailyNewUsersInLastSevenDays?.[0]?.count
+        }}</text>
+        <text class="page-user-text">总营地数： {{ statistics.totalAddApproved }}
         </text>
       </p>
-
       <!-- 用户数据 -->
       <div class="page-user-table">
         <h5>过去7天新增用户数</h5>
       </div>
       <div>
-        <el-table
-          :data="statistics.dailyNewUsersInLastSevenDays"
-          stripe
-          style="width: 100%"
-        >
+        <el-table :data="statistics.dailyNewUsersInLastSevenDays" stripe style="width: 100%">
           <el-table-column prop="date" label="日期" width="180">
           </el-table-column>
           <el-table-column prop="count" label="当日新增" width="180">
           </el-table-column>
         </el-table>
       </div>
-      <el-button plain @click="freshData" class="page-user-button"
-        >刷新用户数据</el-button
-      >
+
+
+      <el-row :gutter="20" class="page-action-button">
+        <el-col :span="6" class="card-column">
+          <el-button type="primary" @click="freshData">刷新数据</el-button>
+        </el-col>
+
+
+        <el-col :span="6" class="card-column">
+          <el-badge :value="statistics.totalAddPendingReview" class="item">
+            <el-button type="" @click="navigateToReviews('/admin/reviews/add', '0')">新增</el-button>
+          </el-badge>
+        </el-col>
+
+        <el-col :span="6" class="card-column">
+          <el-badge :value="statistics.totalEditPendingReview" class="item">
+            <el-button @click="navigateToReviews('/admin/reviews/edit', '0')">修改</el-button>
+          </el-badge>
+        </el-col>
+
+        <el-col :span="6" class="card-column">
+          <el-badge :value="statistics.totalCommentPendingReview" class="item">
+            <el-button @click="navigateToReviews('/admin/reviews/comment', '0')">打卡</el-button>
+          </el-badge>
+        </el-col>
+      </el-row>
+
+    
     </div>
 
-    <!-- 审核管理 -->
-    <div class="page-check">
-      <h3>审核管理</h3>
-    </div>
 
-    <el-row :gutter="20">
-      <!-- 新增待审核 -->
-      <el-col :span="8" class="card-column">
-        <el-card shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <span>新增待审核</span>
-            </div>
-          </template>
-          <div class="card-content">
-            <div class="statistic">
-              <span class="number">{{ statistics.totalAddPendingReview }}</span>
-              <span class="label">条</span>
-            </div>
-            <el-button
-              type="primary"
-              @click="navigateToReviews('/admin/reviews/add', '0')"
-              >查看详情</el-button
-            >
-          </div>
-        </el-card>
-      </el-col>
 
-      <!-- 修改待审核 -->
-      <el-col :span="8" class="card-column">
-        <el-card shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <span>修改待审核</span>
-            </div>
-          </template>
-          <div class="card-content">
-            <div class="statistic">
-              <span class="number">{{
-                statistics.totalEditPendingReview
-              }}</span>
-              <span class="label">条</span>
-            </div>
-            <el-button
-              type="primary"
-              @click="navigateToReviews('/admin/reviews/edit', '0')"
-              >查看详情</el-button
-            >
-          </div>
-        </el-card>
-      </el-col>
 
-      <!-- 打卡待审核 -->
-      <el-col :span="8" class="card-column">
-        <el-card shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <span>打卡待审核</span>
-            </div>
-          </template>
-          <div class="card-content">
-            <div class="statistic">
-              <span class="number">{{
-                statistics.totalCommentPendingReview
-              }}</span>
-              <span class="label">条</span>
-            </div>
-            <el-button
-              type="primary"
-              @click="navigateToReviews('/admin/reviews/comment', '0')"
-              >查看详情</el-button
-            >
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+
 
     <div class="recent-section">
       <h3>最近的审核</h3>
@@ -127,10 +70,7 @@
         <el-table-column prop="address" label="地址" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
-            <el-tag
-              :type="getStatusType(scope.row.status) || 'info'"
-              :class="'status-' + scope.row.status"
-            >
+            <el-tag :type="getStatusType(scope.row.status) || 'info'" :class="'status-' + scope.row.status">
               {{ getStatusText(scope.row.status) }}
             </el-tag>
           </template>
@@ -314,5 +254,9 @@ const viewDetail = (id: string) => {
   .card-column {
     font-size: 12px;
   }
+}
+
+.page-action-button {
+  margin-top: 10px;
 }
 </style>
