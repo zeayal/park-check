@@ -1,10 +1,10 @@
 <template>
     <div class="monitor-container">
-        <el-page-header @back="goBack" title="返回">
+        <!-- <el-page-header @back="goBack" title="返回">
             <template #content>
                 <span class="page-title">性能监控面板</span>
             </template>
-        </el-page-header>
+        </el-page-header> -->
 
         <div class="stats-grid">
             <!-- 总体统计卡片 -->

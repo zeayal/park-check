@@ -51,7 +51,7 @@
 
           <el-menu-item index="/admin/monitor">
             <el-icon><Odometer /></el-icon>
-            <span slot="title" class="hidden-md-and-down">监控管理</span>
+            <span slot="title" class="hidden-md-and-down">性能监控</span>
           </el-menu-item>
         </el-menu>
       </el-header>
