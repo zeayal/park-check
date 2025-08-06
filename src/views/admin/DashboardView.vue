@@ -4,15 +4,18 @@
   </div>
 
   <div v-else class="dashboard container">
-
-
     <div class="page-user">
       <p>
-        <text class="page-user-text">总用户数：{{ statistics.totalUsers }}</text>
-        <text class="page-user-text">今日新增：{{
-          statistics.dailyNewUsersInLastSevenDays?.[0]?.count
-          }}</text>
-        <text class="page-user-text">总营地数： {{ statistics.totalAddApproved }}
+        <text class="page-user-text"
+          >总用户数：{{ statistics.totalUsers }}</text
+        >
+        <text class="page-user-text"
+          >今日新增：{{
+            statistics.dailyNewUsersInLastSevenDays?.[0]?.count
+          }}</text
+        >
+        <text class="page-user-text"
+          >总营地数： {{ statistics.totalAddApproved }}
         </text>
       </p>
       <!-- 用户数据 -->
@@ -20,7 +23,11 @@
         <h5>过去7天新增用户数</h5>
       </div>
       <div>
-        <el-table :data="statistics.dailyNewUsersInLastSevenDays" stripe style="width: 100%">
+        <el-table
+          :data="statistics.dailyNewUsersInLastSevenDays"
+          stripe
+          style="width: 100%"
+        >
           <el-table-column prop="date" label="日期" width="180">
           </el-table-column>
           <el-table-column prop="count" label="当日新增" width="180">
@@ -28,48 +35,74 @@
         </el-table>
       </div>
 
-
       <el-row :gutter="20" class="page-action-button">
         <el-col :span="6" class="card-column">
-          <el-button type="primary" plain @click="freshData">刷新数据</el-button>
-        </el-col>
-
-
-        <el-col :span="6" class="card-column">
-          <el-badge :value="statistics.totalAddPendingReview" class="item" v-if="statistics.totalAddPendingReview > 0">
-            <el-button type="" @click="navigateToReviews('/admin/reviews/add', '0')">新增</el-button>
-          </el-badge>
-          <el-button type="" @click="navigateToReviews('/admin/reviews/add', '0')" v-else>新增</el-button>
+          <el-button type="primary" plain @click="freshData"
+            >刷新数据</el-button
+          >
         </el-col>
 
         <el-col :span="6" class="card-column">
-          <el-badge :value="statistics.totalEditPendingReview" class="item"
-            v-if="statistics.totalEditPendingReview > 0">
-            <el-button @click="navigateToReviews('/admin/reviews/edit', '0')">修改</el-button>
+          <el-badge
+            :value="statistics.totalAddPendingReview"
+            class="item"
+            v-if="statistics.totalAddPendingReview > 0"
+          >
+            <el-button
+              type=""
+              @click="navigateToReviews('/admin/reviews/add', '0')"
+              >新增审核</el-button
+            >
           </el-badge>
-          <el-button type="" @click="navigateToReviews('/admin/reviews/edit', '0')" v-else>修改</el-button>
+          <el-button
+            type=""
+            @click="navigateToReviews('/admin/reviews/add', '0')"
+            v-else
+            >新增审核审核</el-button
+          >
         </el-col>
 
         <el-col :span="6" class="card-column">
-          <el-badge :value="statistics.totalCommentPendingReview" class="item"
-            v-if="statistics.totalCommentPendingReview > 0">
-            <el-button @click="navigateToReviews('/admin/reviews/comment', '0')">打卡</el-button>
+          <el-badge
+            :value="statistics.totalEditPendingReview"
+            class="item"
+            v-if="statistics.totalEditPendingReview > 0"
+          >
+            <el-button @click="navigateToReviews('/admin/reviews/edit', '0')"
+              >修改审核</el-button
+            >
           </el-badge>
-          <el-button type="" @click="navigateToReviews('/admin/reviews/comment', '0')" v-else>打卡</el-button>
+          <el-button
+            type=""
+            @click="navigateToReviews('/admin/reviews/edit', '0')"
+            v-else
+            >修改审核</el-button
+          >
+        </el-col>
+
+        <el-col :span="6" class="card-column">
+          <el-badge
+            :value="statistics.totalCommentPendingReview"
+            class="item"
+            v-if="statistics.totalCommentPendingReview > 0"
+          >
+            <el-button @click="navigateToReviews('/admin/reviews/comment', '0')"
+              >打卡审核</el-button
+            >
+          </el-badge>
+          <el-button
+            type=""
+            @click="navigateToReviews('/admin/reviews/comment', '0')"
+            v-else
+            >打卡审核</el-button
+          >
         </el-col>
       </el-row>
     </div>
 
-
     <div>
-
       <MonitorView />
     </div>
-
-
-
-
-
   </div>
 </template>
 
