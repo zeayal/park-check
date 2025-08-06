@@ -100,6 +100,7 @@
       </el-row>
     </div>
 
+    <MonitorView/>
   </div>
 </template>
 
