@@ -238,9 +238,7 @@ const refreshData = async () => {
     loading.value = true;
     try {
         const res = await getPerformanceStats();
-        console.log('res.data', res.data);
         performanceStats.value = res.data;
-        ElMessage.success('数据刷新成功');
     } catch (error) {
         ElMessage.error('数据刷新失败');
         console.error(error);
