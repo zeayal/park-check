@@ -58,7 +58,7 @@
             type=""
             @click="navigateToReviews('/admin/reviews/add', '0')"
             v-else
-            >新增审核审核</el-button
+            >新增审核</el-button
           >
         </el-col>
 
