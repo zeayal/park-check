@@ -1,180 +1,205 @@
 <template>
-    <div class="monitor-container">
-        <!-- <el-page-header @back="goBack" title="返回">
-            <template #content>
-                <span class="page-title">性能监控面板</span>
+    <div class="stats-grid">
+
+        <!-- 系统资源信息卡片 -->
+        <el-card class="stats-card" shadow="hover">
+            <template #header>
+                <div class="card-header">
+                    <el-icon>
+                        <Cpu />
+                    </el-icon>
+                    <span>系统资源信息</span>
+                </div>
             </template>
-        </el-page-header> -->
-
-        <div class="stats-grid">
-            <!-- 总体统计卡片 -->
-            <el-card class="stats-card overview-card" shadow="hover">
-                <template #header>
-                    <div class="card-header">
-                        <el-icon><DataAnalysis /></el-icon>
-                        <span>总体统计</span>
-                    </div>
-                </template>
-                <div class="overview-stats">
-                    <div class="stat-item">
-                        <div class="stat-number">{{ formatNumber(performanceStats.totalRequests) }}</div>
-                        <div class="stat-label">总请求数</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">{{ formatNumber(performanceStats.compressedRequests) }}</div>
-                        <div class="stat-label">压缩请求数</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">{{ formatDataSize(performanceStats.totalDataProcessed) }}</div>
-                        <div class="stat-label">总处理数据</div>
+            <div class="system-stats">
+                <div class="system-section">
+                    <div class="system-title">内存使用</div>
+                    <el-progress :percentage="parseFloat(performanceStats.system.memory.percentage)"
+                        :color="getProgressColor(parseFloat(performanceStats.system.memory.percentage))"
+                        :stroke-width="10" />
+                    <div class="system-desc">
+                        <span>总内存: {{ performanceStats.system.memory.total }}</span>
+                        <span>已用: {{ performanceStats.system.memory.used }}</span>
+                        <span>空闲: {{ performanceStats.system.memory.free }}</span>
                     </div>
                 </div>
-            </el-card>
+                <div class="system-section">
+                    <div class="system-title">CPU使用</div>
+                    <el-tag type="success">{{ performanceStats.system.cpu.usage }}</el-tag>
+                    <div class="system-desc">负载均值: {{ performanceStats.system.cpu.loadAverage.join(' / ') }}</div>
+                </div>
+                <div class="system-section">
+                    <div class="system-title">运行时间</div>
+                    <el-tag>{{ performanceStats.system.uptime }}</el-tag>
+                </div>
+                <div class="system-section">
+                    <div class="system-title">进程内存</div>
+                    <el-descriptions :column="2" border size="small">
+                        <el-descriptions-item label="RSS">{{ performanceStats.system.process.rss
+                            }}</el-descriptions-item>
+                        <el-descriptions-item label="Heap Used">{{ performanceStats.system.process.heapUsed
+                            }}</el-descriptions-item>
+                        <el-descriptions-item label="Heap Total">{{ performanceStats.system.process.heapTotal
+                            }}</el-descriptions-item>
+                        <el-descriptions-item label="External">{{ performanceStats.system.process.external
+                            }}</el-descriptions-item>
+                    </el-descriptions>
+                </div>
+            </div>
+        </el-card>
+        <!-- 请求统计卡片 -->
+        <el-card class="stats-card" shadow="hover">
+            <template #header>
+                <div class="card-header">
+                    <el-icon>
+                        <DataAnalysis />
+                    </el-icon>
+                    <span>请求统计</span>
+                </div>
+            </template>
+            <div class="overview-stats">
+                <div class="stat-item">
+                    <div class="stat-number">{{ formatNumber(performanceStats.requests.total) }}</div>
+                    <div class="stat-label">总请求数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ formatNumber(performanceStats.requests.compressed) }}</div>
+                    <div class="stat-label">压缩请求数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ performanceStats.requests.compressionRate }}</div>
+                    <div class="stat-label">压缩率</div>
+                </div>
+            </div>
+        </el-card>
 
-            <!-- 压缩效率卡片 -->
-            <el-card class="stats-card" shadow="hover">
-                <template #header>
-                    <div class="card-header">
-                        <el-icon><TrendCharts /></el-icon>
-                        <span>压缩效率</span>
+        <!-- 数据处理统计卡片 -->
+        <el-card class="stats-card" shadow="hover">
+            <template #header>
+                <div class="card-header">
+                    <el-icon>
+                        <Files />
+                    </el-icon>
+                    <span>数据处理统计</span>
+                </div>
+            </template>
+            <div class="overview-stats">
+                <div class="stat-item">
+                    <div class="stat-number">{{ formatDataSize(performanceStats.data.totalProcessed) }}</div>
+                    <div class="stat-label">总处理数据量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ formatDataSize(performanceStats.data.totalCompressed) }}</div>
+                    <div class="stat-label">总压缩数据量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ performanceStats.data.dataReduction }}</div>
+                    <div class="stat-label">数据减少率</div>
+                </div>
+            </div>
+        </el-card>
+
+        <!-- 性能指标卡片 -->
+        <el-card class="stats-card" shadow="hover">
+            <template #header>
+                <div class="card-header">
+                    <el-icon>
+                        <TrendCharts />
+                    </el-icon>
+                    <span>性能指标</span>
+                </div>
+            </template>
+            <div class="performance-stats">
+                <div class="metric-item">
+                    <div class="metric-icon">
+                        <el-icon>
+                            <Loading />
+                        </el-icon>
                     </div>
-                </template>
-                <div class="compression-stats">
-                    <div class="progress-section">
-                        <div class="progress-item">
-                            <div class="progress-label">
-                                <span>压缩率</span>
-                                <span class="progress-value">{{ performanceStats.compressionRate }}</span>
-                            </div>
-                            <el-progress 
-                                :percentage="parseFloat(performanceStats.compressionRate)" 
-                                :color="getProgressColor(parseFloat(performanceStats.compressionRate))"
-                                :stroke-width="8"
-                            />
-                        </div>
-                        <div class="progress-item">
-                            <div class="progress-label">
-                                <span>数据压缩比</span>
-                                <span class="progress-value">{{ performanceStats.averageCompressionRatio }}</span>
-                            </div>
-                            <el-progress 
-                                :percentage="parseFloat(performanceStats.averageCompressionRatio)" 
-                                :color="getProgressColor(parseFloat(performanceStats.averageCompressionRatio))"
-                                :stroke-width="8"
-                            />
-                        </div>
-                        <div class="progress-item">
-                            <div class="progress-label">
-                                <span>数据减少</span>
-                                <span class="progress-value">{{ performanceStats.dataReduction }}</span>
-                            </div>
-                            <el-progress 
-                                :percentage="parseFloat(performanceStats.dataReduction)" 
-                                :color="getProgressColor(parseFloat(performanceStats.dataReduction))"
-                                :stroke-width="8"
-                            />
-                        </div>
+                    <div class="metric-content">
+                        <div class="metric-value">{{ performanceStats.performance.averageCompressionTime }}</div>
+                        <div class="metric-label">平均压缩时间</div>
                     </div>
                 </div>
-            </el-card>
-
-            <!-- 性能指标卡片 -->
-            <el-card class="stats-card" shadow="hover">
-                <template #header>
-                    <div class="card-header">
-                        <el-icon><Timer /></el-icon>
-                        <span>性能指标</span>
+                <div class="metric-item">
+                    <div class="metric-icon">
+                        <el-icon>
+                            <Lock />
+                        </el-icon>
                     </div>
-                </template>
-                <div class="performance-stats">
-                    <div class="metric-item">
-                        <div class="metric-icon">
-                            <el-icon><Loading /></el-icon>
-                        </div>
-                        <div class="metric-content">
-                            <div class="metric-value">{{ performanceStats.averageCompressionTime }}</div>
-                            <div class="metric-label">平均压缩时间</div>
-                        </div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-icon">
-                            <el-icon><Lock /></el-icon>
-                        </div>
-                        <div class="metric-content">
-                            <div class="metric-value">{{ performanceStats.averageEncryptionTime }}</div>
-                            <div class="metric-label">平均加密时间</div>
-                        </div>
+                    <div class="metric-content">
+                        <div class="metric-value">{{ performanceStats.performance.averageEncryptionTime }}</div>
+                        <div class="metric-label">平均加密时间</div>
                     </div>
                 </div>
-            </el-card>
-
-            <!-- 数据统计卡片 -->
-            <el-card class="stats-card" shadow="hover">
-                <template #header>
-                    <div class="card-header">
-                        <el-icon><Files /></el-icon>
-                        <span>数据统计</span>
+                <div class="metric-item">
+                    <div class="metric-icon">
+                        <el-icon>
+                            <Timer />
+                        </el-icon>
                     </div>
-                </template>
-                <div class="data-stats">
-                    <div class="data-item">
-                        <div class="data-label">压缩数据量</div>
-                        <div class="data-value">{{ formatDataSize(performanceStats.totalDataCompressed) }}</div>
-                        <div class="data-percentage">
-                            占总数据量的 {{ ((performanceStats.totalDataCompressed / performanceStats.totalDataProcessed) * 100).toFixed(1) }}%
-                        </div>
-                    </div>
-                    <div class="data-item">
-                        <div class="data-label">总处理数据量</div>
-                        <div class="data-value">{{ formatDataSize(performanceStats.totalDataProcessed) }}</div>
+                    <div class="metric-content">
+                        <div class="metric-value">{{ performanceStats.performance.averageCompressionRatio }}</div>
+                        <div class="metric-label">平均压缩比</div>
                     </div>
                 </div>
-            </el-card>
-        </div>
-
-        <!-- 刷新按钮 -->
-        <div class="refresh-section">
-            <el-button 
-                type="primary" 
-                :icon="Refresh" 
-                @click="refreshData"
-                :loading="loading"
-                size="large"
-            >
-                刷新数据
-            </el-button>
-        </div>
+            </div>
+        </el-card>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { 
-    DataAnalysis, 
-    TrendCharts, 
-    Timer, 
-    Loading, 
-    Lock, 
-    Files, 
-    Refresh 
+import {
+    DataAnalysis,
+    TrendCharts,
+    Timer,
+    Loading,
+    Lock,
+    Files,
+    Cpu,
+    Refresh
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { getPerformanceStats } from "@/api/review";
 
-const router = useRouter();
 const loading = ref(false);
 
 const performanceStats = ref({
-    averageCompressionRatio: "64.6%",
-    averageCompressionTime: "0.51ms",
-    averageEncryptionTime: "1.83ms",
-    compressedRequests: 308,
-    compressionRate: "25.6%",
-    dataReduction: "30.8%",
-    totalDataCompressed: 9576656,
-    totalDataProcessed: 13834041,
-    totalRequests: 1202,
+    requests: {
+        total: 0,
+        compressed: 0,
+        compressionRate: "0%"
+    },
+    data: {
+        totalProcessed: 0,
+        totalCompressed: 0,
+        dataReduction: "0%"
+    },
+    performance: {
+        averageCompressionTime: "0.00ms",
+        averageEncryptionTime: "0.00ms",
+        averageCompressionRatio: "0.0%"
+    },
+    system: {
+        memory: {
+            total: "0 MB",
+            used: "0 MB",
+            free: "0 MB",
+            percentage: "0%"
+        },
+        cpu: {
+            usage: "0%",
+            loadAverage: ["0.00", "0.00", "0.00"]
+        },
+        uptime: "0分钟",
+        process: {
+            rss: "0 MB",
+            heapUsed: "0 MB",
+            heapTotal: "0 MB",
+            external: "0 MB"
+        }
+    }
 });
 
 // 格式化数字
@@ -189,6 +214,7 @@ const formatNumber = (num: number) => {
 
 // 格式化数据大小
 const formatDataSize = (bytes: number) => {
+    if (typeof bytes === 'string') return bytes;
     if (bytes >= 1024 * 1024 * 1024) {
         return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
     } else if (bytes >= 1024 * 1024) {
@@ -207,16 +233,12 @@ const getProgressColor = (percentage: number) => {
     return '#909399';
 };
 
-// 返回上一页
-const goBack = () => {
-    router.back();
-};
-
 // 刷新数据
 const refreshData = async () => {
     loading.value = true;
     try {
         const res = await getPerformanceStats();
+        console.log('res.data', res.data);
         performanceStats.value = res.data;
         ElMessage.success('数据刷新成功');
     } catch (error) {
@@ -239,17 +261,10 @@ onMounted(async () => {
     margin: 0 auto;
 }
 
-.page-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #303133;
-}
-
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
-    margin-top: 20px;
 }
 
 .stats-card {
@@ -275,7 +290,6 @@ onMounted(async () => {
     color: #409EFF;
 }
 
-/* 总体统计样式 */
 .overview-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -301,37 +315,6 @@ onMounted(async () => {
     color: #606266;
 }
 
-/* 压缩效率样式 */
-.compression-stats {
-    padding: 8px 0;
-}
-
-.progress-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.progress-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.progress-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    color: #606266;
-}
-
-.progress-value {
-    font-weight: 600;
-    color: #409EFF;
-}
-
-/* 性能指标样式 */
 .performance-stats {
     display: flex;
     flex-direction: column;
@@ -375,84 +358,73 @@ onMounted(async () => {
     color: #909399;
 }
 
-/* 数据统计样式 */
-.data-stats {
+.system-stats {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
 }
 
-.data-item {
-    padding: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
-    color: white;
-}
-
-.data-label {
-    font-size: 14px;
-    opacity: 0.9;
+.system-section {
     margin-bottom: 8px;
 }
 
-.data-value {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 4px;
+.system-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #409EFF;
 }
 
-.data-percentage {
-    font-size: 12px;
-    opacity: 0.8;
+.system-desc {
+    font-size: 13px;
+    color: #606266;
+    margin-top: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
-/* 刷新按钮样式 */
 .refresh-section {
     display: flex;
     justify-content: center;
     margin-top: 30px;
 }
 
-/* 移动端适配 */
 @media screen and (max-width: 768px) {
     .monitor-container {
-        padding: 16px;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-    
-    .overview-stats {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-    
-    .stat-number {
-        font-size: 20px;
-    }
-    
-    .metric-item {
         padding: 12px;
     }
-    
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .overview-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-number {
+        font-size: 18px;
+    }
+
+    .metric-item {
+        padding: 10px;
+    }
+
     .metric-icon {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+
+    .metric-value {
         font-size: 16px;
     }
-    
-    .metric-value {
-        font-size: 18px;
-    }
-    
-    .data-value {
-        font-size: 20px;
-    }
-    
-    .page-title {
-        font-size: 18px;
+
+    .system-title {
+        font-size: 14px;
     }
 }
 
@@ -460,11 +432,11 @@ onMounted(async () => {
     .overview-stats {
         grid-template-columns: 1fr;
     }
-    
+
     .metric-item {
         flex-direction: column;
         text-align: center;
-        gap: 12px;
+        gap: 8px;
     }
 }
 </style>

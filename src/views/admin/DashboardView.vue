@@ -11,7 +11,7 @@
         <text class="page-user-text">总用户数：{{ statistics.totalUsers }}</text>
         <text class="page-user-text">今日新增：{{
           statistics.dailyNewUsersInLastSevenDays?.[0]?.count
-        }}</text>
+          }}</text>
         <text class="page-user-text">总营地数： {{ statistics.totalAddApproved }}
         </text>
       </p>
@@ -36,66 +36,40 @@
 
 
         <el-col :span="6" class="card-column">
-          <el-badge :value="statistics.totalAddPendingReview" class="item">
+          <el-badge :value="statistics.totalAddPendingReview" class="item" v-if="statistics.totalAddPendingReview > 0">
             <el-button type="" @click="navigateToReviews('/admin/reviews/add', '0')">新增</el-button>
           </el-badge>
+          <el-button type="" @click="navigateToReviews('/admin/reviews/add', '0')" v-else>新增</el-button>
         </el-col>
 
         <el-col :span="6" class="card-column">
-          <el-badge :value="statistics.totalEditPendingReview" class="item">
+          <el-badge :value="statistics.totalEditPendingReview" class="item"
+            v-if="statistics.totalEditPendingReview > 0">
             <el-button @click="navigateToReviews('/admin/reviews/edit', '0')">修改</el-button>
           </el-badge>
+          <el-button type="" @click="navigateToReviews('/admin/reviews/edit', '0')" v-else>修改</el-button>
         </el-col>
 
         <el-col :span="6" class="card-column">
-          <el-badge :value="statistics.totalCommentPendingReview" class="item">
+          <el-badge :value="statistics.totalCommentPendingReview" class="item"
+            v-if="statistics.totalCommentPendingReview > 0">
             <el-button @click="navigateToReviews('/admin/reviews/comment', '0')">打卡</el-button>
           </el-badge>
+          <el-button type="" @click="navigateToReviews('/admin/reviews/comment', '0')" v-else>打卡</el-button>
         </el-col>
       </el-row>
+    </div>
 
-    
+
+    <div>
+
+      <MonitorView />
     </div>
 
 
 
 
 
-
-    <div class="recent-section">
-      <h3>最近的审核</h3>
-      <el-table :data="formatRecentReviews" stripe style="width: 100%">
-        <el-table-column prop="creatorName" label="用户" width="120" />
-        <el-table-column prop="name" label="标题" />
-        <el-table-column prop="address" label="地址" />
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="scope">
-            <el-tag :type="getStatusType(scope.row.status) || 'info'" :class="'status-' + scope.row.status">
-              {{ getStatusText(scope.row.status) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column prop="updateTime" label="更新时间" width="180" />
-        <el-table-column fixed="right" label="操作" width="120">
-          <template #default="scope">
-            <el-button link type="primary" @click="viewDetail(scope.row.id)">
-              查看
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-
-    <!-- 查看详情模态框 -->
-    <el-dialog v-model="reviewModalVisible" :modal="false" destroy-on-close>
-      <ReviewDetailModal :reviewId="currentReviewId" />
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="reviewModalVisible = false">关闭</el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -106,6 +80,7 @@ import type { Review } from "@/api/review";
 import { dayjs } from "element-plus";
 import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
 import { useReviewStore } from "@/stores/review";
+import MonitorView from "./MonitorView.vue";
 
 const router = useRouter();
 const reviewStore = useReviewStore();
@@ -187,7 +162,7 @@ const viewDetail = (id: string) => {
 }
 
 .page-user {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .page-user p {
