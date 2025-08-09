@@ -47,7 +47,12 @@ const routes = [
         name: "Monitor",
         component: () => import("@/views/admin/MonitorView.vue"),
       },
-     
+
+      {
+        path: "feedback",
+        name: "Feedback",
+        component: () => import("@/views/admin/FeedbackView.vue"),
+      },
     ],
   },
   {

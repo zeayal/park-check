@@ -233,10 +233,14 @@ export const adminEditDetail = async (params: object) => {
   return response.data;
 };
 
-
-
 // 获取性能监控数据
 export const getPerformanceStats = async () => {
   const response = await apiClient.get("/api/monster/admin/performance/stats");
+  return response.data;
+};
+
+// 获取用户反馈数据
+export const getUserFeedback = async () => {
+  const response = await apiClient.get("/api/monster/admin/getFeedbackList");
   return response.data;
 };
