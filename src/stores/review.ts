@@ -46,7 +46,6 @@ export const useReviewStore = defineStore("review", {
     initRouteListener(router: any) {
       router.afterEach(async () => {
         // 每次路由跳转后刷新大屏数据
-        console.log("每次路由跳转后刷新大屏数据");
         await this.refreshDashboard();
       });
     },

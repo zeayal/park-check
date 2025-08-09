@@ -100,68 +100,24 @@
       </el-row>
     </div>
 
-    <MonitorView/>
+    <MonitorView />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
-import type { Review } from "@/api/review";
-import { dayjs } from "element-plus";
-import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
 import { useReviewStore } from "@/stores/review";
 import MonitorView from "./MonitorView.vue";
 
 const router = useRouter();
 const reviewStore = useReviewStore();
-const recentReviews = ref<Review[]>([]);
 const loading = computed(() => reviewStore.loading);
 const statistics = computed(() => reviewStore.dashboardData);
-
-// 查看模态框相关
-const reviewModalVisible = ref(false);
-const currentReviewId = ref("");
 
 // 点击刷新数据
 const freshData = async () => {
   await reviewStore.refreshDashboard();
-};
-
-// 计算属性：格式化日期
-const formatRecentReviews = computed(() => {
-  return recentReviews.value.map((review) => {
-    return {
-      ...review,
-      createTime: formaDate(review.createTime),
-      updateTime: formaDate(review.updateTime),
-    };
-  });
-});
-
-// 格式化日期
-const formaDate = (date: string) => {
-  return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
-};
-
-const getStatusText = (status: string) => {
-  const statusMap: Record<string, string> = {
-    "-1": "已拒绝",
-    "-2": "已作废",
-    "0": "待审核",
-    "1": "已批准",
-    "2": "申请作废",
-  };
-  return statusMap[status] || status;
-};
-
-const getStatusType = (status: string) => {
-  const typeMap: Record<string, string> = {
-    "0": "warning",
-    "1": "success",
-    "-1": "danger",
-  };
-  return typeMap[status] || "";
 };
 
 const navigateToReviews = (path: string, status: string) => {
@@ -170,11 +126,6 @@ const navigateToReviews = (path: string, status: string) => {
     path,
     query: { status },
   });
-};
-
-const viewDetail = (id: string) => {
-  reviewModalVisible.value = true;
-  currentReviewId.value = id;
 };
 </script>
 

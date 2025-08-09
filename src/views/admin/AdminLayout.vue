@@ -92,10 +92,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
 import { useReviewStore } from "@/stores/review";
-import { storage } from "@/utils/storage";
 import {
   Edit,
   CirclePlus,
@@ -104,15 +101,11 @@ import {
   Odometer,
   Service,
 } from "@element-plus/icons-vue";
-import { type DashboardData } from "@/api/review";
 
-const router = useRouter();
-const authStore = useAuthStore();
 const isMobileMenuOpen = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
 
 const reviewStore = useReviewStore();
-const dashboardStatics = ref<DashboardData>();
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
