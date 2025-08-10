@@ -43,9 +43,9 @@ const routes = [
       },
 
       {
-        path: "monitor",
-        name: "Monitor",
-        component: () => import("@/views/admin/MonitorView.vue"),
+        path: "router-plans/addList",
+        name: "routerPlanAddList",
+        component: () => import("@/views/admin/ReviewRoutePlanAddListView.vue"),
       },
 
       {

@@ -611,8 +611,6 @@ const fetchReviews = async () => {
     // 从后端获取数据
     const response = await getReviews(params);
 
-    // console.log("response1111", response);
-
     if (response) {
       reviews.value = response.items || [];
       total.value = response.total || 0;

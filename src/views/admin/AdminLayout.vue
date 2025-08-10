@@ -2,25 +2,17 @@
   <div class="admin-layout">
     <el-container>
       <el-header class="menu-header">
-        <el-menu
-          router
-          :default-active="$route.path"
-          class="el-menu-vertical"
-          background-color="#304156"
-          text-color="#fff"
-          active-text-color="#409EFF"
-          mode="horizontal"
-        >
+        <el-menu router :default-active="$route.path" class="el-menu-vertical" background-color="#304156"
+          text-color="#fff" active-text-color="#409EFF" mode="horizontal">
           <el-menu-item index="/admin/dashboard">
-            <el-icon><House /></el-icon>
+            <el-icon>
+              <House />
+            </el-icon>
             <span slot="title" class="hidden-md-and-down">控制面板</span>
           </el-menu-item>
           <el-menu-item index="/admin/reviews/add">
-            <el-badge
-              v-if="reviewStore.dashboardData.totalAddPendingReview !== 0"
-              :value="reviewStore.dashboardData.totalAddPendingReview || 0"
-              :max="99"
-            >
+            <el-badge v-if="reviewStore.dashboardData.totalAddPendingReview !== 0"
+              :value="reviewStore.dashboardData.totalAddPendingReview || 0" :max="99">
               <el-icon>
                 <CirclePlus />
               </el-icon>
@@ -29,15 +21,12 @@
             <el-icon v-else>
               <CirclePlus />
             </el-icon>
-            <span slot="title" class="hidden-md-and-down">新增营地管理</span>
+            <span slot="title" class="hidden-md-and-down">新增营地</span>
           </el-menu-item>
 
           <el-menu-item index="/admin/reviews/edit">
-            <el-badge
-              v-if="reviewStore.dashboardData.totalEditPendingReview !== 0"
-              :value="reviewStore.dashboardData.totalEditPendingReview || 0"
-              :max="99"
-            >
+            <el-badge v-if="reviewStore.dashboardData.totalEditPendingReview !== 0"
+              :value="reviewStore.dashboardData.totalEditPendingReview || 0" :max="99">
               <el-icon>
                 <Edit />
               </el-icon>
@@ -46,14 +35,11 @@
             <el-icon v-else>
               <Edit />
             </el-icon>
-            <span slot="title" class="hidden-md-and-down">修改营地管理</span>
+            <span slot="title" class="hidden-md-and-down">修改营地</span>
           </el-menu-item>
           <el-menu-item index="/admin/reviews/comment">
-            <el-badge
-              v-if="reviewStore.dashboardData.totalCommentPendingReview !== 0"
-              :value="reviewStore.dashboardData.totalCommentPendingReview || 0"
-              :max="99"
-            >
+            <el-badge v-if="reviewStore.dashboardData.totalCommentPendingReview !== 0"
+              :value="reviewStore.dashboardData.totalCommentPendingReview || 0" :max="99">
               <el-icon>
                 <ChatLineRound />
               </el-icon>
@@ -62,16 +48,20 @@
             <el-icon v-else>
               <ChatLineRound />
             </el-icon>
-            <span slot="title" class="hidden-md-and-down">打卡审核管理</span>
+            <span slot="title" class="hidden-md-and-down">打卡审核</span>
           </el-menu-item>
 
-          <el-menu-item index="/admin/monitor">
-            <el-icon><Odometer /></el-icon>
-            <span slot="title" class="hidden-md-and-down">性能监控</span>
+          <el-menu-item index="/admin/router-plans/addList">
+            <el-icon>
+              <Odometer />
+            </el-icon>
+            <span slot="title" class="hidden-md-and-down">新增线路</span>
           </el-menu-item>
 
           <el-menu-item index="/admin/feedback">
-            <el-icon><Service /></el-icon>
+            <el-icon>
+              <Service />
+            </el-icon>
             <span slot="title" class="hidden-md-and-down">用户反馈</span>
           </el-menu-item>
         </el-menu>
@@ -82,11 +72,7 @@
     </el-container>
 
     <!-- 移动端侧边栏的覆盖层 -->
-    <div
-      v-if="isMobile && isMobileMenuOpen"
-      class="mobile-menu-backdrop"
-      @click="toggleMobileMenu"
-    ></div>
+    <div v-if="isMobile && isMobileMenuOpen" class="mobile-menu-backdrop" @click="toggleMobileMenu"></div>
   </div>
 </template>
 

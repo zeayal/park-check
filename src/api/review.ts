@@ -50,6 +50,28 @@ export interface ReviewResponse {
   total: number;
 }
 
+// 获取新增旅游线路审核列表
+export const getRoutePlanList = async (
+  params: ReviewParams
+): Promise<ReviewResponse> => {
+  const response = await apiClient.get<BackendResponse>(
+    "/api/monster/admin/getRoutePlanlist",
+    { params }
+  );
+  return {
+    items: response.data.data.items,
+    total: response.data.data.total,
+  };
+};
+
+// 批准新增旅游线路
+export const approveRoutePlanReviewItem = async (id: string) => {
+  const response = await apiClient.post("/api/monster/admin/routePlan/approve", {
+    id,
+  });
+  return response.data;
+};
+
 // 获取新增营地审核列表
 export const getReviews = async (
   params: ReviewParams
