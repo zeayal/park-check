@@ -66,7 +66,6 @@ export const useReviewStore = defineStore("review", {
       } finally {
         this.loading = false;
       }
-      console.log("刷新大屏ending", this.loading);
     },
 
     // 初始化时请求一次

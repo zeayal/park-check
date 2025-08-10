@@ -18,16 +18,11 @@
             <el-card v-if="review">
                 <template #header>
                     <div class="card-header">
-                        <!-- <span>{{ review?.revisionDetai?.name }}</span> -->
                         <template v-if="differences.name && Number(review?.revisionDetai?.status) === 0">
                             <span style="color: red">{{differences.name.revised}}</span>
                             <span class="original-text">（原：{{ differences.name.original }}）</span>
                         </template>
                         <template v-else>{{ review?.revisionDetai?.name }}</template>
-                        <!-- <el-tag :type="getStatusType(review?.revisionDetai?.status)"
-                            :class="'status-' + review?.revisionDetai?.status">
-                            {{ getStatusText(review?.revisionDetai?.status) }}
-                        </el-tag> -->
                     </div>
                 </template>
 

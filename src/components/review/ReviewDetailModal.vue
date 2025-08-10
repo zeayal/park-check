@@ -33,17 +33,33 @@
             <div class="review-content">
                 <h3>详情</h3>
                 <div class="content-box">
-                    <!-- {{ review.description }} -->
+                    <!-- 公共信息 -->
                     <p><strong>营地描述：</strong> {{ review.description }}</p><br>
                     <p><strong>地址：</strong> {{ review.address }}</p>
                     <p><strong>GPS经度：</strong> {{ review.longitude }}</p>
                     <p><strong>GPS纬度：</strong> {{ review.latitude }}</p>
-                    <p><strong>是否收费：</strong> {{ review.isCharged ? "收费" : "免费" }}</p>
-                    <p><strong>是否有厕所：</strong> {{ review.hasToilet ? "有" : "无" }}</p>
-                    <p><strong>是否可以接水：</strong> {{ review.hasWater ? "可以" : "不可以" }}</p>
-                    <p><strong>是否有充电桩：</strong> {{ review.hasElectricity ? "有" : "无" }}</p>
-                    <p><strong>是否可以搭帐篷：</strong> {{ review.canPitchTent ? "可以" : "不可以" }}</p>
-                    <!-- <p><strong>是否五星营地：</strong> {{ review.isStarCamp ? "是" : "否" }}</p> -->
+                    <p><strong>平均星级：</strong> {{ review.averageScore || '-' }}</p>
+                    
+
+                    <!-- 营地 -->
+                    <div class="content-detail" v-if="review.isCamp">
+                        <p><strong>营地类型：</strong> {{ getCampType(review.campType) }}</p>
+                        <p><strong>是否收费：</strong> {{ review.isCharged ? "收费" : "免费" }}</p>
+                        <p><strong>是否有厕所：</strong> {{ review.hasToilet ? "有" : "无" }}</p>
+                        <p><strong>是否可以接水：</strong> {{ review.hasWater ? "可以" : "不可以" }}</p>
+                        <p><strong>是否有充电桩：</strong> {{ review.hasElectricity ? "有" : "无" }}</p>
+                        <p><strong>是否可以搭帐篷：</strong> {{ review.canPitchTent ? "可以" : "不可以" }}</p>
+                        <p><strong>是否可以钓鱼：</strong> {{ review.fish ? "可以" : "不可以" }}</p>
+                        <p><strong>是否可用明火：</strong> {{ review.fire ? "可以" : "不可以" }}</p>
+                    </div>
+
+                    <!-- 不是营地 -->
+                    <div class="content-detail" v-if="!review.isCamp">
+                        <p><strong>设施类型：</strong> {{ getFacilityType(review.convenienceFacility) }}</p>
+                        <p v-if="review.convenienceFacility === 2">
+                            <strong>是否可以接水：</strong> {{ review.hasWater ? "可以" : "不可以" }}
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -143,6 +159,29 @@ const getStatusType = (status: string) => {
     return typeMap[status] || '';
 };
 
+// 营地类型
+const getCampType = (type:number ) => {
+    const campType: Record<number, string> = {
+        1: '停车场',
+        2: '服务区',
+        3: '露营地',
+        4: '房车营地'
+    }
+    return campType[type] || '-'
+}
+
+// 便利设施
+const getFacilityType = (type:number ) => {
+    const campType: Record<number, string> = {
+        1: '商超',
+        2: '公共厕所',
+        3: '菜市场',
+        4: '夜市美食'
+    }
+    return campType[type] || '-'
+}
+
+
 // 批准操作
 const handleApprove = () => {
     ElMessageBox.confirm('确定要批准该审核吗?', '提示', {
@@ -157,7 +196,6 @@ const handleApprove = () => {
             ElMessage.success('审核已批准');
             emit('close-modal');
             router.go(0);
-            // await fetchReviewDetail();
         } catch (error) {
             ElMessage.error('操作失败');
         } finally {

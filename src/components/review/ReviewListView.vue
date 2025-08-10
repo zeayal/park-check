@@ -34,7 +34,7 @@
         </el-row>
       </el-col>
     </el-row>
-
+    <!--  show-overflow-tooltip -->
     <el-table
       v-loading="loading"
       :data="formatReviews"
@@ -44,7 +44,7 @@
       show-overflow-tooltip
     >
       <el-table-column prop="id" label="ID" width="80" class="single" />
-      <el-table-column prop="name" label="标题" min-width="100" />
+      <el-table-column prop="name" label="标题" min-width="180" />
       <el-table-column
         prop="address"
         label="地址"
@@ -244,49 +244,97 @@
         <el-form-item label="详情描述">
           <el-input type="textarea" v-model="editForm.description"></el-input>
         </el-form-item>
-        <el-form-item label="是否收费">
-          <el-radio-group v-model="editForm.isCharged">
-            <el-radio :value="true">收费</el-radio>
-            <el-radio :value="false">免费</el-radio>
-          </el-radio-group>
-        </el-form-item>
 
-        <el-form-item label="是否有厕所">
-          <el-radio-group v-model="editForm.hasToilet">
-            <el-radio :value="true">有</el-radio>
-            <el-radio :value="false">无</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
-        <el-form-item label="是否可以接水">
-          <el-radio-group v-model="editForm.hasWater">
-            <el-radio :value="true">可以</el-radio>
-            <el-radio :value="false">不可以</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
-        <el-form-item label="是否有充电桩">
-          <el-radio-group v-model="editForm.hasElectricity">
-            <el-radio :value="true">有</el-radio>
-            <el-radio :value="false">无</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
-        <el-form-item label="是否可以搭帐篷">
-          <el-radio-group v-model="editForm.canPitchTent">
-            <el-radio :value="true">可以</el-radio>
-            <el-radio :value="false">不可以</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
-        <!-- <el-form-item label="是否五星营地">
-          <el-radio-group v-model="editForm.isStarCamp">
+        <el-form-item label="是否营地">
+          <el-radio-group v-model="editForm.isCamp">
             <el-radio :value="true">是</el-radio>
-            <el-radio :value="false">否</el-radio>
+            <el-radio :value="false">不是</el-radio>
           </el-radio-group>
-        </el-form-item> -->
-      </el-form>
+        </el-form-item>
 
+        <!-- 营地 -->
+        <div v-if="editForm.isCamp">
+          <el-form-item label="营地类型">
+            <el-radio-group v-model="editForm.campType">
+              <el-radio :value="1">停车场</el-radio>
+              <el-radio :value="2">服务区</el-radio>
+              <el-radio :value="3">露营地</el-radio>
+              <el-radio :value="4">房车营地</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="是否收费">
+            <el-radio-group v-model="editForm.isCharged">
+              <el-radio :value="true">收费</el-radio>
+              <el-radio :value="false">免费</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="是否有厕所">
+            <el-radio-group v-model="editForm.hasToilet">
+              <el-radio :value="true">有</el-radio>
+              <el-radio :value="false">无</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="是否可以接水">
+            <el-radio-group v-model="editForm.hasWater">
+              <el-radio :value="true">可以</el-radio>
+              <el-radio :value="false">不可以</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="是否有充电桩">
+            <el-radio-group v-model="editForm.hasElectricity">
+              <el-radio :value="true">有</el-radio>
+              <el-radio :value="false">无</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="是否可以搭帐篷">
+            <el-radio-group v-model="editForm.canPitchTent">
+              <el-radio :value="true">可以</el-radio>
+              <el-radio :value="false">不可以</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="是否可以钓鱼">
+            <el-radio-group v-model="editForm.fish">
+              <el-radio :value="true">可以</el-radio>
+              <el-radio :value="false">不可以</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="是否可用明火">
+            <el-radio-group v-model="editForm.fire">
+              <el-radio :value="true">可以</el-radio>
+              <el-radio :value="false">不可以</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
+
+        <!-- 不是营地 -->
+        <div v-if="!editForm.isCamp">
+          <el-form-item label="营地类型">
+            <el-radio-group v-model="editForm.convenienceFacility">
+              <el-radio :value="1">商超</el-radio>
+              <el-radio :value="2">公共厕所</el-radio>
+              <el-radio :value="3">菜市场</el-radio>
+              <el-radio :value="4">夜市美食</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item
+            label="是否可以接水"
+            v-if="editForm.convenienceFacility === 2"
+          >
+            <el-radio-group v-model="editForm.hasWater">
+              <el-radio :value="true">可以</el-radio>
+              <el-radio :value="false">不可以</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
+      </el-form>
       <!-- https://unistar.icu/api/fs-service/uploadFileToOSS -->
       <!-- https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15 -->
 
@@ -403,6 +451,11 @@ const INIT_FORM_DATA = {
   hasElectricity: false,
   canPitchTent: false,
   address: "",
+  isCamp: true,
+  campType: 0,
+  fish: false,
+  fire: false,
+  convenienceFacility: 1, // 1: 商超 2: 公共厕所 3: 菜市场 4: 夜市美食
 };
 const input = ref("");
 const props = defineProps<{
@@ -452,8 +505,10 @@ const currentReviewId = ref("");
 const editFormVisible = ref(false);
 // 用于el-upload的文件列表
 const fileList = ref([]);
-
+// 定义表单
 const editForm = reactive(INIT_FORM_DATA);
+// 记录editForm.isCamp初始值
+let initialIsCamp = false;
 
 // 拒绝对话框相关
 const rejectDialogVisible = ref(false);
@@ -494,7 +549,6 @@ const handleResize = () => {
 
 // 监听筛选星级变化
 watch(starValue, (newStarValue) => {
-  console.log("newStarValue", newStarValue);
   fetchReviews();
 });
 
@@ -519,6 +573,11 @@ watch(editFormVisible, (newStatus) => {
   editForm.hasElectricity = false;
   editForm.canPitchTent = false;
   editForm.address = "";
+  editForm.isCamp = true;
+  editForm.campType = 0;
+  editForm.fish = false;
+  editForm.fire = false;
+  editForm.convenienceFacility = 1;
 });
 
 const handleOnChange = (value: string) => {
@@ -670,6 +729,8 @@ const handleEdit = async (id: string) => {
     // 复制数据到表单
     const { images, ...restData } = data;
     Object.assign(editForm, restData);
+    initialIsCamp = editForm.isCamp;
+    console.log("initialIsCamp:", initialIsCamp);
     // 处理图片
     editForm.images = images.map((image: any) => image.serverFilename);
 
@@ -691,10 +752,42 @@ const handleEdit = async (id: string) => {
 const submmitEdit = async (EditedDetail: object) => {
   try {
     actionLoading.value = true;
+
+    // 检查isCamp是否发生变化
+    if (editForm.isCamp !== initialIsCamp) {
+      console.log("isCamp发生变化，修改相关字段");
+      // 定义默认要重置的字段
+      const defaultFields = {
+        isCharged: false,
+        hasToilet: false,
+        hasWater: false,
+        hasElectricity: false,
+        canPitchTent: false,
+        campType: -1,
+        fish: false,
+        fire: false,
+      };
+
+      // 根据isCamp的新值设置不同内容
+      if (editForm.isCamp) {
+        editForm.convenienceFacility = -1;
+      } else {
+        // 当isCamp为false时，先应用默认重置
+        Object.assign(editForm, defaultFields);
+
+        // 针对convenienceFacility === 2的特殊情况单独处理
+        if (editForm.convenienceFacility === 2) {
+          editForm.hasToilet = true;
+        }
+      }
+      console.log("isCamp发生变化后的数据：", editForm);
+    }
+
     const res = await adminEditDetail(editForm);
     if (res.code === 0) {
       ElMessage.success("修改成功");
       editFormVisible.value = false;
+      console.log("提交修改:", editForm);
       // 刷新页面
       fetchReviews();
     } else {
