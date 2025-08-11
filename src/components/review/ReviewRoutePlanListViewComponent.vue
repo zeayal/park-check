@@ -66,9 +66,20 @@
         <template #default="scope">
           <div class="table-actions desktop-only">
 
-            <el-button v-if="scope.row.status === 0" size="small" link type="success"
+            <el-button v-if="scope.row.status === 0" size="small" link type="primary"
               @click="handleApprove(scope.row.id)">
               批准
+            </el-button>
+
+            <el-button v-if="scope.row.status === 1" size="small" link type="danger"
+              @click="handleInvalidate(scope.row.id)">
+              作废
+            </el-button>
+
+
+            <el-button v-if="scope.row.status === -2" size="small" link type="success"
+              @click="handleInvalidateToNormal(scope.row.id)">
+              恢复
             </el-button>
 
           </div>
@@ -81,6 +92,12 @@
                 <el-dropdown-menu>
                   <el-dropdown-item v-if="scope.row.status === 0"
                     @click="handleApprove(scope.row.id)">批准</el-dropdown-item>
+
+                  <el-dropdown-item v-if="scope.row.status === 1"
+                    @click="handleInvalidate(scope.row.id)">作废</el-dropdown-item>
+
+                  <el-dropdown-item v-if="scope.row.status === -2"
+                    @click="handleInvalidateToNormal(scope.row.id)">恢复</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -108,7 +125,9 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import {
   type Review,
   getRoutePlanList,
-  approveRoutePlanReviewItem
+  approveRoutePlanReviewItem,
+  invalidateRoutePlanReviewItem,
+  invalidateToNormalRoutePlanReviewItem
 } from "@/api/review";
 import dayjs from "dayjs";
 import { ArrowDown } from "@element-plus/icons-vue";
@@ -305,6 +324,60 @@ const handleApprove = (id: string) => {
 };
 
 
+// 作废操作
+const handleInvalidate = (id: string) => {
+  ElMessageBox.confirm("确定要作废该审核吗?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      actionLoading.value = true;
+      try {
+        const res = await invalidateRoutePlanReviewItem(id);
+        if (res.code === 0) {
+          ElMessage.success("已作废");
+          fetchReviews();
+        } else {
+          ElMessage.error(res.msg || "作废失败");
+        }
+      } catch (error) {
+        ElMessage.error("作废失败");
+      } finally {
+        actionLoading.value = false;
+      }
+    })
+    .catch(() => {
+      ElMessage.info("已取消作废");
+    });
+};
+
+
+// 恢复操作
+const handleInvalidateToNormal = (id: string) => {
+  ElMessageBox.confirm("确定要恢复该审核吗?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(async () => {
+    actionLoading.value = true;
+    try {
+      const res = await invalidateToNormalRoutePlanReviewItem(id);
+      if (res.code === 0) {
+        ElMessage.success("已恢复");
+        fetchReviews();
+      } else {
+        ElMessage.error(res.msg || "恢复失败");
+      }
+    } catch (error) {
+      ElMessage.error("恢复失败");
+    } finally {
+      actionLoading.value = false;
+    }
+  }).catch(() => {
+    ElMessage.info("已取消恢复");
+  });
+};
 
 
 </script>

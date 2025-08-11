@@ -72,6 +72,22 @@ export const approveRoutePlanReviewItem = async (id: string) => {
   return response.data;
 };
 
+// 作废新增旅游线路
+export const invalidateRoutePlanReviewItem = async (id: string) => {
+  const response = await apiClient.post("/api/monster/admin/routePlan/invalidate", {
+    id,
+  });
+  return response.data;
+};
+
+// 恢复已作废新增旅游线路
+export const invalidateToNormalRoutePlanReviewItem = async (id: string) => {
+  const response = await apiClient.post("/api/monster/admin/routePlan/invalidateToNormal", {
+    id,
+  });
+  return response.data;
+};
+
 // 获取新增营地审核列表
 export const getReviews = async (
   params: ReviewParams
