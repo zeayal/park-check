@@ -55,7 +55,7 @@ export const getRoutePlanList = async (
   params: ReviewParams
 ): Promise<ReviewResponse> => {
   const response = await apiClient.get<BackendResponse>(
-    "/api/monster/admin/getRoutePlanlist",
+    "/api/monster/admin/routePlanList",
     { params }
   );
   return {
@@ -66,7 +66,7 @@ export const getRoutePlanList = async (
 
 // 批准新增旅游线路
 export const approveRoutePlanReviewItem = async (id: string) => {
-  const response = await apiClient.post("/api/monster/admin/routePlan/approve", {
+  const response = await apiClient.post("/api/monster/admin/routePlanApprove", {
     id,
   });
   return response.data;
@@ -74,7 +74,7 @@ export const approveRoutePlanReviewItem = async (id: string) => {
 
 // 作废新增旅游线路
 export const invalidateRoutePlanReviewItem = async (id: string) => {
-  const response = await apiClient.post("/api/monster/admin/routePlan/invalidate", {
+  const response = await apiClient.post("/api/monster/admin/routePlanInvalidate", {
     id,
   });
   return response.data;
@@ -82,7 +82,7 @@ export const invalidateRoutePlanReviewItem = async (id: string) => {
 
 // 恢复已作废新增旅游线路
 export const invalidateToNormalRoutePlanReviewItem = async (id: string) => {
-  const response = await apiClient.post("/api/monster/admin/routePlan/invalidateToNormal", {
+  const response = await apiClient.post("/api/monster/admin/routePlanInvalidateToNormal", {
     id,
   });
   return response.data;
