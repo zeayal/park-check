@@ -58,6 +58,13 @@
             <span slot="title" class="hidden-md-and-down">新增线路</span>
           </el-menu-item>
 
+          <el-menu-item index="/admin/router-plans/editList">
+            <el-icon>
+              <Odometer />
+            </el-icon>
+            <span slot="title" class="hidden-md-and-down">修改线路</span>
+          </el-menu-item>
+
           <el-menu-item index="/admin/feedback">
             <el-icon>
               <Service />

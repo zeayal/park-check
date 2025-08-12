@@ -8,7 +8,6 @@
             <el-radio-button label="0">待审核</el-radio-button>
             <el-radio-button label="1">已批准</el-radio-button>
             <el-radio-button label="-1">已拒绝</el-radio-button>
-            <el-radio-button label="-2">已作废</el-radio-button>
           </el-radio-group>
         </div>
       </el-col>
@@ -42,7 +41,7 @@
       <el-table-column prop="id" label="ID" width="80" class="single" />
       <el-table-column prop="name" label="标题" width="280" />
       <el-table-column prop="description" label="描述" width="320" />
-      <el-table-column prop="color" label="颜色" width="140" class="single">
+      <el-table-column prop="color" label="颜色" width="130" class="single">
         <template #default="scope">
           <div style="display: flex; align-items: center">
             <div :style="{ width: '10px', height: '10px', backgroundColor: scope.row.color }"></div>
@@ -71,15 +70,9 @@
               批准
             </el-button>
 
-            <el-button v-if="scope.row.status === 1" size="small" link type="danger"
-              @click="handleInvalidate(scope.row.id)">
-              作废
-            </el-button>
-
-
-            <el-button v-if="scope.row.status === -2" size="small" link type="success"
-              @click="handleInvalidateToNormal(scope.row.id)">
-              恢复
+            <el-button v-if="scope.row.status === 0" size="small" link type="danger"
+              @click="handleReject(scope.row.id)">
+              拒绝
             </el-button>
 
           </div>
@@ -93,11 +86,9 @@
                   <el-dropdown-item v-if="scope.row.status === 0"
                     @click="handleApprove(scope.row.id)">批准</el-dropdown-item>
 
-                  <el-dropdown-item v-if="scope.row.status === 1"
-                    @click="handleInvalidate(scope.row.id)">作废</el-dropdown-item>
+                  <el-dropdown-item v-if="scope.row.status === 0"
+                    @click="handleReject(scope.row.id)">拒绝</el-dropdown-item>
 
-                  <el-dropdown-item v-if="scope.row.status === -2"
-                    @click="handleInvalidateToNormal(scope.row.id)">恢复</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -112,7 +103,24 @@
         @current-change="handleCurrentChange" />
     </div>
 
-
+    <!-- 拒绝对话框 -->
+    <el-dialog v-model="rejectDialogVisible" title="拒绝原因" :width="dialogWidth">
+      <el-form :model="rejectForm" ref="rejectFormRef">
+        <el-form-item prop="reason" label="拒绝原因" :rules="[
+          { required: true, message: '请输入拒绝原因', trigger: 'blur' },
+        ]">
+          <el-input v-model="rejectForm.reason" type="textarea" :rows="4" placeholder="请输入拒绝原因"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="rejectDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="confirmReject" :loading="actionLoading">
+            确认
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
 
   </div>
 </template>
@@ -121,13 +129,13 @@
 import { Search } from "@element-plus/icons-vue";
 import { ref, onMounted, watch, computed, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import {
   type Review,
-  getRoutePlanList,
-  approveRoutePlanReviewItem,
-  invalidateRoutePlanReviewItem,
-  invalidateToNormalRoutePlanReviewItem
+  invalidateToNormalRoutePlanReviewItem,
+  getRoutePlanEditList,
+  approveTourRouteRevision,
+  rejectTourRouteRevision
 } from "@/api/review";
 import dayjs from "dayjs";
 import { ArrowDown } from "@element-plus/icons-vue";
@@ -140,6 +148,12 @@ const emit = defineEmits<{
 
 const router = useRouter();
 const route = useRoute();
+
+const dialogWidth = computed(() => (isMobile.value ? "90%" : "30%"));
+// 拒绝对话框相关
+const rejectDialogVisible = ref(false);
+const rejectForm = ref({ reason: "", id: "" });
+const rejectFormRef = ref<FormInstance>();
 
 // 状态过滤
 const currentStatus = ref("");
@@ -221,7 +235,7 @@ const fetchReviews = async () => {
     };
 
     // 从后端获取数据
-    const response = await getRoutePlanList(params);
+    const response = await getRoutePlanEditList(params);
 
     if (response) {
       reviews.value = response.items || [];
@@ -296,7 +310,7 @@ const handleStatusChange = (val: string) => {
 
 
 // 批准操作
-const handleApprove = (id: string) => {
+const handleApprove = (revisionId: string) => {
   ElMessageBox.confirm("确定要批准该审核吗?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -305,7 +319,7 @@ const handleApprove = (id: string) => {
     .then(async () => {
       actionLoading.value = true;
       try {
-        const res = await approveRoutePlanReviewItem(id);
+        const res = await approveTourRouteRevision(revisionId);
         if (res.code === 0) {
           ElMessage.success("审核已批准");
           fetchReviews();
@@ -324,60 +338,42 @@ const handleApprove = (id: string) => {
 };
 
 
-// 作废操作
-const handleInvalidate = (id: string) => {
-  ElMessageBox.confirm("确定要作废该审核吗?", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
+// 拒绝操作
+const handleReject = (id: string) => {
+  rejectDialogVisible.value = true;
+  rejectForm.value.id = id;
+  if (rejectFormRef.value) {
+    rejectFormRef.value.resetFields();
+  }
+};
+
+const confirmReject = async () => {
+  if (!rejectFormRef.value) return;
+
+  await rejectFormRef.value.validate(async (valid) => {
+    if (valid) {
       actionLoading.value = true;
       try {
-        const res = await invalidateRoutePlanReviewItem(id);
+        const res = await rejectTourRouteRevision(
+          rejectForm.value.id,
+          rejectForm.value.reason
+        );
         if (res.code === 0) {
-          ElMessage.success("已作废");
+          ElMessage.success("审核已拒绝");
+          rejectDialogVisible.value = false;
           fetchReviews();
         } else {
-          ElMessage.error(res.msg || "作废失败");
+          ElMessage.error(res.msg || "拒绝失败");
         }
       } catch (error) {
-        ElMessage.error("作废失败");
+        ElMessage.error("接口调取失败");
       } finally {
         actionLoading.value = false;
       }
-    })
-    .catch(() => {
-      ElMessage.info("已取消作废");
-    });
-};
-
-
-// 恢复操作
-const handleInvalidateToNormal = (id: string) => {
-  ElMessageBox.confirm("确定要恢复该审核吗?", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  }).then(async () => {
-    actionLoading.value = true;
-    try {
-      const res = await invalidateToNormalRoutePlanReviewItem(id);
-      if (res.code === 0) {
-        ElMessage.success("已恢复");
-        fetchReviews();
-      } else {
-        ElMessage.error(res.msg || "恢复失败");
-      }
-    } catch (error) {
-      ElMessage.error("恢复失败");
-    } finally {
-      actionLoading.value = false;
     }
-  }).catch(() => {
-    ElMessage.info("已取消恢复");
   });
 };
+
 
 
 </script>

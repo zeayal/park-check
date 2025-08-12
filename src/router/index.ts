@@ -49,6 +49,12 @@ const routes = [
       },
 
       {
+        path: "router-plans/editList",
+        name: "routerPlanEditList",
+        component: () => import("@/views/admin/ReviewRoutePlanEditListView.vue"),
+      },
+
+      {
         path: "feedback",
         name: "Feedback",
         component: () => import("@/views/admin/FeedbackView.vue"),

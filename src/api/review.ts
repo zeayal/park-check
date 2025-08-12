@@ -88,6 +88,41 @@ export const invalidateToNormalRoutePlanReviewItem = async (id: string) => {
   return response.data;
 };
 
+
+
+// 获取修改旅游线路审核列表
+export const getRoutePlanEditList = async (
+  params: ReviewParams
+): Promise<ReviewResponse> => {
+  const response = await apiClient.get<BackendResponse>(
+    "/api/monster/admin/getTourRouteRevisionList",
+    { params }
+  );
+  return {
+    items: response.data.data.items,
+    total: response.data.data.total,
+  };
+};
+
+// 批准修改旅游线路
+export const approveTourRouteRevision = async (revisionId: string) => {
+  const response = await apiClient.post("/api/monster/admin/approveTourRouteRevision", {
+    revisionId,
+  });
+  return response.data;
+};
+
+// 拒绝修改旅游线路
+export const rejectTourRouteRevision = async (revisionId: string, reason: string) => {
+  const response = await apiClient.post("/api/monster/admin/rejectTourRouteRevision", {
+    revisionId,
+    reason
+  });
+  return response.data;
+};
+
+
+
 // 获取新增营地审核列表
 export const getReviews = async (
   params: ReviewParams
