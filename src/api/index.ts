@@ -58,9 +58,9 @@ apiClient.interceptors.response.use(
     const code = response.data.code;
     const msg = response.data.msg;
     if (code == 0) {
-      ElMessage.success({ message: msg, duration: 1000 });
+      ElMessage.success({ message: msg, duration: 1000, offset: 300 });
     } else {
-      ElMessage.error(msg);
+      ElMessage.error({ message: msg, duration: 1000, offset: 300 });
     }
     if ([403, 401].includes(code)) {
       // storage.
