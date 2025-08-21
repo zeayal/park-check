@@ -51,14 +51,14 @@
             <el-button
               type=""
               @click="navigateToReviews('/admin/reviews/add', '0')"
-              >新增审核</el-button
+              >新增营地</el-button
             >
           </el-badge>
           <el-button
             type=""
             @click="navigateToReviews('/admin/reviews/add', '0')"
             v-else
-            >新增审核</el-button
+            >新增营地</el-button
           >
         </el-col>
 
@@ -69,14 +69,14 @@
             v-if="statistics.totalEditPendingReview > 0"
           >
             <el-button @click="navigateToReviews('/admin/reviews/edit', '0')"
-              >修改审核</el-button
+              >修改营地</el-button
             >
           </el-badge>
           <el-button
             type=""
             @click="navigateToReviews('/admin/reviews/edit', '0')"
             v-else
-            >修改审核</el-button
+            >修改营地</el-button
           >
         </el-col>
 
@@ -87,14 +87,57 @@
             v-if="statistics.totalCommentPendingReview > 0"
           >
             <el-button @click="navigateToReviews('/admin/reviews/comment', '0')"
-              >打卡审核</el-button
+              >打卡营地</el-button
             >
           </el-badge>
           <el-button
             type=""
             @click="navigateToReviews('/admin/reviews/comment', '0')"
             v-else
-            >打卡审核</el-button
+            >打卡营地</el-button
+          >
+        </el-col>
+      </el-row>
+
+      <el-row class="page-action-button">
+        <el-col :span="6" class="card-column"> </el-col>
+
+        <el-col :span="6" class="card-column">
+          <el-badge
+            :value="statistics.totalAddPendingReview"
+            class="item"
+            v-if="statistics.totalAddPendingReview < 0"
+          >
+            <el-button
+              type=""
+              @click="navigateToReviews('/admin/router-plans/addList', '0')"
+              >新增线路</el-button
+            >
+          </el-badge>
+          <el-button
+            type=""
+            @click="navigateToReviews('/admin/router-plans/addList', '0')"
+            v-else
+            >新增线路</el-button
+          >
+        </el-col>
+
+        <el-col :span="6" class="card-column">
+          <el-badge
+            :value="statistics.totalEditPendingReview"
+            class="item"
+            v-if="statistics.totalEditPendingReview < 0"
+          >
+            <el-button
+              @click="navigateToReviews('/admin/router-plans/editList', '0')"
+              >修改线路</el-button
+            >
+          </el-badge>
+          <el-button
+            type=""
+            @click="navigateToReviews('/admin/router-plans/editList', '0')"
+            v-else
+            >修改线路</el-button
           >
         </el-col>
       </el-row>

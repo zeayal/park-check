@@ -51,16 +51,13 @@ export interface ReviewResponse {
 }
 
 // 获取新增旅游线路审核列表
-export const getRoutePlanList = async (
-  params: ReviewParams
-): Promise<ReviewResponse> => {
-  const response = await apiClient.get<BackendResponse>(
-    "/api/monster/admin/routePlanList",
-    { params }
-  );
+export const getRoutePlanList = async (params: ReviewParams) => {
+  const response = await apiClient.get("/api/monster/admin/routePlanList", {
+    params,
+  });
   return {
     items: response.data.data.items,
-    total: response.data.data.total,
+    total: response.data.data.pagination.total,
   };
 };
 
@@ -74,21 +71,25 @@ export const approveRoutePlanReviewItem = async (id: string) => {
 
 // 作废新增旅游线路
 export const invalidateRoutePlanReviewItem = async (id: string) => {
-  const response = await apiClient.post("/api/monster/admin/routePlanInvalidate", {
-    id,
-  });
+  const response = await apiClient.post(
+    "/api/monster/admin/routePlanInvalidate",
+    {
+      id,
+    }
+  );
   return response.data;
 };
 
 // 恢复已作废新增旅游线路
 export const invalidateToNormalRoutePlanReviewItem = async (id: string) => {
-  const response = await apiClient.post("/api/monster/admin/routePlanInvalidateToNormal", {
-    id,
-  });
+  const response = await apiClient.post(
+    "/api/monster/admin/routePlanInvalidateToNormal",
+    {
+      id,
+    }
+  );
   return response.data;
 };
-
-
 
 // 获取修改旅游线路审核列表
 export const getRoutePlanEditList = async (
@@ -106,22 +107,29 @@ export const getRoutePlanEditList = async (
 
 // 批准修改旅游线路
 export const approveTourRouteRevision = async (revisionId: string) => {
-  const response = await apiClient.post("/api/monster/admin/approveTourRouteRevision", {
-    revisionId,
-  });
+  const response = await apiClient.post(
+    "/api/monster/admin/approveTourRouteRevision",
+    {
+      revisionId,
+    }
+  );
   return response.data;
 };
 
 // 拒绝修改旅游线路
-export const rejectTourRouteRevision = async (revisionId: string, reason: string) => {
-  const response = await apiClient.post("/api/monster/admin/rejectTourRouteRevision", {
-    revisionId,
-    reason
-  });
+export const rejectTourRouteRevision = async (
+  revisionId: string,
+  reason: string
+) => {
+  const response = await apiClient.post(
+    "/api/monster/admin/rejectTourRouteRevision",
+    {
+      revisionId,
+      reason,
+    }
+  );
   return response.data;
 };
-
-
 
 // 获取新增营地审核列表
 export const getReviews = async (

@@ -1,39 +1,59 @@
 <template>
   <div class="review-list">
     <el-row :gutter="10" class="page-header">
+      <h2>{{ title }}</h2>
       <el-col :span="24" :md="12">
         <div class="status-filter-wrapper">
           <el-radio-group v-model="currentStatus" @change="handleStatusChange">
-            <el-radio-button label="">全部</el-radio-button>
-            <el-radio-button label="0">待审核</el-radio-button>
-            <el-radio-button label="1">已批准</el-radio-button>
-            <el-radio-button label="-1">已拒绝</el-radio-button>
-            <el-radio-button label="-2">已作废</el-radio-button>
+            <el-radio-button value="">全部</el-radio-button>
+            <el-radio-button value="0">待审核</el-radio-button>
+            <el-radio-button value="1">已批准</el-radio-button>
+            <el-radio-button value="-1">已拒绝</el-radio-button>
+            <el-radio-button value="-2">已作废</el-radio-button>
           </el-radio-group>
         </div>
       </el-col>
       <el-col :span="24" :md="12">
         <el-row :gutter="10">
           <el-col :span="24" :md="12" class="search-wrapper">
-            <!-- <h2>{{ title }}</h2> -->
-            <el-input v-model="input" clearable :prefix-icon="Search" style="width: 340px; height: 30px"
-              placeholder="请输入标题进行搜索" @change="handleOnChange" />
+            <el-input
+              v-model="input"
+              clearable
+              :prefix-icon="Search"
+              style="width: 340px; height: 30px"
+              placeholder="请输入标题进行搜索"
+              @change="handleOnChange"
+            />
           </el-col>
         </el-row>
       </el-col>
     </el-row>
     <!--  show-overflow-tooltip -->
-    <el-table v-loading="loading" :data="formatReviews" height="75vh" style="width: 100%" border show-overflow-tooltip
-      preserve-expanded-content>
-
+    <el-table
+      v-loading="loading"
+      :data="formatReviews"
+      height="75vh"
+      style="width: 100%"
+      border
+      show-overflow-tooltip
+      preserve-expanded-content
+    >
       <el-table-column type="expand">
         <template #default="props">
           <div class="expand-content">
             <el-table :data="props.row.points" :border="true">
               <el-table-column label="排序" prop="order" width="80" />
               <el-table-column label="途经点名称" prop="name" width="280" />
-              <el-table-column label="经度longitude" prop="longitude" width="180" />
-              <el-table-column label="纬度latitude" prop="latitude" width="180" />
+              <el-table-column
+                label="经度longitude"
+                prop="longitude"
+                width="180"
+              />
+              <el-table-column
+                label="纬度latitude"
+                prop="latitude"
+                width="180"
+              />
               <el-table-column label="地址" prop="address" />
             </el-table>
           </div>
@@ -45,43 +65,79 @@
       <el-table-column prop="color" label="颜色" width="140" class="single">
         <template #default="scope">
           <div style="display: flex; align-items: center">
-            <div :style="{ width: '10px', height: '10px', backgroundColor: scope.row.color }"></div>
+            <div
+              :style="{
+                width: '10px',
+                height: '10px',
+                backgroundColor: scope.row.color,
+              }"
+            ></div>
             <span style="margin-left: 10px">{{ scope.row.color }}</span>
           </div>
         </template>
       </el-table-column>
       <!-- 在移动端隐藏部分列 -->
-      <el-table-column prop="status" label="状态" width="100" class="desktop-only">
+      <el-table-column
+        prop="status"
+        label="状态"
+        width="100"
+        class="desktop-only"
+      >
         <template #default="scope">
-          <el-tag :type="getStatusType(scope.row.status)" :class="'status-' + scope.row.status">
+          <el-tag
+            :type="getStatusType(scope.row.status)"
+            :class="'status-' + scope.row.status"
+          >
             {{ getStatusText(scope.row.status) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180" class="desktop-only" />
+      <el-table-column
+        prop="createTime"
+        label="创建时间"
+        width="180"
+        class="desktop-only"
+      />
 
-      <el-table-column prop="updateTime" label="更新时间" width="180" class="desktop-only" />
+      <el-table-column
+        prop="updateTime"
+        label="更新时间"
+        width="180"
+        class="desktop-only"
+      />
 
       <el-table-column fixed="right" label="操作" :width="operationColumnWidth">
         <template #default="scope">
           <div class="table-actions desktop-only">
-
-            <el-button v-if="scope.row.status === 0" size="small" link type="primary"
-              @click="handleApprove(scope.row.id)">
+            <el-button
+              v-if="scope.row.status === 0"
+              size="small"
+              link
+              type="primary"
+              @click="handleApprove(scope.row.id)"
+            >
               批准
             </el-button>
 
-            <el-button v-if="scope.row.status === 1" size="small" link type="danger"
-              @click="handleInvalidate(scope.row.id)">
+            <el-button
+              v-if="scope.row.status === 1"
+              size="small"
+              link
+              type="danger"
+              @click="handleInvalidate(scope.row.id)"
+            >
               作废
             </el-button>
 
-
-            <el-button v-if="scope.row.status === -2" size="small" link type="success"
-              @click="handleInvalidateToNormal(scope.row.id)">
+            <el-button
+              v-if="scope.row.status === -2"
+              size="small"
+              link
+              type="success"
+              @click="handleInvalidateToNormal(scope.row.id)"
+            >
               恢复
             </el-button>
-
           </div>
           <div class="table-actions mobile-only">
             <el-dropdown trigger="click">
@@ -90,14 +146,23 @@
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item v-if="scope.row.status === 0"
-                    @click="handleApprove(scope.row.id)">批准</el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="scope.row.status === 0"
+                    @click="handleApprove(scope.row.id)"
+                    >批准</el-dropdown-item
+                  >
 
-                  <el-dropdown-item v-if="scope.row.status === 1"
-                    @click="handleInvalidate(scope.row.id)">作废</el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="scope.row.status === 1"
+                    @click="handleInvalidate(scope.row.id)"
+                    >作废</el-dropdown-item
+                  >
 
-                  <el-dropdown-item v-if="scope.row.status === -2"
-                    @click="handleInvalidateToNormal(scope.row.id)">恢复</el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="scope.row.status === -2"
+                    @click="handleInvalidateToNormal(scope.row.id)"
+                    >恢复</el-dropdown-item
+                  >
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -107,13 +172,17 @@
     </el-table>
 
     <div class="pagination-container">
-      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[100, 200, 500, 1000]"
-        background :layout="paginationLayout" :total="total" @size-change="handleSizeChange"
-        @current-change="handleCurrentChange" />
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[100, 200, 500, 1000]"
+        background
+        :layout="paginationLayout"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
-
-
-
   </div>
 </template>
 
@@ -127,10 +196,12 @@ import {
   getRoutePlanList,
   approveRoutePlanReviewItem,
   invalidateRoutePlanReviewItem,
-  invalidateToNormalRoutePlanReviewItem
+  invalidateToNormalRoutePlanReviewItem,
 } from "@/api/review";
 import dayjs from "dayjs";
 import { ArrowDown } from "@element-plus/icons-vue";
+
+const props = defineProps<{ title: string }>();
 
 const input = ref("");
 
@@ -189,14 +260,11 @@ const handleResize = () => {
   isMobile.value = window.innerWidth <= 768;
 };
 
-
 // 监听状态变化刷新数据
 watch(currentStatus, (newStatus) => {
   currentPage.value = 1; // 切换状态时重置为第一页
   router.push({ query: newStatus ? { status: newStatus } : {} });
 });
-
-
 
 const handleOnChange = (value: string) => {
   const val = value?.trim() || "";
@@ -294,7 +362,6 @@ const handleStatusChange = (val: string) => {
   fetchReviews();
 };
 
-
 // 批准操作
 const handleApprove = (id: string) => {
   ElMessageBox.confirm("确定要批准该审核吗?", "提示", {
@@ -322,7 +389,6 @@ const handleApprove = (id: string) => {
       ElMessage.info("已取消批准");
     });
 };
-
 
 // 作废操作
 const handleInvalidate = (id: string) => {
@@ -352,34 +418,33 @@ const handleInvalidate = (id: string) => {
     });
 };
 
-
 // 恢复操作
 const handleInvalidateToNormal = (id: string) => {
   ElMessageBox.confirm("确定要恢复该审核吗?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
-  }).then(async () => {
-    actionLoading.value = true;
-    try {
-      const res = await invalidateToNormalRoutePlanReviewItem(id);
-      if (res.code === 0) {
-        ElMessage.success("已恢复");
-        fetchReviews();
-      } else {
-        ElMessage.error(res.msg || "恢复失败");
+  })
+    .then(async () => {
+      actionLoading.value = true;
+      try {
+        const res = await invalidateToNormalRoutePlanReviewItem(id);
+        if (res.code === 0) {
+          ElMessage.success("已恢复");
+          fetchReviews();
+        } else {
+          ElMessage.error(res.msg || "恢复失败");
+        }
+      } catch (error) {
+        ElMessage.error("恢复失败");
+      } finally {
+        actionLoading.value = false;
       }
-    } catch (error) {
-      ElMessage.error("恢复失败");
-    } finally {
-      actionLoading.value = false;
-    }
-  }).catch(() => {
-    ElMessage.info("已取消恢复");
-  });
+    })
+    .catch(() => {
+      ElMessage.info("已取消恢复");
+    });
 };
-
-
 </script>
 
 <style scoped>

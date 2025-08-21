@@ -2,74 +2,107 @@
   <div class="admin-layout">
     <el-container>
       <el-header class="menu-header">
-        <el-menu router :default-active="$route.path" class="el-menu-vertical" background-color="#304156"
-          text-color="#fff" active-text-color="#409EFF" mode="horizontal">
+        <el-menu
+          ref="menuRef"
+          router
+          :default-active="$route.path"
+          class="el-menu-vertical"
+          background-color="#304156"
+          text-color="#fff"
+          active-text-color="#409EFF"
+          mode="horizontal"
+        >
           <el-menu-item index="/admin/dashboard">
             <el-icon>
               <House />
             </el-icon>
-            <span slot="title" class="hidden-md-and-down">控制面板</span>
+            <span slot="title">控制面板</span>
           </el-menu-item>
-          <el-menu-item index="/admin/reviews/add">
-            <el-badge v-if="reviewStore.dashboardData.totalAddPendingReview !== 0"
-              :value="reviewStore.dashboardData.totalAddPendingReview || 0" :max="99">
+          <!-- 营地相关 -->
+          <el-sub-menu index="/admin/reviews">
+            <template #title>
+              <el-icon><MapLocation /></el-icon>
+              营地管理
+            </template>
+            <el-menu-item index="/admin/reviews/add">
+              <el-badge
+                v-if="reviewStore.dashboardData.totalAddPendingReview !== 0"
+                :value="reviewStore.dashboardData.totalAddPendingReview || 0"
+                :max="99"
+              >
+                <el-icon>
+                  <CirclePlus />
+                </el-icon>
+              </el-badge>
+
+              <el-icon v-else>
+                <CirclePlus />
+              </el-icon>
+              <span slot="title">新增营地</span>
+            </el-menu-item>
+
+            <el-menu-item index="/admin/reviews/edit">
+              <el-badge
+                v-if="reviewStore.dashboardData.totalEditPendingReview !== 0"
+                :value="reviewStore.dashboardData.totalEditPendingReview || 0"
+                :max="99"
+              >
+                <el-icon>
+                  <Edit />
+                </el-icon>
+              </el-badge>
+
+              <el-icon v-else>
+                <Edit />
+              </el-icon>
+              <span slot="title">修改营地</span>
+            </el-menu-item>
+            <el-menu-item index="/admin/reviews/comment">
+              <el-badge
+                v-if="reviewStore.dashboardData.totalCommentPendingReview !== 0"
+                :value="
+                  reviewStore.dashboardData.totalCommentPendingReview || 0
+                "
+                :max="99"
+              >
+                <el-icon>
+                  <ChatLineRound />
+                </el-icon>
+              </el-badge>
+
+              <el-icon v-else>
+                <ChatLineRound />
+              </el-icon>
+              <span slot="title">打卡审核</span>
+            </el-menu-item>
+          </el-sub-menu>
+
+          <!-- 路线相关 -->
+          <el-sub-menu index="/admin/router-plans">
+            <template #title>
+              <el-icon><Guide /></el-icon>
+              路线管理
+            </template>
+            <el-menu-item index="/admin/router-plans/addList">
               <el-icon>
                 <CirclePlus />
               </el-icon>
-            </el-badge>
+              <span slot="title">新增线路</span>
+            </el-menu-item>
 
-            <el-icon v-else>
-              <CirclePlus />
-            </el-icon>
-            <span slot="title" class="hidden-md-and-down">新增营地</span>
-          </el-menu-item>
-
-          <el-menu-item index="/admin/reviews/edit">
-            <el-badge v-if="reviewStore.dashboardData.totalEditPendingReview !== 0"
-              :value="reviewStore.dashboardData.totalEditPendingReview || 0" :max="99">
+            <el-menu-item index="/admin/router-plans/editList">
               <el-icon>
-                <Edit />
+                <EditPen />
               </el-icon>
-            </el-badge>
-
-            <el-icon v-else>
-              <Edit />
-            </el-icon>
-            <span slot="title" class="hidden-md-and-down">修改营地</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/reviews/comment">
-            <el-badge v-if="reviewStore.dashboardData.totalCommentPendingReview !== 0"
-              :value="reviewStore.dashboardData.totalCommentPendingReview || 0" :max="99">
-              <el-icon>
-                <ChatLineRound />
-              </el-icon>
-            </el-badge>
-
-            <el-icon v-else>
-              <ChatLineRound />
-            </el-icon>
-            <span slot="title" class="hidden-md-and-down">打卡审核</span>
-          </el-menu-item>
-
-          <el-menu-item index="/admin/router-plans/addList">
-            <el-icon>
-              <Odometer />
-            </el-icon>
-            <span slot="title" class="hidden-md-and-down">新增线路</span>
-          </el-menu-item>
-
-          <el-menu-item index="/admin/router-plans/editList">
-            <el-icon>
-              <Odometer />
-            </el-icon>
-            <span slot="title" class="hidden-md-and-down">修改线路</span>
-          </el-menu-item>
+              <span slot="title">修改线路</span>
+            </el-menu-item>
+          </el-sub-menu>
 
           <el-menu-item index="/admin/feedback">
             <el-icon>
               <Service />
             </el-icon>
-            <span slot="title" class="hidden-md-and-down">用户反馈</span>
+            <span slot="title">用户反馈</span>
           </el-menu-item>
         </el-menu>
       </el-header>
@@ -79,26 +112,35 @@
     </el-container>
 
     <!-- 移动端侧边栏的覆盖层 -->
-    <div v-if="isMobile && isMobileMenuOpen" class="mobile-menu-backdrop" @click="toggleMobileMenu"></div>
+    <div
+      v-if="isMobile && isMobileMenuOpen"
+      class="mobile-menu-backdrop"
+      @click="toggleMobileMenu"
+    ></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import { useReviewStore } from "@/stores/review";
+import { useRoute } from "vue-router";
 import {
   Edit,
   CirclePlus,
   ChatLineRound,
   House,
-  Odometer,
   Service,
+  MapLocation,
+  Guide,
+  EditPen,
 } from "@element-plus/icons-vue";
+
+const reviewStore = useReviewStore();
+const route = useRoute();
+const menuRef = ref<any>(null);
 
 const isMobileMenuOpen = ref(false);
 const isMobile = ref(window.innerWidth <= 768);
-
-const reviewStore = useReviewStore();
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
@@ -119,6 +161,17 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
 });
+
+// 监听路由变化，路由切换后关闭所有子菜单
+watch(
+  () => route.path,
+  () => {
+    if (isMobile.value && menuRef.value) {
+      // 关闭所有展开的子菜单
+      menuRef.value.close();
+    }
+  }
+);
 </script>
 
 <style scoped>
@@ -243,10 +296,6 @@ onUnmounted(() => {
 :deep(.el-badge__content.is-fixed) {
   font-size: 10px;
 }
-
-/* :deep(.el-menu-item) {
-  display: inline-block;
-} */
 
 .el-menu-item {
   display: inline-flex;

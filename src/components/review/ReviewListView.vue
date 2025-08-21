@@ -1,21 +1,21 @@
 <template>
   <div class="review-list">
     <el-row :gutter="10" class="page-header">
+      <h2>{{ title }}</h2>
       <el-col :span="24" :md="12">
         <div class="status-filter-wrapper">
           <el-radio-group v-model="currentStatus" @change="handleStatusChange">
-            <el-radio-button label="">全部</el-radio-button>
-            <el-radio-button label="0">待审核</el-radio-button>
-            <el-radio-button label="1">已批准</el-radio-button>
-            <el-radio-button label="-1">已拒绝</el-radio-button>
-            <el-radio-button label="-2">已作废</el-radio-button>
+            <el-radio-button value="">全部</el-radio-button>
+            <el-radio-button value="0">待审核</el-radio-button>
+            <el-radio-button value="1">已批准</el-radio-button>
+            <el-radio-button value="-1">已拒绝</el-radio-button>
+            <el-radio-button value="-2">已作废</el-radio-button>
           </el-radio-group>
         </div>
       </el-col>
       <el-col :span="24" :md="12">
         <el-row :gutter="10">
           <el-col :span="24" :md="12" class="search-wrapper">
-            <!-- <h2>{{ title }}</h2> -->
             <el-input
               v-model="input"
               clearable

@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <ReviewRevisionRoutePlanListViewComponent mode="edit" title="修改旅游线路" v-model:loading="loading" class="custom-modal" />
+    <ReviewRevisionRoutePlanListViewComponent
+      mode="edit"
+      title="修改旅游线路管理"
+      v-model:loading="loading"
+      class="custom-modal"
+    />
   </div>
 </template>
 <script setup lang="ts">

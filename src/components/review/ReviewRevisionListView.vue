@@ -3,10 +3,10 @@
     <div class="page-header">
       <h2>{{ title }}</h2>
       <el-radio-group v-model="currentStatus" @change="handleStatusChange">
-        <el-radio-button label="">全部</el-radio-button>
-        <el-radio-button label="0">待审核</el-radio-button>
-        <el-radio-button label="1">已批准</el-radio-button>
-        <el-radio-button label="-1">已拒绝</el-radio-button>
+        <el-radio-button value="">全部</el-radio-button>
+        <el-radio-button value="0">待审核</el-radio-button>
+        <el-radio-button value="1">已批准</el-radio-button>
+        <el-radio-button value="-1">已拒绝</el-radio-button>
       </el-radio-group>
     </div>
 
