@@ -43,7 +43,13 @@
       border
       show-overflow-tooltip
     >
-      <el-table-column prop="id" label="ID" width="80" class="single" />
+      <el-table-column prop="id" label="ID" width="50" class="single" />
+      <el-table-column
+        prop="viewNickname"
+        label="用户名"
+        width="100"
+        class="desktop-only"
+      />
       <el-table-column prop="name" label="标题" min-width="180" />
       <el-table-column
         prop="address"
@@ -57,6 +63,7 @@
         width="300"
         class="desktop-only"
       />
+
       <el-table-column
         prop="averageScore"
         label="星级"

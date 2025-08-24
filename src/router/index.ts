@@ -51,9 +51,15 @@ const routes = [
       {
         path: "router-plans/editList",
         name: "routerPlanEditList",
-        component: () => import("@/views/admin/ReviewRoutePlanEditListView.vue"),
+        component: () =>
+          import("@/views/admin/ReviewRoutePlanEditListView.vue"),
       },
-
+      // TencentMapExample
+      {
+        path: "map",
+        name: "map",
+        component: () => import("@/views/admin/TencentMapExample.vue"),
+      },
       {
         path: "feedback",
         name: "Feedback",
