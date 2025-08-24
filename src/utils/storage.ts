@@ -20,6 +20,7 @@ const storage = {
   },
   isAccessTokenExpired() {
     const expireTime = Number(localStorage.getItem("token_expire_time"));
+    console.log('expireTime', expireTime,  Date.now() >= expireTime)
     return !expireTime || Date.now() >= expireTime; // true 已过期
   },
   /**

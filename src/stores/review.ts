@@ -44,7 +44,10 @@ export const useReviewStore = defineStore("review", {
   actions: {
     // 初始路由监听
     initRouteListener(router: any) {
-      router.afterEach(async () => {
+      router.afterEach(async (route: any) => {
+        if(route.path ===  "/admin/login") {
+          return
+        }
         // 每次路由跳转后刷新大屏数据
         await this.refreshDashboard();
       });
