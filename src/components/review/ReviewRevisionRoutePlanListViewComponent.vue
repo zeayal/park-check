@@ -12,20 +12,6 @@
           </el-radio-group>
         </div>
       </el-col>
-      <el-col :span="24" :md="12">
-        <el-row :gutter="10">
-          <el-col :span="24" :md="12" class="search-wrapper">
-            <el-input
-              v-model="input"
-              clearable
-              :prefix-icon="Search"
-              style="width: 340px; height: 30px"
-              placeholder="请输入标题进行搜索"
-              @change="handleOnChange"
-            />
-          </el-col>
-        </el-row>
-      </el-col>
     </el-row>
     <!--  show-overflow-tooltip -->
     <el-table

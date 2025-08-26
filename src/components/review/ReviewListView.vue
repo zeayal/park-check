@@ -350,9 +350,11 @@
         v-model:file-list="fileList"
         action="https://unistar.icu/api/fs-service/uploadFileToOSS"
         list-type="picture-card"
+        name="files"
         :on-remove="handleRemove"
         :on-success="handleSuccess"
         :auto-upload="true"
+        multiple
       >
         <el-icon>
           <Plus />
@@ -742,7 +744,7 @@ const handleEdit = async (id: string) => {
     // 转换图片格式以适配up-load
     fileList.value = images.map((image: any) => ({
       uid: image.serverFilename || `temp_${Date.now}`,
-      name: "image",
+      name: "files",
       url: image.previewUrl,
       status: "success",
       response: image,
@@ -817,11 +819,9 @@ const handleRemove = (file: any, fileList: any[]) => {
 
 // 处理上传成功
 const handleSuccess = (response: any, file: any, fileList: any[]) => {
-  console.log("上传成功:", response);
-
-  if (response.code === 0 && response.data?.filename) {
+  if (response.code === 0 && response.data?.files) {
     // 从响应中获取文件名并构建完整URL
-    const filename = response.data.filename;
+    const filename = response.data.files[0].filename;
 
     // 更新文件对象
     // file.url = filename;
