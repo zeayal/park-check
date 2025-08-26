@@ -70,6 +70,7 @@
                                 }}
                             </template>
                         </p>
+                        <TencentMapViewModal :latitude="review.originalDetail?.latitude" :longitude="review.originalDetail?.longitude"/>
                     </div>
                 </div>
 
@@ -139,6 +140,7 @@ import type { Review } from "@/api/review";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
 import dayjs from "dayjs";
+import TencentMapViewModal from "./TencentMapViewModal.vue";
 
 const props = defineProps<{
     reviewId: string;

@@ -2,35 +2,36 @@
   <div class="map-container">
     <!-- 地图容器 -->
     <div id="map" class="map"></div>
-
-    <!-- 控制区域 -->
-    <div class="control-panel">
-      <h3>腾讯地图示例</h3>
-      <div class="input-group">
-        <label>纬度：</label>
-        <input v-model.number="latitude" type="number" step="0.000001" />
-      </div>
-      <div class="input-group">
-        <label>经度：</label>
-        <input v-model.number="longitude" type="number" step="0.000001" />
-      </div>
-      <button @click="updateMarker" class="update-btn">更新标记位置</button>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 
+// 接收父组件传入的经纬度
+const props = defineProps({
+  latitude: {
+    type: Number,
+    required: true,
+    default: 39.98412,
+  },
+  longitude: {
+    type: Number,
+    required: true,
+    default: 116.307484,
+  },
+  content: {
+    type: String,
+  },
+});
+
 // 地图实例和标记点实例
 const map = ref(null);
 const marker = ref(null);
+const infoWindow = ref(null);
+const control = ref(null);
 
-// 经纬度数据
-const latitude = ref(39.98412); // 纬度
-const longitude = ref(116.307484); // 经度
-
-// 腾讯地图API密钥，请替换为你自己的密钥
+// 腾讯地图API密钥
 const MAP_KEY = "BTGBZ-GOKK7-HZFXI-PF24R-77MPV-QQF6B";
 
 // 初始化地图
@@ -53,6 +54,12 @@ const initMap = () => {
 // 动态加载地图脚本
 const loadMapScript = () => {
   return new Promise((resolve, reject) => {
+    // 避免重复加载
+    if (document.querySelector(`script[src*="map.qq.com/api/gljs"]`)) {
+      resolve();
+      return;
+    }
+
     const script = document.createElement("script");
     script.src = `https://map.qq.com/api/gljs?v=2.0&key=${MAP_KEY}`;
     script.charset = "utf-8";
@@ -65,13 +72,19 @@ const loadMapScript = () => {
 // 创建地图实例和标记点
 const createMap = () => {
   // 创建地图实例
-  const center = new window.TMap.LatLng(latitude.value, longitude.value);
+  const center = new window.TMap.LatLng(props.latitude, props.longitude);
   map.value = new window.TMap.Map("map", {
     center: center,
     zoom: 15, // 缩放级别
     pitch: 0, // 俯仰角
     rotation: 0, // 旋转角
   });
+
+  control.value = map.value.getControl(TMap.constants.DEFAULT_CONTROL_ID.ZOOM);
+  control.value.setPosition(TMap.constants.CONTROL_POSITION.BOTTOM_RIGHT);
+
+  // 移除缩放控件
+  map.value.removeControl(control.value);
 
   // 创建标记点
   marker.value = new window.TMap.MultiMarker({
@@ -81,7 +94,7 @@ const createMap = () => {
         width: 40,
         height: 40,
         anchor: { x: 20, y: 40 },
-        src: "../src/images/icon-esc-yc-caozuodidian.svg",
+        src: "../../src/images/icon-esc-yc-caozuodidian.svg",
       }),
     },
     geometries: [
@@ -92,6 +105,14 @@ const createMap = () => {
       },
     ],
   });
+
+  //初始化infoWindow
+  //   infoWindow.value = new window.TMap.InfoWindow({
+  //     map: map.value,
+  //     position: center, //设置信息框位置
+  //     content: props.content, //设置信息框内容
+  //     offset: { x: 0, y: -32 },
+  //   });
 };
 
 // 更新标记点位置
@@ -121,9 +142,10 @@ onUnmounted(() => {
 
 <style scoped>
 .map-container {
-  position: relative;
   width: 100%;
-  height: 100vh;
+  /* 使用变量接收父组件传入的高度 */
+  height: v-bind(mapHeight);
+  position: relative;
 }
 
 .map {
@@ -131,42 +153,8 @@ onUnmounted(() => {
   height: 100%;
 }
 
-.control-panel {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background-color: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-}
-
-.input-group {
-  margin: 10px 0;
-}
-
-input {
-  width: 150px;
-  padding: 6px;
-  margin-left: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.update-btn {
-  width: 100%;
-  padding: 8px;
-  margin-top: 10px;
-  background-color: #42b983;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.update-btn:hover {
-  background-color: #359e75;
+/* 解决模态框显示隐藏时的地图问题 */
+:deep(.map-container-hidden) {
+  display: none !important;
 }
 </style>

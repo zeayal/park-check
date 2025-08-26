@@ -36,9 +36,11 @@
                     <!-- 公共信息 -->
                     <p><strong>营地描述：</strong> {{ review.description }}</p><br>
                     <p><strong>地址：</strong> {{ review.address }}</p>
+                    <p><strong>平均星级：</strong> {{ review.averageScore || '-' }}</p>
                     <p><strong>GPS经度：</strong> {{ review.longitude }}</p>
                     <p><strong>GPS纬度：</strong> {{ review.latitude }}</p>
-                    <p><strong>平均星级：</strong> {{ review.averageScore || '-' }}</p>
+                    <TencentMapViewModal :latitude="review.latitude" :longitude="review.longitude" :content="review.address" />
+                    
                     
 
                     <!-- 营地 -->
@@ -100,6 +102,7 @@ import type { Review } from '@/api/review';
 import type { FormInstance, imageEmits } from 'element-plus';
 import { useRouter } from 'vue-router';
 import dayjs from 'dayjs';
+import TencentMapViewModal from './TencentMapViewModal.vue';
 
 const props = defineProps<{
     reviewId: string;
@@ -262,13 +265,18 @@ const formatDate = (date: string) => {
     background-color: #f8f8f8;
     padding: 15px;
     border-radius: 4px;
-    white-space: pre-wrap;
+    /* white-space: pre-wrap; */
     line-height: 1.6;
+    margin-bottom: 20px;
 }
 
 .images-box img {
     width: 380px;
     margin-bottom: 10px;
     margin-right: 5px;
+}
+
+.content-detail {
+    margin-top: 10px;
 }
 </style>
