@@ -21,7 +21,7 @@ apiClient.interceptors.request.use(
         console.log("进入令牌刷新逻辑", refreshToken); // 新增日志
         if (refreshToken) {
           getAccessTokenPromise = axios
-            .get("/api/users/refreshToken", {
+            .get("/api/auth/refreshToken", {
               params: {
                 refreshToken,
               },

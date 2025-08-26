@@ -16,8 +16,8 @@ export default defineConfig({
     proxy: {
       "/api": {
         changeOrigin: true,
-        // target: "https://unistar.icu",
-        target: "http://localhost:3000",
+        target: "https://unistar.icu",
+        // target: "http://localhost:3000",
         secure: false,
         rewrite: (path) =>
           path.startsWith("/api") ? `/api/${path.slice(4)}` : path,
