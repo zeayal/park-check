@@ -94,7 +94,7 @@ const createMap = () => {
         width: 40,
         height: 40,
         anchor: { x: 20, y: 40 },
-        src: "../../src/images/icon-esc-yc-caozuodidian.svg",
+        src: "/public/icon-esc-yc-caozuodidian.svg",
       }),
     },
     geometries: [
