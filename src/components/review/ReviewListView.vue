@@ -248,6 +248,10 @@
             autocomplete="off"
           ></el-input>
         </el-form-item>
+        <!-- <TencentMapViewModal
+          :latitude="editForm.latitude"
+          :longitude="editForm.longitude"
+        /> -->
         <el-form-item label="详情描述">
           <el-input type="textarea" v-model="editForm.description"></el-input>
         </el-form-item>
@@ -446,6 +450,8 @@ import dayjs from "dayjs";
 import ReviewDetailModal from "@/components/review/ReviewDetailModal.vue";
 import { ArrowDown } from "@element-plus/icons-vue";
 import { Plus } from "@element-plus/icons-vue";
+import TencentMapViewModal from "./TencentMapViewModal.vue";
+
 const INIT_FORM_DATA = {
   id: "",
   name: "",
@@ -470,6 +476,10 @@ const input = ref("");
 const props = defineProps<{
   mode: "add";
   title: string;
+  latitude: number;
+  longitude: number;
+  // mapHeight: string;
+  // zoom: number;
 }>();
 
 const emit = defineEmits<{
