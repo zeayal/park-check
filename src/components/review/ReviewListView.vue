@@ -476,10 +476,6 @@ const input = ref("");
 const props = defineProps<{
   mode: "add";
   title: string;
-  latitude: number;
-  longitude: number;
-  // mapHeight: string;
-  // zoom: number;
 }>();
 
 const emit = defineEmits<{
