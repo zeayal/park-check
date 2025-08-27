@@ -16,13 +16,13 @@
             <el-icon>
               <House />
             </el-icon>
-            <span slot="title">控制面板</span>
+            <span slot="title">主页</span>
           </el-menu-item>
           <!-- 营地相关 -->
           <el-sub-menu index="/admin/reviews">
             <template #title>
               <el-icon><MapLocation /></el-icon>
-              营地管理
+              营地
             </template>
             <el-menu-item index="/admin/reviews/add">
               <el-badge
@@ -81,7 +81,7 @@
           <el-sub-menu index="/admin/router-plans">
             <template #title>
               <el-icon><Guide /></el-icon>
-              路线管理
+              路线
             </template>
             <el-menu-item index="/admin/router-plans/addList">
               <el-icon>
@@ -102,7 +102,7 @@
             <el-icon>
               <Service />
             </el-icon>
-            <span slot="title">用户反馈</span>
+            <span slot="title">反馈</span>
           </el-menu-item>
         </el-menu>
       </el-header>

@@ -8,6 +8,7 @@
   --text-color-secondary: #666;
   --bg-color: #f5f7fa;
   --el-menu-horizontal-height: 44px;
+  --el-menu-base-level-padding: 10px;
 }
 
 * {
