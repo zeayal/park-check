@@ -39,9 +39,8 @@
                     <p><strong>平均星级：</strong> {{ review.averageScore || '-' }}</p>
                     <p><strong>GPS经度：</strong> {{ review.longitude }}</p>
                     <p><strong>GPS纬度：</strong> {{ review.latitude }}</p>
-                    <TencentMapViewModal :latitude="review.latitude" :longitude="review.longitude" :content="review.address" />
-                    
-                    
+                    <!-- 点击按钮打开腾讯地图 -->
+                    <el-button type="info" plain @click="handleOpenMap">在地图中查看</el-button>
 
                     <!-- 营地 -->
                     <div class="content-detail" v-if="review.isCamp">
@@ -73,6 +72,18 @@
             </div>
         </el-card>
 
+        <!-- 腾讯地图模态框 -->
+        <el-dialog v-model="tencentModalVisible" :modal="false" destroy-on-close :width="dialogWidth" title="查看营地位置"
+            fullscreen>
+            <TencentMapViewModal :latitude="review?.latitude" :longitude="review?.longitude"
+                :content="review?.address" />
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="tencentModalVisible = false">关闭</el-button>
+                </div>
+            </template>
+        </el-dialog>
+
         <!-- 拒绝对话框 -->
         <el-dialog v-model="rejectDialogVisible" title="拒绝原因" width="30%">
             <el-form :model="rejectForm" ref="rejectFormRef">
@@ -94,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getReviewById } from '@/api/review';
 import { useReviewStore } from '@/stores/review';
@@ -124,8 +135,20 @@ const rejectDialogVisible = ref(false);
 const rejectForm = ref({ reason: '' });
 const rejectFormRef = ref<FormInstance>();
 
+// 腾讯地图模态框相关
+const isMobile = ref(window.innerWidth <= 768);
+const tencentModalVisible = ref(false)
+const dialogWidth = computed(() => (isMobile.value ? "100%" : "60%"));
+
+
 onMounted(async () => {
+    // 监听窗口大小变化
+    window.addEventListener("resize", handleResize);
     await fetchReviewDetail()
+});
+
+onUnmounted(() => {
+    window.removeEventListener("resize", handleResize);
 });
 
 // 获取审核详情
@@ -163,7 +186,7 @@ const getStatusType = (status: string) => {
 };
 
 // 营地类型
-const getCampType = (type:number ) => {
+const getCampType = (type: number) => {
     const campType: Record<number, string> = {
         1: '停车场',
         2: '服务区',
@@ -174,7 +197,7 @@ const getCampType = (type:number ) => {
 }
 
 // 便利设施
-const getFacilityType = (type:number ) => {
+const getFacilityType = (type: number) => {
     const campType: Record<number, string> = {
         1: '商超',
         2: '公共厕所',
@@ -236,6 +259,21 @@ const confirmReject = async () => {
     });
 };
 
+// 地图相关
+const handleOpenMap = () => {
+    if (!review.value?.latitude || !review.value?.longitude) {
+        ElMessage.warning('缺少位置信息，无法显示地图');
+        return;
+    }
+    console.log("isMobile", isMobile.value)
+    tencentModalVisible.value = true;
+}
+
+// 处理窗口大小变化
+const handleResize = () => {
+    isMobile.value = window.innerWidth <= 768;
+};
+
 // 格式化日期
 const formatDate = (date: string) => {
     return dayjs(date).format("YYYY-MM-DD HH:mm:ss")
@@ -278,5 +316,9 @@ const formatDate = (date: string) => {
 
 .content-detail {
     margin-top: 10px;
+}
+
+ :deep(.el-overlay-dialog .el-dialog .el-dialog__body) { 
+   height: 100%;
 }
 </style>
