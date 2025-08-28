@@ -19,7 +19,7 @@
                 <template #header>
                     <div class="card-header">
                         <template v-if="differences.name && Number(review?.revisionDetai?.status) === 0">
-                            <span style="color: red">{{differences.name.revised}}</span>
+                            <span style="color: red">{{ differences.name.revised }}</span>
                             <span class="original-text">（原：{{ differences.name.original }}）</span>
                         </template>
                         <template v-else>{{ review?.revisionDetai?.name }}</template>
@@ -48,6 +48,13 @@
                 <div class="review-content">
                     <h3>详情</h3>
                     <div class="content-box">
+                        <!-- <strong>是否营地：</strong>
+                        <template v-if="differences.isCamp && Number(review?.revisionDetai?.status) === 0">
+                            <span style="color: red"> {{ differences.isCamp.revised }}</span>
+                            <span class="original-text">（原：{{ differences.isCamp.original }}）</span>
+                        </template>
+                        <template v-else>{{ review?.revisionDetai?.isCamp }}</template> -->
+
                         <!-- 动态渲染所有需要展示的字段 -->
                         <p v-for="field in displayFields" :key="field.key">
                             <strong>{{ field.label }}：</strong>
@@ -55,10 +62,10 @@
                                 <!-- 有差异时显示修改后（红）和修改前的值 -->
                                 <span style="color: red">{{
                                     formatValue(field.key, differences[field.key].revised)
-                                }}</span>
+                                    }}</span>
                                 <span class="original-text">（原：{{
                                     formatValue(field.key, differences[field.key].original)
-                                }}）</span>
+                                    }}）</span>
                             </template>
                             <template v-else>
                                 <!-- 无差异时直接显示当前值 -->
@@ -70,28 +77,25 @@
                                 }}
                             </template>
                         </p>
-                        <TencentMapViewModal :latitude="review.originalDetail?.latitude" :longitude="review.originalDetail?.longitude"/>
+                         <!-- 点击按钮打开腾讯地图 -->
+                        <el-button type="info" plain @click="handleOpenMap">在地图中查看</el-button>
                     </div>
                 </div>
 
                 <div class="review-images">
                     <h3>图片</h3>
-                    <!-- <div class="images-box">
-                        <img v-for="(url, index) in review?.revisionDetai?.images" :key="index" :src="url.previewUrl" alt="图片"></img>
-                    </div> -->
                     <template v-if="Number(review?.revisionDetai?.status) === 0">
                         <div class="images-box">
                             <!-- 显示修改后的图片（含新增标识） -->
                             <div v-for="(img, index) in revisedImages" :key="index" class="image-wrapper">
-                                <img :src="img.previewUrl" alt="图片" class="image" :class="{ added: isImageAdded(img) }" />
+                                <img :src="img.previewUrl" alt="图片" class="image"
+                                    :class="{ added: isImageAdded(img) }" />
                             </div>
 
                             <!-- 显示已删除的原始图片 -->
-                             <p v-if="deletedImages.length !==0">删除了以下图片：</p>
+                            <p v-if="deletedImages.length !== 0">删除了以下图片：</p>
                             <div v-for="(img, index) in deletedImages" :key="index" class="image-wrapper">
-                                <!-- <div class="deleted-placeholder"> -->
-                                    <img :src="img.previewUrl" class="image deleted"></img>
-                                <!-- </div> -->
+                                <img :src="img.previewUrl" class="image deleted"></img>
                             </div>
                         </div>
 
@@ -107,6 +111,18 @@
 
                 </div>
             </el-card>
+
+            <!-- 腾讯地图模态框 -->
+            <el-dialog v-model="tencentModalVisible" :modal="false" destroy-on-close :width="dialogWidth" title="查看营地位置"
+                fullscreen>
+                <TencentMapViewModal :latitude="review.originalDetail?.latitude"
+                    :longitude="review.originalDetail?.longitude" :content="review.originalDetail?.address" />
+                <template #footer>
+                    <div class="dialog-footer">
+                        <el-button @click="tencentModalVisible = false">关闭</el-button>
+                    </div>
+                </template>
+            </el-dialog>
 
             <!-- 拒绝对话框 -->
             <el-dialog v-model="rejectDialogVisible" title="拒绝原因" width="30%">
@@ -132,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { getReviewById, getRevisionReviewById } from "@/api/review";
 import { useReviewStore } from "@/stores/review";
@@ -167,9 +183,19 @@ const rejectDialogVisible = ref(false);
 const rejectForm = ref({ reason: "" });
 const rejectFormRef = ref<FormInstance>();
 
+// 腾讯地图模态框相关
+const isMobile = ref(window.innerWidth <= 768);
+const tencentModalVisible = ref(false)
+const dialogWidth = computed(() => (isMobile.value ? "100%" : "60%"));
+
 onMounted(async () => {
-    // await fetchReviewDetail();
+    // 监听窗口大小变化
+    window.addEventListener("resize", handleResize);
     await fetchRevisionReviewDetail();
+});
+
+onUnmounted(() => {
+    window.removeEventListener("resize", handleResize);
 });
 
 // 定义需要对比展示的字段配置
@@ -179,6 +205,15 @@ const displayFields = [
     { key: "address", label: "地址", type: "text" },
     { key: "longitude", label: "GPS经度", type: "number" },
     { key: "latitude", label: "GPS纬度", type: "number" },
+    {
+        key: "isCamp",
+        label: "是否营地",
+        type: "boolean",
+        trueText: "是",
+        falseText: "不是",
+    },
+    { key: "campType", label: "营地类型", type: "text" },
+    { key: "convenienceFacility", label: "设施营型", type: "text" },
     {
         key: "isCharged",
         label: "是否收费",
@@ -214,19 +249,36 @@ const displayFields = [
         trueText: "可以",
         falseText: "不可以",
     },
-    // {
-    //     key: "isStarCamp",
-    //     label: "是否五星营地",
-    //     type: "boolean",
-    //     trueText: "是",
-    //     falseText: "否",
-    // },
+    {
+        key: "fish",
+        label: "是否可以钓鱼",
+        type: "boolean",
+        trueText: "可以",
+        falseText: "不可以",
+    },
+    {
+        key: "fire",
+        label: "是否可以明火",
+        type: "boolean",
+        trueText: "可以",
+        falseText: "不可以",
+    },
 ];
 
 // 格式化值（根据字段类型处理显示）
 const formatValue = (key: string, value: any) => {
     const field = displayFields.find((f) => f.key === key);
     if (!value && value !== false) return "-";
+    // 处理营地类型
+    if (key === "campType") {
+        return getCampType(Number(value));
+    }
+
+    // 处理设施类型
+    if (key === "convenienceFacility") {
+        return getFacilityType(Number(value));
+    }
+
     // 处理布尔值显示
     if (field?.type === "boolean") {
         return value ? field.trueText : field.falseText;
@@ -290,6 +342,20 @@ const fetchRevisionReviewDetail = async () => {
     }
 };
 
+// 地图相关
+const handleOpenMap = () => {
+    if (!revisionDetai.value?.latitude || !revisionDetai.value?.longitude) {
+        ElMessage.warning('缺少位置信息，无法显示地图');
+        return;
+    }
+    tencentModalVisible.value = true;
+}
+
+// 处理窗口大小变化
+const handleResize = () => {
+    isMobile.value = window.innerWidth <= 768;
+};
+
 // 格式化日期
 const formatDate = (date: string) => {
     return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
@@ -319,6 +385,28 @@ const getStatusType = (status: string) => {
     };
     return typeMap[status] || "info";
 };
+
+// 营地类型
+const getCampType = (type: number) => {
+    const campType: Record<number, string> = {
+        1: '停车场',
+        2: '服务区',
+        3: '露营地',
+        4: '房车营地'
+    }
+    return campType[type] || '-'
+}
+
+// 便利设施
+const getFacilityType = (type: number) => {
+    const campType: Record<number, string> = {
+        1: '商超',
+        2: '公共厕所',
+        3: '菜市场',
+        4: '夜市美食'
+    }
+    return campType[type] || '-'
+}
 
 // 批准操作
 const handleApprove = () => {
@@ -483,5 +571,9 @@ const confirmReject = async () => {
     padding: 2px 6px;
     border-radius: 2px;
     font-weight: 500;
+}
+
+:deep(.el-overlay-dialog .el-dialog .el-dialog__body) {
+    height: 100%;
 }
 </style>

@@ -265,7 +265,6 @@ const handleOpenMap = () => {
         ElMessage.warning('缺少位置信息，无法显示地图');
         return;
     }
-    console.log("isMobile", isMobile.value)
     tencentModalVisible.value = true;
 }
 

@@ -165,12 +165,12 @@ const createMap = () => {
   });
 
   //初始化infoWindow
-  //   infoWindow.value = new window.TMap.InfoWindow({
-  //     map: map.value,
-  //     position: center, //设置信息框位置
-  //     content: props.content, //设置信息框内容
-  //     offset: { x: 0, y: -32 },
-  //   });
+  infoWindow.value = new window.TMap.InfoWindow({
+    map: map.value,
+    position: center, //设置信息框位置
+    content: props.content, //设置信息框内容
+    offset: { x: 0, y: -32 },
+  });
 };
 
 // 更新标记点位置
