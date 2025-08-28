@@ -127,15 +127,15 @@ const createMap = () => {
     return; // 终止初始化，避免后续报错
   }
 
-  // 创建地图实例
-  const center = new window.TMap.LatLng(props.latitude, props.longitude);
-
-  // 初始化地图（显式指定地图容器，避免容器未渲染的问题）
+  // 显式指定地图容器，避免容器未渲染的问题
   const mapContainer = document.getElementById(mapContainerId.value);
   if (!mapContainer) {
     console.error("地图容器不存在");
     return;
   }
+
+  // 创建地图实例
+  const center = new window.TMap.LatLng(props.latitude, props.longitude);
 
   map.value = new window.TMap.Map(mapContainerId.value, {
     center: center,
@@ -152,7 +152,7 @@ const createMap = () => {
         width: 40,
         height: 40,
         anchor: { x: 20, y: 40 },
-        src: "/icon-esc-yc-caozuodidian.svg",
+        src: "/curLocation.svg",
       }),
     },
     geometries: [

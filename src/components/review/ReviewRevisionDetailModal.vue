@@ -62,10 +62,10 @@
                                 <!-- 有差异时显示修改后（红）和修改前的值 -->
                                 <span style="color: red">{{
                                     formatValue(field.key, differences[field.key].revised)
-                                    }}</span>
+                                }}</span>
                                 <span class="original-text">（原：{{
                                     formatValue(field.key, differences[field.key].original)
-                                    }}）</span>
+                                }}）</span>
                             </template>
                             <template v-else>
                                 <!-- 无差异时直接显示当前值 -->
@@ -77,7 +77,7 @@
                                 }}
                             </template>
                         </p>
-                         <!-- 点击按钮打开腾讯地图 -->
+                        <!-- 点击按钮打开腾讯地图 -->
                         <el-button type="info" plain @click="handleOpenMap">在地图中查看</el-button>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
                             </div>
 
                             <!-- 显示已删除的原始图片 -->
-                            <p v-if="deletedImages.length !== 0">删除了以下图片：</p>
+                            <p v-if="deletedImages.length !== 0"><strong>删除了以下图片：</strong></p>
                             <div v-for="(img, index) in deletedImages" :key="index" class="image-wrapper">
                                 <img :src="img.previewUrl" class="image deleted"></img>
                             </div>
@@ -115,8 +115,9 @@
             <!-- 腾讯地图模态框 -->
             <el-dialog v-model="tencentModalVisible" :modal="false" destroy-on-close :width="dialogWidth" title="查看营地位置"
                 fullscreen>
-                <TencentMapViewModal :latitude="review.originalDetail?.latitude"
-                    :longitude="review.originalDetail?.longitude" :content="review.originalDetail?.address" />
+                    <TencentMapViewModal :latitude="review.revisionDetai?.latitude"
+                    :longitude="review.revisionDetai?.longitude" :content="review.originalDetail?.address" />
+                    
                 <template #footer>
                     <div class="dialog-footer">
                         <el-button @click="tencentModalVisible = false">关闭</el-button>
@@ -534,17 +535,18 @@ const confirmReject = async () => {
 }
 
 /* 新增图片样式 */
-.added {
+.image.added {
+    border-style: solid;
     border-color: green;
     border-width: 3px;
-    /* 红色边框 */
+    /* 绿色边框 */
 }
 
 /* 删除图片样式 */
 .deleted {
+    border-style: solid;
     border-color: #ff4d4f;
-    /* 灰色边框 */
-    background-color: #f9fafb;
+    /* 红色边框 */
     border-width: 3px;
 }
 

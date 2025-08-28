@@ -248,10 +248,6 @@
             autocomplete="off"
           ></el-input>
         </el-form-item>
-        <!-- <TencentMapViewModal
-          :latitude="editForm.latitude"
-          :longitude="editForm.longitude"
-        /> -->
         <el-form-item label="详情描述">
           <el-input type="textarea" v-model="editForm.description"></el-input>
         </el-form-item>
@@ -355,6 +351,7 @@
         action="https://unistar.icu/api/fs-service/uploadFileToOSS"
         list-type="picture-card"
         name="files"
+        :on-preview="handlePictureCardPreview"
         :on-remove="handleRemove"
         :on-success="handleSuccess"
         :auto-upload="true"
@@ -364,6 +361,11 @@
           <Plus />
         </el-icon>
       </el-upload>
+
+      <!-- 放大图片 -->
+      <el-dialog v-model="dialogVisible">
+        <img :src="dialogImageUrl" alt="Preview Image" class="upload-img" />
+      </el-dialog>
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="editFormVisible = false">取消</el-button>
@@ -524,6 +526,8 @@ const fileList = ref([]);
 const editForm = reactive(INIT_FORM_DATA);
 // 记录editForm.isCamp初始值
 let initialIsCamp = false;
+const dialogImageUrl = ref("");
+const dialogVisible = ref(false);
 
 // 拒绝对话框相关
 const rejectDialogVisible = ref(false);
@@ -650,6 +654,12 @@ const formatReviews = computed(() => {
     updateTime: formatDate(review.updateTime),
   }));
 });
+
+// 处理放大图片
+const handlePictureCardPreview = (uploadFile: any) => {
+  dialogImageUrl.value = uploadFile.url!;
+  dialogVisible.value = true;
+};
 
 // 格式化日期
 const formatDate = (date: string) => {
@@ -1086,5 +1096,9 @@ const confirmRestore = async () => {
   align-items: center;
   gap: 10px;
   margin-top: 5px;
+}
+
+.upload-img {
+  width: 100%;
 }
 </style>
